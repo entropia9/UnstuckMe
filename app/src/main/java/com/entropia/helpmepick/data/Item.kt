@@ -1,0 +1,13 @@
+package com.entropia.helpmepick.data
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "items")
+data class Item(
+    @PrimaryKey
+    val name: String,
+    val timesPicked: Int = 0,
+    val timesRejected: Int = 0,
+    val battleWins: Int = 0
+)
