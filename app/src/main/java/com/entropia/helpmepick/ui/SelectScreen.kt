@@ -3,10 +3,14 @@ package com.entropia.helpmepick.ui
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,7 +26,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.data.Item
+import com.entropia.helpmepick.ui.theme.HelpMePickTheme
 
+
+@Composable
+fun ItemsGrid(itemList: List<Item>, modifier: Modifier = Modifier) {
+    LazyHorizontalGrid(
+        rows = GridCells.Fixed(2),
+        modifier = modifier
+    ) {
+        items(itemList) { item ->
+            ItemButton(item, { (_) -> {} })  //TODO
+        }
+
+    }
+}
 
 @Composable
 fun AddButton() {
@@ -47,11 +65,18 @@ fun ItemButton(
             false
         )
     }
+    val colors = if (selected) ButtonDefaults.buttonColors(
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+    ) else ButtonDefaults.buttonColors(
+        containerColor = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary
+    )
     Box(modifier = modifier) {
         if (selected) {
             Icon(
                 painter = painterResource(id = R.drawable.selected_icon), contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary,
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.zIndex(1f)
             )
         }
@@ -60,6 +85,7 @@ fun ItemButton(
                 selected = !selected
                 selectOrDeselectItem(item)
             },
+            colors = colors,
             shape = RoundedCornerShape(30),
             modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp)
         ) {
@@ -72,12 +98,14 @@ fun ItemButton(
 @Preview
 @Composable
 fun ItemButtonPreview() {
-    val item = Item(
-        "CatFoodCalculator"
-    )
-    Row {
-        AddButton()
-        ItemButton(item, { (_) -> {} })
+    HelpMePickTheme {
+        val item = Item(
+            "CatFoodCalculator"
+        )
+        Row {
+            AddButton()
+            ItemButton(item, { (_) -> {} })
 
+        }
     }
 }
