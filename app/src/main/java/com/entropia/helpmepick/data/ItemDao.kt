@@ -21,7 +21,7 @@ interface ItemDao {
     suspend fun delete(item: Item)
 
     @Query("SELECT * FROM items WHERE name=:name")
-    fun getItem(name: String): Flow<Item>
+    fun getItem(name: String):Item?
 
     @Query("SELECT * FROM items ORDER BY timesPicked DESC")
     fun getAllItems(): Flow<List<Item>>
