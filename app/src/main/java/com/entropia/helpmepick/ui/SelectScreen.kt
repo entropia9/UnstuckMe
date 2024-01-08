@@ -36,29 +36,40 @@ import com.entropia.helpmepick.ui.theme.HelpMePickTheme
 
 
 @Composable
-fun ItemsGrid(itemList: List<Item>, modifier: Modifier = Modifier) {
+fun ItemsGrid(itemList: List<Item>, viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
     LazyHorizontalGrid(
         rows = GridCells.Fixed(2),
         modifier = modifier
     ) {
         items(itemList) { item ->
-            ItemButton(item, { (_) -> {} }, modifier = Modifier.wrapContentSize())  //TODO
+            ItemButton(
+                item,
+                viewModel::selectItem,
+                viewModel::deselectItem,
+                modifier = Modifier.wrapContentSize()
+            )
         }
 
     }
 }
 
 @Composable
-fun AddButton(modifier: Modifier = Modifier) {
+fun AddButton(modifier: Modifier = Modifier, addItem: (String) -> Unit) {
+    var name by remember {
+        mutableStateOf("")
+    }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
         modifier = modifier
     ) {
-        TextField(value = "", onValueChange = { }, placeholder = { Text(text = "Enter name") }
+        TextField(
+            value = name,
+            onValueChange = { name = it },
+            placeholder = { Text(text = "Enter name") }
         )
         Button(
-            onClick = { /*TODO*/ },
+            onClick = { addItem(name) },
             shape = RoundedCornerShape(30),
             modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp)
         ) {
@@ -73,7 +84,8 @@ fun AddButton(modifier: Modifier = Modifier) {
 @Composable
 fun ItemButton(
     item: Item,
-    selectOrDeselectItem: (item: Item) -> Unit,
+    selectItem: (item: Item) -> Unit,
+    deselectItem: (item: Item) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var selected by remember {
@@ -99,7 +111,7 @@ fun ItemButton(
         Button(
             onClick = {
                 selected = !selected
-                selectOrDeselectItem(item)
+                if (selected) selectItem(item) else deselectItem(item)
             },
             colors = colors,
             shape = RoundedCornerShape(30),
@@ -121,13 +133,14 @@ fun ItemButtonPreview() {
         val items = listOf(item, item, item, item, item, item)
         Column {
             AddButton(
+                addItem = { ("name") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
             )
-            ItemsGrid(itemList = items, modifier = Modifier.weight(0.15f))
             Box(modifier = Modifier.weight(1f))
 
         }
     }
 }
+

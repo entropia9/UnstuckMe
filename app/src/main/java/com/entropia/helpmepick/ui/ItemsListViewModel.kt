@@ -5,12 +5,13 @@ import androidx.lifecycle.viewModelScope
 import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.data.ItemsRepository
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewModel() {
-    val itemsListUiState = itemsRepository.getAllItemsStream().map {
+    private val _itemsListUiState = itemsRepository.getAllItemsStream().map {
         ItemsListUiState(it)
     }.stateIn(
         scope = viewModelScope,
@@ -18,12 +19,22 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
         initialValue = ItemsListUiState()
     )
 
+    val itemsListUiState: StateFlow<ItemsListUiState> = _itemsListUiState
+
     fun addItem(item: Item) {
         viewModelScope.launch {
             if (validateInput(item.name)) {
                 itemsRepository.insertItem(item)
             }
         }
+    }
+
+    fun selectItem(item: Item) {
+        _itemsListUiState.value.selectedItemsList.add(item)
+    }
+
+    fun deselectItem(item: Item) {
+        _itemsListUiState.value.selectedItemsList.remove(item)
     }
 
     private fun validateInput(name: String): Boolean {
@@ -36,5 +47,6 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
 }
 
 data class ItemsListUiState(
-    val itemsList: List<Item> = listOf()
+    val itemsList: List<Item> = listOf(),
+    val selectedItemsList: MutableList<Item> = mutableListOf()
 )
