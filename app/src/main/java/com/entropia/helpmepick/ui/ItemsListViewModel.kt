@@ -21,10 +21,10 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
 
     val itemsListUiState: StateFlow<ItemsListUiState> = _itemsListUiState
 
-    fun addItem(item: Item) {
+    fun addItem(name: String) {
         viewModelScope.launch {
-            if (validateInput(item.name)) {
-                itemsRepository.insertItem(item)
+            if (validateInput(name)) {
+                itemsRepository.insertItem(Item(name))
             }
         }
     }

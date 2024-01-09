@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -34,6 +35,13 @@ import com.entropia.helpmepick.R
 import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.ui.theme.HelpMePickTheme
 
+@Composable
+fun SelectScreen(viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        AddButton(addItem = viewModel::addItem, modifier = Modifier.fillMaxWidth())
+        //TODO fix threading
+    }
+}
 
 @Composable
 fun ItemsGrid(itemList: List<Item>, viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
