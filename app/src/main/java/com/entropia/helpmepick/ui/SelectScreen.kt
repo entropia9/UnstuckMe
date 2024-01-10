@@ -4,13 +4,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyHorizontalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -21,12 +22,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,17 +40,26 @@ import com.entropia.helpmepick.ui.theme.HelpMePickTheme
 
 @Composable
 fun SelectScreen(viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
+    val uiState = viewModel.itemsListUiState.collectAsState()
     Column(modifier = Modifier.fillMaxSize()) {
-        AddButton(addItem = viewModel::addItem, modifier = Modifier.fillMaxWidth())
-        //TODO fix threading
+        AddButton(
+            addItem = viewModel::addItem, modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    dimensionResource(id = R.dimen.padding_medium)
+                )
+        )
+        ItemsGrid(itemList = uiState.value.itemsList, viewModel = viewModel)
+
+        Text(text = "Picked: " + uiState.value.selectedItemsList.toString())
     }
 }
 
 @Composable
 fun ItemsGrid(itemList: List<Item>, viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
-    LazyHorizontalGrid(
-        rows = GridCells.Fixed(2),
-        modifier = modifier
+    LazyHorizontalStaggeredGrid(
+        rows = StaggeredGridCells.Fixed(2),
+        modifier = modifier.fillMaxHeight(0.2f)
     ) {
         items(itemList) { item ->
             ItemButton(
@@ -62,7 +74,7 @@ fun ItemsGrid(itemList: List<Item>, viewModel: ItemsListViewModel, modifier: Mod
 }
 
 @Composable
-fun AddButton(modifier: Modifier = Modifier, addItem: (String) -> Unit) {
+fun AddButton(modifier: Modifier = Modifier, addItem: (Item) -> Unit) {
     var name by remember {
         mutableStateOf("")
     }
@@ -74,10 +86,14 @@ fun AddButton(modifier: Modifier = Modifier, addItem: (String) -> Unit) {
         TextField(
             value = name,
             onValueChange = { name = it },
+            singleLine = true,
             placeholder = { Text(text = "Enter name") }
         )
         Button(
-            onClick = { addItem(name) },
+            onClick = {
+                addItem(Item(name))
+                name = ""
+            },
             shape = RoundedCornerShape(30),
             modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp)
         ) {

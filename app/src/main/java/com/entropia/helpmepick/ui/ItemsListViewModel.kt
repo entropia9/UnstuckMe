@@ -1,9 +1,11 @@
 package com.entropia.helpmepick.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.data.ItemsRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -17,20 +19,27 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
         initialValue = ItemsListUiState()
-    )
+    )   //TODO turn to mutableStateFlow
 
     val itemsListUiState: StateFlow<ItemsListUiState> = _itemsListUiState
 
-    fun addItem(name: String) {
-        viewModelScope.launch {
-            if (validateInput(name)) {
-                itemsRepository.insertItem(Item(name))
-            }
+    private val defaultDispatcher = Dispatchers.Default
+
+
+    fun addItem(item: Item) = viewModelScope.launch(defaultDispatcher) {
+        if (validateInput(item.name)) {
+            itemsRepository.insertItem(item)
         }
+    }
+
+    fun isSelected(item: Item): Boolean {
+        return _itemsListUiState.value.selectedItemsList.contains(item)
     }
 
     fun selectItem(item: Item) {
         _itemsListUiState.value.selectedItemsList.add(item)
+
+        Log.d("SELECTED", _itemsListUiState.value.selectedItemsList.toString())
     }
 
     fun deselectItem(item: Item) {
