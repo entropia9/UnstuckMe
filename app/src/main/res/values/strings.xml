@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Help Me Pick</string>
+    <string name="hide_list">Hide List</string>
+    <string name="show_list">Show List</string>
 </resources>

@@ -1,10 +1,10 @@
 package com.entropia.helpmepick.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,6 +15,8 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -31,12 +33,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.ui.theme.HelpMePickTheme
+import kotlin.math.ceil
+import kotlin.math.roundToInt
 
 @Composable
 fun SelectScreen(viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
@@ -49,28 +54,52 @@ fun SelectScreen(viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
                     dimensionResource(id = R.dimen.padding_medium)
                 )
         )
-        ItemsGrid(itemList = uiState.value.itemsList, viewModel = viewModel)
+        ItemsGrid(itemList = uiState.value.itemsList, viewModel = viewModel, modifier= Modifier
+            .padding(
+                dimensionResource(id = R.dimen.padding_medium)
+            )
+            .weight(0.2f))
 
-        Text(text = "Picked: " + uiState.value.selectedItemsList.toString())
+        Text(text = "Picked: " + if(uiState.value.selectedItemsList.isNotEmpty()) uiState.value.selectedItemsList.first().name else "", modifier = Modifier.weight(1f))
+        //TODO pickall
     }
 }
 
 @Composable
 fun ItemsGrid(itemList: List<Item>, viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
-    LazyHorizontalStaggeredGrid(
-        rows = StaggeredGridCells.Fixed(2),
-        modifier = modifier.fillMaxHeight(0.2f)
-    ) {
-        items(itemList) { item ->
-            ItemButton(
-                item,
-                viewModel::selectItem,
-                viewModel::deselectItem,
-                modifier = Modifier.wrapContentSize()
+    var visible by remember {
+        mutableStateOf(true)
+    }
+    val numberOfRows = if (itemList.isNotEmpty()) ceil(itemList.size / 10f).roundToInt() else 1
+    Column(modifier = modifier, verticalArrangement = Arrangement.Top) {
+        Row(modifier = Modifier) {
+            Text(text = if (visible) stringResource(id = R.string.hide_list) else stringResource(id = R.string.show_list))
+            Icon(
+                imageVector = if (visible) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                contentDescription = "Dropdown",
+                modifier = Modifier.clickable {
+                    visible = !visible
+                }
             )
         }
+        if (visible) {
+            LazyHorizontalStaggeredGrid(
+                rows = StaggeredGridCells.Fixed(numberOfRows),
+                modifier = Modifier
+            ) {
+                items(itemList) { item ->
+                    ItemButton(
+                        item,
+                        viewModel::selectItem,
+                        viewModel::deselectItem,
+                        modifier = Modifier.wrapContentSize()
+                    )
+                }
 
+            }
+        }
     }
+
 }
 
 @Composable

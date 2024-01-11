@@ -1,6 +1,7 @@
 package com.entropia.helpmepick.ui
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.entropia.helpmepick.data.Item
@@ -19,8 +20,7 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
         initialValue = ItemsListUiState()
-    )   //TODO turn to mutableStateFlow
-
+    )
     val itemsListUiState: StateFlow<ItemsListUiState> = _itemsListUiState
 
     private val defaultDispatcher = Dispatchers.Default
@@ -57,5 +57,5 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
 
 data class ItemsListUiState(
     val itemsList: List<Item> = listOf(),
-    val selectedItemsList: MutableList<Item> = mutableListOf()
+    val selectedItemsList: MutableList<Item> = mutableStateListOf()
 )
