@@ -1,7 +1,10 @@
 package com.entropia.helpmepick.ui
 
 import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.entropia.helpmepick.data.Item
@@ -23,6 +26,8 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
     )
     val itemsListUiState: StateFlow<ItemsListUiState> = _itemsListUiState
 
+    var pickItemUiState by mutableStateOf(PickItemUiState())
+
     private val defaultDispatcher = Dispatchers.Default
 
 
@@ -32,9 +37,6 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
         }
     }
 
-    fun isSelected(item: Item): Boolean {
-        return _itemsListUiState.value.selectedItemsList.contains(item)
-    }
 
     fun selectItem(item: Item) {
         _itemsListUiState.value.selectedItemsList.add(item)
@@ -46,8 +48,20 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
         _itemsListUiState.value.selectedItemsList.remove(item)
     }
 
+    fun listSelectedItems(): String {
+        val names = _itemsListUiState.value.selectedItemsList.map { it.name }
+        return names.joinToString(separator = ", ")
+    }
+
     private fun validateInput(name: String): Boolean {
         return name.isNotBlank() && itemsRepository.getItem(name) == null
+    }
+
+    fun pickRandomFromSelected() {
+        if (_itemsListUiState.value.selectedItemsList.isNotEmpty()) {
+            pickItemUiState =
+                pickItemUiState.copy(_itemsListUiState.value.selectedItemsList.random())
+        }
     }
 
     companion object {
@@ -55,7 +69,11 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
     }
 }
 
+data class PickItemUiState(
+    val currentPick: Item? = null
+)
+
 data class ItemsListUiState(
     val itemsList: List<Item> = listOf(),
-    val selectedItemsList: MutableList<Item> = mutableStateListOf()
+    val selectedItemsList: MutableList<Item> = mutableStateListOf(),
 )

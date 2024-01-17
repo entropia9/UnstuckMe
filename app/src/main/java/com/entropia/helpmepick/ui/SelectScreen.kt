@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -46,7 +45,7 @@ import kotlin.math.roundToInt
 @Composable
 fun SelectScreen(viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
     val uiState = viewModel.itemsListUiState.collectAsState()
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = modifier) {
         AddButton(
             addItem = viewModel::addItem, modifier = Modifier
                 .fillMaxWidth()
@@ -60,8 +59,10 @@ fun SelectScreen(viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
             )
             .weight(0.2f))
 
-        Text(text = "Picked: " + if(uiState.value.selectedItemsList.isNotEmpty()) uiState.value.selectedItemsList.first().name else "", modifier = Modifier.weight(1f))
-        //TODO pickall
+        Text(text = "Picked: " + if(uiState.value.selectedItemsList.isNotEmpty()) viewModel.listSelectedItems() else "", modifier = Modifier.weight(1f))
+        
+        PickRandom(viewModel = viewModel)
+        //TODO fix UI
     }
 }
 
@@ -186,7 +187,10 @@ fun ItemButtonPreview() {
         val items = listOf(item, item, item, item, item, item)
         Column {
             AddButton(
-                addItem = { ("name") },
+                addItem = {
+                    @Suppress("UNUSED_EXPRESSION")
+                    ("name")
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
