@@ -4,13 +4,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.staggeredgrid.LazyHorizontalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -39,13 +38,11 @@ import androidx.compose.ui.zIndex
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.ui.theme.HelpMePickTheme
-import kotlin.math.ceil
-import kotlin.math.roundToInt
 
 @Composable
 fun SelectScreen(viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
     val uiState = viewModel.itemsListUiState.collectAsState()
-    Column(modifier = modifier) {
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         AddButton(
             addItem = viewModel::addItem, modifier = Modifier
                 .fillMaxWidth()
@@ -53,27 +50,32 @@ fun SelectScreen(viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
                     dimensionResource(id = R.dimen.padding_medium)
                 )
         )
-        ItemsGrid(itemList = uiState.value.itemsList, viewModel = viewModel, modifier= Modifier
-            .padding(
-                dimensionResource(id = R.dimen.padding_medium)
-            )
-            .weight(0.2f))
+        ItemsGrid(
+            itemList = uiState.value.itemsList, viewModel = viewModel, modifier = Modifier
+                .padding(
+                    dimensionResource(id = R.dimen.padding_medium)
+                )
+        )
+        Text(
+            text = "Selected: " + if (uiState.value.selectedItemsList.isNotEmpty()) viewModel.listSelectedItems() else "",
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+        )
 
-        Text(text = "Picked: " + if(uiState.value.selectedItemsList.isNotEmpty()) viewModel.listSelectedItems() else "", modifier = Modifier.weight(1f))
-        
         PickRandom(viewModel = viewModel)
-        //TODO fix UI
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ItemsGrid(itemList: List<Item>, viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
     var visible by remember {
         mutableStateOf(true)
     }
-    val numberOfRows = if (itemList.isNotEmpty()) ceil(itemList.size / 10f).roundToInt() else 1
-    Column(modifier = modifier, verticalArrangement = Arrangement.Top) {
-        Row(modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(modifier = Modifier.align(Alignment.Start)) {
             Text(text = if (visible) stringResource(id = R.string.hide_list) else stringResource(id = R.string.show_list))
             Icon(
                 imageVector = if (visible) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
@@ -84,11 +86,12 @@ fun ItemsGrid(itemList: List<Item>, viewModel: ItemsListViewModel, modifier: Mod
             )
         }
         if (visible) {
-            LazyHorizontalStaggeredGrid(
-                rows = StaggeredGridCells.Fixed(numberOfRows),
-                modifier = Modifier
+            FlowRow(
+                modifier = Modifier,
+                verticalArrangement = Arrangement.Top,
+                horizontalArrangement = Arrangement.SpaceAround,
             ) {
-                items(itemList) { item ->
+                itemList.forEach { item ->
                     ItemButton(
                         item,
                         viewModel::selectItem,
@@ -154,26 +157,26 @@ fun ItemButton(
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary
     )
-    Box(modifier = modifier) {
-        if (selected) {
-            Icon(
-                painter = painterResource(id = R.drawable.selected_icon), contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.zIndex(1f)
-            )
-        }
-        Button(
-            onClick = {
-                selected = !selected
-                if (selected) selectItem(item) else deselectItem(item)
-            },
-            colors = colors,
-            shape = RoundedCornerShape(30),
-            modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp, bottom = 4.dp)
-        ) {
-            Text(text = item.name)
-        }
+    // Box(modifier = modifier.wrapContentSize()) {
+    if (selected) {
+        Icon(
+            painter = painterResource(id = R.drawable.selected_icon), contentDescription = null,
+            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+            modifier = Modifier.zIndex(1f)
+        )
     }
+    Button(
+        onClick = {
+            selected = !selected
+            if (selected) selectItem(item) else deselectItem(item)
+        },
+        colors = colors,
+        shape = RoundedCornerShape(30),
+        modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp, bottom = 4.dp)
+    ) {
+        Text(text = item.name)
+    }
+    // }
 }
 
 
