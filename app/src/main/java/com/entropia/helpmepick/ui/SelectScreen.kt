@@ -157,7 +157,6 @@ fun ItemButton(
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary
     )
-    // Box(modifier = modifier.wrapContentSize()) {
     if (selected) {
         Icon(
             painter = painterResource(id = R.drawable.selected_icon), contentDescription = null,
@@ -172,11 +171,11 @@ fun ItemButton(
         },
         colors = colors,
         shape = RoundedCornerShape(30),
-        modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp, bottom = 4.dp)
+        modifier = modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp, bottom = 4.dp)
     ) {
         Text(text = item.name)
     }
-    // }
+
 }
 
 

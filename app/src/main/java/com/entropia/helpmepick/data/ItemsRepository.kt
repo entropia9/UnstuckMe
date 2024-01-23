@@ -16,4 +16,9 @@ interface ItemsRepository {
 
     suspend fun updateItem(item: Item)
 
+    fun getAllByTimesSelected(): Flow<List<Item>>
+
+    fun getAllByTimesRejected(): Flow<List<Item>>
+
+    fun getNeverSelected():Flow<List<Item>>
 }
