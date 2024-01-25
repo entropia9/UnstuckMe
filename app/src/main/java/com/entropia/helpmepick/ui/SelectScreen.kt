@@ -63,9 +63,12 @@ fun SelectScreen(viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
                     dimensionResource(id = R.dimen.padding_medium)
                 )
             )
+            //TODO spacing etc.
             Button(onClick = { viewModel.selectAll() }) {
                 Text(text = (stringResource(id = R.string.select_all)))
             }
+
+            //TODO Select Random
             Text(text = stringResource(id = R.string.select_random))
             Text(
                 text = "Selected: " + if (uiState.value.selectedItemsList.isNotEmpty()) viewModel.listSelectedItems() else "",
