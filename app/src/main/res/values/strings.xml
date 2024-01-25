@@ -2,5 +2,18 @@
     <string name="app_name">Help Me Pick</string>
     <string name="hide_list">Hide List</string>
     <string name="show_list">Show List</string>
+    <string name="select">Select Items to Pick From Below</string>
+    <string name="select_all">Select All</string>
+    <string name="select_random">"Or select random?"</string>
+    <string name="done_button">Done</string>
     <string name="help_me_pick_btn">Help Me Pick</string>
+    <string name="question_dialogue1">Is this your heart\'s desire?</string>
+    <string name="question_dialogue2">How about %1$s?</string>
+    <string name="question_dialogue3">Maybe you fancy %1$s instead?</string>
+    <string name="question_dialogue4">Does %1$s sound better?</string>
+    <string name="picked_dialogue">Congrats, have fun doing %1$s!</string>
+    <string name="out_of_options_dialogue">Seems like you don\'t want to do any of these. Maybe you should just chill then?</string>
+    <string name="start_again_dialogue2">Do you want to start again then?</string>
+    <string name="yes_answer_button">Yes</string>
+    <string name="no_answer_button">No</string>
 </resources>

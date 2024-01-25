@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -50,18 +51,33 @@ fun SelectScreen(viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
                     dimensionResource(id = R.dimen.padding_medium)
                 )
         )
-        ItemsGrid(
-            itemList = uiState.value.itemsList, viewModel = viewModel, modifier = Modifier
-                .padding(
+        if (uiState.value.itemsList.isNotEmpty()) {
+            Text(
+                text = stringResource(id = R.string.select),
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+            )
+            ItemsGrid(
+                itemList = uiState.value.itemsList,
+                viewModel = viewModel,
+                modifier = Modifier.padding(
                     dimensionResource(id = R.dimen.padding_medium)
                 )
-        )
-        Text(
-            text = "Selected: " + if (uiState.value.selectedItemsList.isNotEmpty()) viewModel.listSelectedItems() else "",
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
-        )
-
-        PickRandom(viewModel = viewModel)
+            )
+            Button(onClick = { viewModel.selectAll() }) {
+                Text(text = (stringResource(id = R.string.select_all)))
+            }
+            Text(text = stringResource(id = R.string.select_random))
+            Text(
+                text = "Selected: " + if (uiState.value.selectedItemsList.isNotEmpty()) viewModel.listSelectedItems() else "",
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+            )
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        if (uiState.value.selectedItemsList.isNotEmpty()) {
+            Button(onClick = { /*TODO*/ }, modifier = Modifier) {
+                Text(text = stringResource(id = R.string.done_button))
+            }
+        }
     }
 }
 
@@ -72,18 +88,17 @@ fun ItemsGrid(itemList: List<Item>, viewModel: ItemsListViewModel, modifier: Mod
         mutableStateOf(true)
     }
     Column(
-        modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.Top,
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(modifier = Modifier.align(Alignment.Start)) {
             Text(text = if (visible) stringResource(id = R.string.hide_list) else stringResource(id = R.string.show_list))
-            Icon(
-                imageVector = if (visible) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+            Icon(imageVector = if (visible) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
                 contentDescription = "Dropdown",
                 modifier = Modifier.clickable {
                     visible = !visible
-                }
-            )
+                })
         }
         if (visible) {
             FlowRow(
@@ -96,14 +111,14 @@ fun ItemsGrid(itemList: List<Item>, viewModel: ItemsListViewModel, modifier: Mod
                         item,
                         viewModel::selectItem,
                         viewModel::deselectItem,
-                        modifier = Modifier.wrapContentSize()
+                        modifier = Modifier.wrapContentSize(),
+                        selected = viewModel.itemsListUiState.value.selectedItemsList.contains(item)
                     )
                 }
 
             }
         }
     }
-
 }
 
 @Composable
@@ -116,12 +131,10 @@ fun AddButton(modifier: Modifier = Modifier, addItem: (Item) -> Unit) {
         horizontalArrangement = Arrangement.Center,
         modifier = modifier
     ) {
-        TextField(
-            value = name,
+        TextField(value = name,
             onValueChange = { name = it },
             singleLine = true,
-            placeholder = { Text(text = "Enter name") }
-        )
+            placeholder = { Text(text = "Enter name") })
         Button(
             onClick = {
                 addItem(Item(name))
@@ -143,13 +156,10 @@ fun ItemButton(
     item: Item,
     selectItem: (item: Item) -> Unit,
     deselectItem: (item: Item) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    selected: Boolean = false
 ) {
-    var selected by remember {
-        mutableStateOf(
-            false
-        )
-    }
+
     val colors = if (selected) ButtonDefaults.buttonColors(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -157,23 +167,24 @@ fun ItemButton(
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary
     )
-    if (selected) {
-        Icon(
-            painter = painterResource(id = R.drawable.selected_icon), contentDescription = null,
-            tint = MaterialTheme.colorScheme.onPrimaryContainer,
-            modifier = Modifier.zIndex(1f)
-        )
-    }
-    Button(
-        onClick = {
-            selected = !selected
-            if (selected) selectItem(item) else deselectItem(item)
-        },
-        colors = colors,
-        shape = RoundedCornerShape(30),
-        modifier = modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp, bottom = 4.dp)
-    ) {
-        Text(text = item.name)
+    Box(modifier = modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp, bottom = 4.dp)){
+        if (selected) {
+            Icon(
+                painter = painterResource(id = R.drawable.selected_icon),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.zIndex(1f)
+            )
+        }
+        Button(
+            onClick = {
+                if (!selected) selectItem(item) else deselectItem(item)
+            },
+            colors = colors,
+            shape = RoundedCornerShape(30),
+        ) {
+            Text(text = item.name)
+        }
     }
 
 }
@@ -190,10 +201,8 @@ fun ItemButtonPreview() {
         Column {
             AddButton(
                 addItem = {
-                    @Suppress("UNUSED_EXPRESSION")
-                    ("name")
-                },
-                modifier = Modifier
+                    @Suppress("UNUSED_EXPRESSION") ("name")
+                }, modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
             )

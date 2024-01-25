@@ -1,6 +1,5 @@
 package com.entropia.helpmepick.ui
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -39,14 +38,32 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
 
 
     fun selectItem(item: Item) {
-        _itemsListUiState.value.selectedItemsList.add(item)
-
-        Log.d("SELECTED", _itemsListUiState.value.selectedItemsList.toString())
+        if(!isSelected(item)){
+            _itemsListUiState.value.selectedItemsList.add(item)
+        }
     }
 
     fun deselectItem(item: Item) {
-        _itemsListUiState.value.selectedItemsList.remove(item)
+        if(isSelected(item)){
+            _itemsListUiState.value.selectedItemsList.remove(item)
+        }
     }
+
+    fun selectAll() {
+        _itemsListUiState.value.itemsList.forEach { item ->
+            if (!isSelected(item)) {
+                _itemsListUiState.value.selectedItemsList.add(item)
+            }
+        }
+    }
+
+    fun selectRandom(amountToSelect: Int) {
+
+
+    }
+
+    private fun isSelected(item: Item) =
+        _itemsListUiState.value.selectedItemsList.contains(item)
 
     fun listSelectedItems(): String {
         val names = _itemsListUiState.value.selectedItemsList.map { it.name }
@@ -60,7 +77,7 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
     fun pickRandomFromSelected() {
         if (_itemsListUiState.value.selectedItemsList.isNotEmpty()) {
             pickItemUiState =
-                pickItemUiState.copy(_itemsListUiState.value.selectedItemsList.random())
+                pickItemUiState.copy(currentPick = _itemsListUiState.value.selectedItemsList.random())
         }
     }
 
@@ -69,9 +86,6 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
     }
 }
 
-data class PickItemUiState(
-    val currentPick: Item? = null
-)
 
 data class ItemsListUiState(
     val itemsList: List<Item> = listOf(),
