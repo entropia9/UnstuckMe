@@ -1,9 +1,6 @@
 package com.entropia.helpmepick.ui
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.entropia.helpmepick.data.Item
@@ -25,9 +22,9 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
     )
     val itemsListUiState: StateFlow<ItemsListUiState> = _itemsListUiState
 
-    var pickItemUiState by mutableStateOf(PickItemUiState())
 
-    private val defaultDispatcher = Dispatchers.Default
+
+    private val defaultDispatcher= Dispatchers.Default
 
 
     fun addItem(item: Item) = viewModelScope.launch(defaultDispatcher) {
@@ -85,12 +82,6 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
         return name.isNotBlank() && itemsRepository.getItem(name) == null
     }
 
-    fun pickRandomFromSelected() {
-        if (_itemsListUiState.value.selectedItemsList.isNotEmpty()) {
-            pickItemUiState =
-                pickItemUiState.copy(currentPick = _itemsListUiState.value.selectedItemsList.random())
-        }
-    }
 
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L

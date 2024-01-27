@@ -15,13 +15,14 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.entropia.helpmepick.R
+import com.entropia.helpmepick.data.Item
 
 @Composable
-fun PickRandom(viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
+fun PickRandom(items: List<Item>, viewModel: PickRandomViewModel, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         Text(text = viewModel.pickItemUiState.currentPick?.name ?: " ")
         Button(onClick = {
-            viewModel.pickRandomFromSelected()
+            viewModel.pickRandomFromSelected(items)
         }) {
             Text(text = stringResource(id = R.string.help_me_pick_btn))
         }
@@ -31,9 +32,16 @@ fun PickRandom(viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
 
 
 @Composable
-fun DialogueBar(text:String, modifier: Modifier=Modifier){
-    Column(modifier =modifier, verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = text, modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium)))
+fun DialogueBar(text: String, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = text,
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+        )
         Row {
             Button(onClick = { /*TODO*/ }) {
                 Text(text = stringResource(id = R.string.yes_answer_button))
@@ -48,6 +56,6 @@ fun DialogueBar(text:String, modifier: Modifier=Modifier){
 
 @Preview
 @Composable
-fun Preview(){
+fun Preview() {
     DialogueBar(text = stringResource(id = R.string.question_dialogue1))
 }

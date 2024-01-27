@@ -11,7 +11,13 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository) : ViewMo
     var progressStatus: PickingProgressStatus by mutableStateOf(PickingProgressStatus.Start)
         private set
 
-
+    var pickItemUiState by mutableStateOf(PickItemUiState())
+    fun pickRandomFromSelected(items: List<Item>) {
+        if (items.isNotEmpty()) {
+            pickItemUiState =
+                pickItemUiState.copy(currentPick = items.random())
+        }
+    }
 
 }
 
