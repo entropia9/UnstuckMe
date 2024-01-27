@@ -38,13 +38,13 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
 
 
     fun selectItem(item: Item) {
-        if(!isSelected(item)){
+        if (!isSelected(item)) {
             _itemsListUiState.value.selectedItemsList.add(item)
         }
     }
 
     fun deselectItem(item: Item) {
-        if(isSelected(item)){
+        if (isSelected(item)) {
             _itemsListUiState.value.selectedItemsList.remove(item)
         }
     }
@@ -57,9 +57,20 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
         }
     }
 
+    private fun clearAll() {
+        _itemsListUiState.value.selectedItemsList.removeAll(itemsListUiState.value.itemsList)
+    }
+
     fun selectRandom(amountToSelect: Int) {
-
-
+        if (_itemsListUiState.value.itemsList.isNotEmpty()) {
+            val list: MutableList<Item> = _itemsListUiState.value.itemsList.toMutableList()
+            clearAll()
+            repeat(amountToSelect) {
+                val item = list.random()
+                _itemsListUiState.value.selectedItemsList.add(item)
+                list.remove(item)
+            }
+        }
     }
 
     private fun isSelected(item: Item) =

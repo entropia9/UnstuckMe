@@ -25,6 +25,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -63,13 +64,20 @@ fun SelectScreen(viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
                     dimensionResource(id = R.dimen.padding_medium)
                 )
             )
-            //TODO spacing etc.
-            Button(onClick = { viewModel.selectAll() }) {
+
+            Button(
+                onClick = { viewModel.selectAll() },
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+            ) {
                 Text(text = (stringResource(id = R.string.select_all)))
             }
 
-            //TODO Select Random
-            Text(text = stringResource(id = R.string.select_random))
+
+            SelectRandom(
+                viewModel::selectRandom,
+                uiState.value.itemsList.size - 1
+            )
+
             Text(
                 text = "Selected: " + if (uiState.value.selectedItemsList.isNotEmpty()) viewModel.listSelectedItems() else "",
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
@@ -77,11 +85,49 @@ fun SelectScreen(viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
         }
         Spacer(modifier = Modifier.weight(1f))
         if (uiState.value.selectedItemsList.isNotEmpty()) {
-            Button(onClick = { /*TODO*/ }, modifier = Modifier) {
+            Button(onClick = { /*TODO Done*/ }, modifier = Modifier) {
                 Text(text = stringResource(id = R.string.done_button))
             }
         }
     }
+}
+
+@Composable
+private fun SelectRandom(
+    selectFunction: (Int) -> Unit,
+    upperLimit: Int,
+    modifier: Modifier = Modifier,
+    lowerLimit: Int = 2
+) {
+    var number by remember {
+        mutableIntStateOf(2)
+    }
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
+        Text(
+            text = stringResource(id = R.string.select_random) + " " +
+                    number.toString()
+        )
+        Column {
+            Icon(
+                imageVector = Icons.Filled.KeyboardArrowUp,
+                contentDescription = null,
+                modifier = Modifier.clickable {
+                    if (number < upperLimit) number++
+                })
+            Icon(
+                imageVector = Icons.Filled.KeyboardArrowDown,
+                contentDescription = null,
+                modifier = Modifier.clickable {
+                    if (number > lowerLimit) number--
+                })
+        }
+        Text(text = stringResource(id = R.string.select_random2))
+
+        Button(onClick = { selectFunction(number) }) {
+            Text(text = stringResource(id = R.string.select_btn))
+        }
+    }
+
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -170,7 +216,7 @@ fun ItemButton(
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary
     )
-    Box(modifier = modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp, bottom = 4.dp)){
+    Box(modifier = modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp, bottom = 4.dp)) {
         if (selected) {
             Icon(
                 painter = painterResource(id = R.drawable.selected_icon),
@@ -197,10 +243,6 @@ fun ItemButton(
 @Composable
 fun ItemButtonPreview() {
     HelpMePickTheme {
-        val item = Item(
-            "CatFoodCalculator"
-        )
-        val items = listOf(item, item, item, item, item, item)
         Column {
             AddButton(
                 addItem = {

@@ -4,7 +4,9 @@
     <string name="show_list">Show List</string>
     <string name="select">Select Items to Pick From Below</string>
     <string name="select_all">Select All</string>
-    <string name="select_random">"Or select random?"</string>
+    <string name="select_btn">Select All</string>
+    <string name="select_random">Or select </string>
+    <string name="select_random2"> random?</string>
     <string name="done_button">Done</string>
     <string name="help_me_pick_btn">Help Me Pick</string>
     <string name="question_dialogue1">Is this your heart\'s desire?</string>
