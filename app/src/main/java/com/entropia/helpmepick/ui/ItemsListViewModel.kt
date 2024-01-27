@@ -23,8 +23,7 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
     val itemsListUiState: StateFlow<ItemsListUiState> = _itemsListUiState
 
 
-
-    private val defaultDispatcher= Dispatchers.Default
+    private val defaultDispatcher = Dispatchers.Default
 
 
     fun addItem(item: Item) = viewModelScope.launch(defaultDispatcher) {
@@ -54,7 +53,7 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
         }
     }
 
-    private fun clearAll() {
+    fun clearAll() {
         _itemsListUiState.value.selectedItemsList.removeAll(itemsListUiState.value.itemsList)
     }
 
@@ -72,11 +71,6 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
 
     private fun isSelected(item: Item) =
         _itemsListUiState.value.selectedItemsList.contains(item)
-
-    fun listSelectedItems(): String {
-        val names = _itemsListUiState.value.selectedItemsList.map { it.name }
-        return names.joinToString(separator = ", ")
-    }
 
     private fun validateInput(name: String): Boolean {
         return name.isNotBlank() && itemsRepository.getItem(name) == null

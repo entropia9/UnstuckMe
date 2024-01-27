@@ -20,7 +20,7 @@ interface ItemDao {
     @Delete
     suspend fun delete(item: Item)
 
-    @Query("SELECT * FROM items WHERE name=:name")
+    @Query("SELECT * FROM items WHERE name=:name COLLATE NOCASE")
     fun getItem(name: String):Item?
 
     @Query("SELECT * FROM items ORDER BY timesPicked DESC")

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -44,7 +46,10 @@ import com.entropia.helpmepick.ui.theme.HelpMePickTheme
 @Composable
 fun SelectScreen(viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
     val uiState = viewModel.itemsListUiState.collectAsState()
-    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         AddButton(
             addItem = viewModel::addItem, modifier = Modifier
                 .fillMaxWidth()
@@ -65,27 +70,47 @@ fun SelectScreen(viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
                 )
             )
 
-            Button(
-                onClick = { viewModel.selectAll() },
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimensionResource(id = R.dimen.padding_medium)),
             ) {
-                Text(text = (stringResource(id = R.string.select_all)))
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(dimensionResource(id = R.dimen.padding_medium)),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row {
+                        Button(
+                            onClick = { viewModel.selectAll() },
+                            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+                        ) {
+                            Text(text = (stringResource(id = R.string.select_all)))
+                        }
+                        Button(
+                            onClick = { viewModel.clearAll() },
+                            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+                        ) {
+                            Text(text = (stringResource(id = R.string.clear_all)))
+                        }
+                    }
+
+                    SelectRandom(
+                        viewModel::selectRandom, uiState.value.itemsList.size - 1
+                    )
+                }
+
+
             }
 
 
-            SelectRandom(
-                viewModel::selectRandom,
-                uiState.value.itemsList.size - 1
-            )
-
-            Text(
-                text = "Selected: " + if (uiState.value.selectedItemsList.isNotEmpty()) viewModel.listSelectedItems() else "",
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
-            )
         }
+
         Spacer(modifier = Modifier.weight(1f))
         if (uiState.value.selectedItemsList.isNotEmpty()) {
-            Button(onClick = { /*TODO Done*/ }, modifier = Modifier) {
+            Button(onClick = { /*TODO Done*/ }, modifier = Modifier.weight(0.2f)) {
                 Text(text = stringResource(id = R.string.done_button))
             }
         }
@@ -104,18 +129,15 @@ private fun SelectRandom(
     }
     Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
         Text(
-            text = stringResource(id = R.string.select_random) + " " +
-                    number.toString()
+            text = stringResource(id = R.string.select_random) + " " + number.toString()
         )
         Column {
-            Icon(
-                imageVector = Icons.Filled.KeyboardArrowUp,
+            Icon(imageVector = Icons.Filled.KeyboardArrowUp,
                 contentDescription = null,
                 modifier = Modifier.clickable {
                     if (number < upperLimit) number++
                 })
-            Icon(
-                imageVector = Icons.Filled.KeyboardArrowDown,
+            Icon(imageVector = Icons.Filled.KeyboardArrowDown,
                 contentDescription = null,
                 modifier = Modifier.clickable {
                     if (number > lowerLimit) number--
@@ -180,17 +202,22 @@ fun AddButton(modifier: Modifier = Modifier, addItem: (Item) -> Unit) {
         horizontalArrangement = Arrangement.Center,
         modifier = modifier
     ) {
-        TextField(value = name,
+        TextField(
+            value = name,
             onValueChange = { name = it },
             singleLine = true,
-            placeholder = { Text(text = "Enter name") })
+            placeholder = { Text(text = "Enter name") },
+            modifier = Modifier.weight(0.5f)
+        )
         Button(
             onClick = {
                 addItem(Item(name))
                 name = ""
             },
             shape = RoundedCornerShape(30),
-            modifier = Modifier.padding(top = 4.dp, start = 8.dp, end = 8.dp)
+            modifier = Modifier
+                .padding(top = 4.dp, start = 8.dp, end = 8.dp)
+                .wrapContentWidth()
         ) {
             Text(text = "Add Item")
             Icon(Icons.Filled.Add, contentDescription = "add_button")

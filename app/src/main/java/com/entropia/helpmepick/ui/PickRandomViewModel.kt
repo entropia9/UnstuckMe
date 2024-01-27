@@ -12,6 +12,10 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository) : ViewMo
         private set
 
     var pickItemUiState by mutableStateOf(PickItemUiState())
+
+    fun updateItem(){
+
+    }
     fun pickRandomFromSelected(items: List<Item>) {
         if (items.isNotEmpty()) {
             pickItemUiState =
