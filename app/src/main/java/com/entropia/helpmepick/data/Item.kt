@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 data class Item(
     @PrimaryKey
     val name: String,
+    val category: String = "Default",
     val timesSelected: Int = 0,
     val timesPicked: Int = 0,
     val timesRejected: Int = 0,
