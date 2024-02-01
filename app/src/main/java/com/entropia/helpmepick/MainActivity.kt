@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
                     val viewModel: ItemsListViewModel =
                         viewModel(factory = AppViewModelProvider.Factory)
                     Column() {
-                        SelectScreen(viewModel, modifier = Modifier.weight(0.2f))
+                        SelectScreen(viewModel, modifier = Modifier.fillMaxSize())
                     }
                 }
             }

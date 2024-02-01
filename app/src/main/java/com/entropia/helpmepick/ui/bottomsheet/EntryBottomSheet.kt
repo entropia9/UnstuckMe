@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.entropia.helpmepick.R
+import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.ui.ItemsListViewModel
 import java.util.Locale
 
@@ -43,8 +44,6 @@ fun EntryBottomSheet(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    // val juice by juiceTrackerViewModel.currentJuiceStream.collectAsState()
-
     BottomSheetScaffold(
         modifier = modifier,
         scaffoldState = sheetScaffoldState,
@@ -53,7 +52,8 @@ fun EntryBottomSheet(
                 SheetHeader()
                 SheetForm(
                     onCancel = onCancel,
-                    onSubmit = onSubmit
+                    onSubmit = onSubmit,
+                    addItem = itemsListViewModel::addItem
                 )
             }
         }
@@ -66,6 +66,7 @@ fun EntryBottomSheet(
 fun SheetForm(
     onCancel: () -> Unit,
     onSubmit: () -> Unit,
+    addItem: (Item) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var name by remember {
@@ -80,7 +81,10 @@ fun SheetForm(
         ButtonRow(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             onCancel = onCancel,
-            onSubmit = onSubmit,
+            onSubmit = {
+                onSubmit()
+                addItem(Item(name))
+            },
             submitButtonEnabled = name.isNotEmpty()
         )
     }
