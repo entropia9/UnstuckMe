@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -36,9 +37,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.entropia.helpmepick.R
@@ -122,23 +125,66 @@ fun SelectScreen(viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
                                 Text(text = (stringResource(id = R.string.clear_all)))
                             }
                         }
+                        if (uiState.value.itemsList.size > 2) {
+                            SelectRandom(
+                                viewModel::selectRandom, uiState.value.itemsList.size - 1
+                            )
+                        }
 
-                        SelectRandom(
-                            viewModel::selectRandom, uiState.value.itemsList.size - 1
-                        )
                     }
                 }
             }
 
             Spacer(modifier = Modifier.weight(1f))
-            if (uiState.value.selectedItemsList.isNotEmpty()) {
-                Button(onClick = { /*TODO Done*/ }, modifier = Modifier.weight(0.2f)) {
-                    Text(text = stringResource(id = R.string.done_button))
-                }
-            }
+            ModeSelectionButtons(uiState = uiState)
+
         }
     }
 
+}
+
+@Composable
+private fun ModeSelectionButtons(
+    uiState: State<ItemsListUiState>,
+    modifier: Modifier = Modifier,
+    regularButtonOnClick: () -> Unit = {},
+    battleModeButtonOnClick: () -> Unit = {},
+
+    ) {
+    Row(modifier = modifier) {
+        Button(
+            onClick = { regularButtonOnClick() },
+            enabled = uiState.value.selectedItemsList.size > 1,
+            modifier = Modifier.weight(0.5f)
+        ) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.regular_mode_icon),
+                    contentDescription = ""
+                )
+                Text(text = stringResource(id = R.string.regular))
+            }
+        }
+        Button(
+            onClick = { battleModeButtonOnClick() },
+            enabled = uiState.value.selectedItemsList.size > 3 && uiState.value.selectedItemsList.size % 2 == 0,
+            modifier = Modifier.weight(0.5f)
+        ) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.battle_mode_icon),
+                    contentDescription = ""
+                )
+                Text(text = stringResource(id = R.string.battle_mode))
+            }
+        }
+    }
 }
 
 @Composable

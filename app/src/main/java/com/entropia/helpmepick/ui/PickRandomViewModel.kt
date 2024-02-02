@@ -11,8 +11,6 @@ import com.entropia.helpmepick.data.ItemsRepository
 import kotlinx.coroutines.launch
 
 class PickRandomViewModel(private val itemsRepository: ItemsRepository) : ViewModel() {
-    var progressStatus: PickingProgressStatus by mutableStateOf(PickingProgressStatus.Start)
-        private set
 
     var pickItemUiState by mutableStateOf(PickItemUiState())
 
@@ -55,11 +53,4 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository) : ViewMo
 data class PickItemUiState(
     val currentPick: Item? = null
 )
-
-sealed interface PickingProgressStatus {
-    object Start : PickingProgressStatus
-    object Picking : PickingProgressStatus
-
-    object Finished : PickingProgressStatus
-}
 
