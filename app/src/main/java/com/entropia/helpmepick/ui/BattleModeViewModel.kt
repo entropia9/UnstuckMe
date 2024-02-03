@@ -20,6 +20,8 @@ class BattleModeViewModel(private val itemsRepository: ItemsRepository) : ViewMo
         }
 
     }
+
+
     //TODO remove items
 }
 

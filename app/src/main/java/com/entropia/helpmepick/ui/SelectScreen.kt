@@ -27,7 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -136,7 +135,7 @@ fun SelectScreen(viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
             }
 
             Spacer(modifier = Modifier.weight(1f))
-            ModeSelectionButtons(uiState = uiState)
+            ModeSelectionButtons(listSize = uiState.value.selectedItemsList.size)
 
         }
     }
@@ -145,7 +144,7 @@ fun SelectScreen(viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
 
 @Composable
 private fun ModeSelectionButtons(
-    uiState: State<ItemsListUiState>,
+    listSize: Int,
     modifier: Modifier = Modifier,
     regularButtonOnClick: () -> Unit = {},
     battleModeButtonOnClick: () -> Unit = {},
@@ -154,7 +153,7 @@ private fun ModeSelectionButtons(
     Row(modifier = modifier) {
         Button(
             onClick = { regularButtonOnClick() },
-            enabled = uiState.value.selectedItemsList.size > 1,
+            enabled = listSize > 1,
             modifier = Modifier.weight(0.5f)
         ) {
             Column(
@@ -170,7 +169,7 @@ private fun ModeSelectionButtons(
         }
         Button(
             onClick = { battleModeButtonOnClick() },
-            enabled = uiState.value.selectedItemsList.size > 3 && uiState.value.selectedItemsList.size % 2 == 0,
+            enabled = listSize > 3 && listSize % 2 == 0,
             modifier = Modifier.weight(0.5f)
         ) {
             Column(
