@@ -3,14 +3,10 @@ package com.entropia.helpmepick
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.entropia.helpmepick.ui.ItemsListViewModel
-import com.entropia.helpmepick.ui.SelectScreen
 import com.entropia.helpmepick.ui.theme.HelpMePickTheme
 
 class MainActivity : ComponentActivity() {
@@ -23,11 +19,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val viewModel: ItemsListViewModel =
-                        viewModel(factory = AppViewModelProvider.Factory)
-                    Column() {
-                        SelectScreen(viewModel, modifier = Modifier.fillMaxSize())
-                    }
+                    HelpMePickApp()
                 }
             }
         }

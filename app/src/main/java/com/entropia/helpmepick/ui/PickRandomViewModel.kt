@@ -10,9 +10,11 @@ import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.data.ItemsRepository
 import kotlinx.coroutines.launch
 
-class PickRandomViewModel(private val itemsRepository: ItemsRepository) : ViewModel() {
+class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: List<Item>) :
+    ViewModel() {
 
-    var pickItemUiState by mutableStateOf(PickItemUiState())
+    var pickItemUiState by mutableStateOf(PickItemUiState(selectedList = items))
+
 
     fun updateRejected() {
         if (pickItemUiState.currentPick.isNotNull()) {
@@ -51,6 +53,7 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository) : ViewMo
 }
 
 data class PickItemUiState(
-    val currentPick: Item? = null
+    val currentPick: Item? = null,
+    var selectedList: List<Item>
 )
 

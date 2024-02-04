@@ -15,14 +15,27 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.entropia.helpmepick.R
-import com.entropia.helpmepick.data.Item
+import com.entropia.helpmepick.ui.navigation.NavigationDestination
+
+
+object RegularDestination : NavigationDestination {
+    override val route: String
+        get() = "regular_mode"
+    override val titleRes: Int
+        get() = R.string.regular_mode
+
+}
+
 
 @Composable
-fun PickRandom(items: List<Item>, viewModel: PickRandomViewModel, modifier: Modifier = Modifier) {
+fun PickRandomScreen(
+    viewModel: PickRandomViewModel,
+    modifier: Modifier = Modifier
+) {
     Column(modifier = modifier) {
         Text(text = viewModel.pickItemUiState.currentPick?.name ?: " ")
         Button(onClick = {
-            viewModel.pickRandomFromSelected(items)
+            viewModel.pickRandomFromSelected(viewModel.pickItemUiState.selectedList)
         }) {
             Text(text = stringResource(id = R.string.help_me_pick_btn))
         }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -41,16 +42,34 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.ui.bottomsheet.EntryBottomSheet
+import com.entropia.helpmepick.ui.navigation.NavigationDestination
+import com.entropia.helpmepick.ui.theme.HelpMePickTheme
 import kotlinx.coroutines.launch
+
+
+object SelectScreenDestination : NavigationDestination {
+    override val route: String
+        get() = "select_screen"
+    override val titleRes: Int
+        get() = R.string.app_name
+
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SelectScreen(viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
+fun SelectScreen(
+    viewModel: ItemsListViewModel,
+    navigateToRegular: () -> Unit,
+    navigateToBattleMode: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val uiState = viewModel.itemsListUiState.collectAsState()
 
     val scope = rememberCoroutineScope()
@@ -135,7 +154,9 @@ fun SelectScreen(viewModel: ItemsListViewModel, modifier: Modifier = Modifier) {
             }
 
             Spacer(modifier = Modifier.weight(1f))
-            ModeSelectionButtons(listSize = uiState.value.selectedItemsList.size)
+            ModeSelectionButtons(regularButtonOnClick = {
+                navigateToRegular()
+            }, listSize = uiState.value.selectedItemsList.size)
 
         }
     }
@@ -154,7 +175,10 @@ private fun ModeSelectionButtons(
         Button(
             onClick = { regularButtonOnClick() },
             enabled = listSize > 1,
-            modifier = Modifier.weight(0.5f)
+            shape = RoundedCornerShape(15),
+            modifier = Modifier
+                .size(135.dp)
+                .padding(dimensionResource(id = R.dimen.padding_small))
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -170,7 +194,10 @@ private fun ModeSelectionButtons(
         Button(
             onClick = { battleModeButtonOnClick() },
             enabled = listSize > 3 && listSize % 2 == 0,
-            modifier = Modifier.weight(0.5f)
+            shape = RoundedCornerShape(15),
+            modifier = Modifier
+                .size(135.dp)
+                .padding(dimensionResource(id = R.dimen.padding_small))
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -297,6 +324,16 @@ fun ItemButton(
         }
     }
 
+}
+
+@Preview
+@Composable
+fun PreviewSelect() {
+    HelpMePickTheme {
+        Column() {
+            ModeSelectionButtons(listSize = 4)
+        }
+    }
 }
 
 

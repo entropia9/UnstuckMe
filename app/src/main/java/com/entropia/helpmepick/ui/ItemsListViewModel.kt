@@ -3,6 +3,7 @@ package com.entropia.helpmepick.ui
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.entropia.helpmepick.AppViewModelProvider
 import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.data.ItemsRepository
 import kotlinx.coroutines.Dispatchers
@@ -37,6 +38,7 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
         if (!isSelected(item)) {
             _itemsListUiState.value.selectedItemsList.add(item)
         }
+        AppViewModelProvider.items=_itemsListUiState.value.selectedItemsList.toList()
     }
 
     fun deselectItem(item: Item) {
@@ -47,9 +49,7 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
 
     fun selectAll() {
         _itemsListUiState.value.itemsList.forEach { item ->
-            if (!isSelected(item)) {
-                _itemsListUiState.value.selectedItemsList.add(item)
-            }
+            selectItem(item)
         }
     }
 
@@ -63,7 +63,7 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
             clearAll()
             repeat(amountToSelect) {
                 val item = list.random()
-                _itemsListUiState.value.selectedItemsList.add(item)
+                selectItem(item)
                 list.remove(item)
             }
         }
