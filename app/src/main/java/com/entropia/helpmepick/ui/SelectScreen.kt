@@ -193,7 +193,7 @@ private fun ModeSelectionButtons(
         }
         Button(
             onClick = { battleModeButtonOnClick() },
-            enabled = listSize > 3 && listSize % 2 == 0,
+            enabled = listSize > 3 && listSize % 4 == 0,
             shape = RoundedCornerShape(15),
             modifier = Modifier
                 .size(135.dp)

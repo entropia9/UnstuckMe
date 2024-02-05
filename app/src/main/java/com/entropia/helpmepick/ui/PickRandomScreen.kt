@@ -5,10 +5,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -32,20 +37,46 @@ fun PickRandomScreen(
     viewModel: PickRandomViewModel,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
-        Text(text = viewModel.pickItemUiState.currentPick?.name ?: " ")
-        Button(onClick = {
-            viewModel.pickRandomFromSelected(viewModel.pickItemUiState.selectedList)
-        }) {
-            Text(text = stringResource(id = R.string.help_me_pick_btn))
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        var firstRun by remember {
+            mutableStateOf(true)
         }
+        Text(text = viewModel.pickItemUiState.currentPick?.name ?: " ")
+        if (firstRun) {
+            Button(onClick = {
+                viewModel.pickRandomFromSelected(viewModel.pickItemUiState.selectedList)
+                viewModel.updateSelected(viewModel.pickItemUiState.selectedList)
+                firstRun = false
+            }) {
+                Text(text = stringResource(id = R.string.help_me_pick_btn))
+            }
+        } else {
+            DialogueBar(
+                onYesButtonPressed = { viewModel.updatePicked() },
+                onNoButtonPressed = {
+                    viewModel.updateRejected()
+                    viewModel.pickRandomFromSelected(viewModel.pickItemUiState.selectedList)
+                },
+                text = stringResource(id = viewModel.pickItemUiState.currentDialogue)
+            )
+        }
+
     }
 
 }
 
 
 @Composable
-fun DialogueBar(text: String, modifier: Modifier = Modifier) {
+fun DialogueBar(
+    onYesButtonPressed: () -> Unit,
+    onNoButtonPressed: () -> Unit,
+    text: String,
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
@@ -56,11 +87,11 @@ fun DialogueBar(text: String, modifier: Modifier = Modifier) {
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
         )
         Row {
-            Button(onClick = { /*TODO*/ }) {
+            Button(onClick = { onYesButtonPressed() }) {
                 Text(text = stringResource(id = R.string.yes_answer_button))
             }
             Spacer(modifier = Modifier.weight(1f))
-            Button(onClick = { /*TODO*/ }) {
+            Button(onClick = { onNoButtonPressed() }) {
                 Text(text = stringResource(id = R.string.no_answer_button))
             }
         }
@@ -70,5 +101,7 @@ fun DialogueBar(text: String, modifier: Modifier = Modifier) {
 @Preview
 @Composable
 fun Preview() {
-    DialogueBar(text = stringResource(id = R.string.question_dialogue1))
+    DialogueBar(text = stringResource(id = R.string.question_dialogue1),
+        onYesButtonPressed = {},
+        onNoButtonPressed = {})
 }

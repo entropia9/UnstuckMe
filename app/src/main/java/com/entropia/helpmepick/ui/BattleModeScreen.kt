@@ -10,3 +10,4 @@ object BattleModeDestination : NavigationDestination {
         get() = R.string.battle_mode
 
 }
+
