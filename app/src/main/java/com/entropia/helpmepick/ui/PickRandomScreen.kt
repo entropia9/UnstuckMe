@@ -56,12 +56,17 @@ fun PickRandomScreen(
             }
         } else {
             DialogueBar(
-                onYesButtonPressed = { viewModel.updatePicked() },
+                onYesButtonPressed = {
+                    viewModel.updatePicked()
+                    viewModel.pickedDialogue()
+                },
                 onNoButtonPressed = {
                     viewModel.updateRejected()
                     viewModel.pickRandomFromSelected(viewModel.pickItemUiState.selectedList)
+                    viewModel.nextDialogue()
                 },
-                text = stringResource(id = viewModel.pickItemUiState.currentDialogue)
+                buttonsVisible = viewModel.pickItemUiState.currentDialogue != pickedDialogue && viewModel.pickItemUiState.currentDialogue != outOfOptionsAgree,
+                text = stringResource(id = viewModel.pickItemUiState.currentDialogue, viewModel.pickItemUiState.currentPick!!.name)
             )
         }
 
@@ -75,7 +80,8 @@ fun DialogueBar(
     onYesButtonPressed: () -> Unit,
     onNoButtonPressed: () -> Unit,
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    buttonsVisible: Boolean = true
 ) {
     Column(
         modifier = modifier,
@@ -86,13 +92,15 @@ fun DialogueBar(
             text = text,
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
         )
-        Row {
-            Button(onClick = { onYesButtonPressed() }) {
-                Text(text = stringResource(id = R.string.yes_answer_button))
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            Button(onClick = { onNoButtonPressed() }) {
-                Text(text = stringResource(id = R.string.no_answer_button))
+        if (buttonsVisible) {
+            Row {
+                Button(onClick = { onYesButtonPressed() }) {
+                    Text(text = stringResource(id = R.string.yes_answer_button))
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                Button(onClick = { onNoButtonPressed() }) {
+                    Text(text = stringResource(id = R.string.no_answer_button))
+                }
             }
         }
     }

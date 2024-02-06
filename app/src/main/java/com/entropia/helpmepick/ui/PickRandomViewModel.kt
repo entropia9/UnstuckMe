@@ -11,6 +11,17 @@ import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.data.ItemsRepository
 import kotlinx.coroutines.launch
 
+
+val questionDialogueList: List<Int> = listOf(
+    R.string.question_dialogue2,
+    R.string.question_dialogue3,
+    R.string.question_dialogue4
+)
+val startAgainDialogue: Int = R.string.start_again_dialogue2
+val pickedDialogue: Int = R.string.picked_dialogue
+val outOfOptionsAgree: Int = R.string.out_of_options_agree
+val outOfOptions: Int = R.string.out_of_options_dialogue
+
 class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: List<Item>) :
     ViewModel() {
 
@@ -58,10 +69,26 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
         }
     }
 
+    fun pickedDialogue() {
+        when {
+            pickItemUiState.currentDialogue == outOfOptions -> pickItemUiState =
+                pickItemUiState.copy(currentDialogue = outOfOptionsAgree)
+
+            pickItemUiState.currentDialogue == startAgainDialogue -> {} //TODO go back to selection
+            else -> pickItemUiState = pickItemUiState.copy(currentDialogue = pickedDialogue)
+        }
+    }
+
     fun nextDialogue() {
         when {
             pickItemUiState.selectedList.isEmpty() -> pickItemUiState =
-                pickItemUiState.copy(currentDialogue = pickItemUiState.outOfOptions)
+                pickItemUiState.copy(currentDialogue = outOfOptions)
+
+            pickItemUiState.currentDialogue == outOfOptions -> pickItemUiState =
+                pickItemUiState.copy(currentDialogue = startAgainDialogue)
+
+            else -> pickItemUiState =
+                pickItemUiState.copy(currentDialogue = questionDialogueList.random())
         }
     }
 }
@@ -69,13 +96,6 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
 data class PickItemUiState(
     val currentPick: Item? = null,
     val selectedList: List<Item>,
-    val currentDialogue: Int = R.string.question_dialogue1,
-    val questionDialogueList: List<Int> = listOf(
-        R.string.question_dialogue2,
-        R.string.question_dialogue3,
-        R.string.question_dialogue4
-    ),
-    val pickedDialogue: Int = R.string.picked_dialogue,
-    val outOfOptions: Int = R.string.out_of_options_dialogue
+    val currentDialogue: Int = R.string.question_dialogue1
 )
 
