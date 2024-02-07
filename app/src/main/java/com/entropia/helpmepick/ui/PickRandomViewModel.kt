@@ -73,8 +73,6 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
         when {
             pickItemUiState.currentDialogue == outOfOptions -> pickItemUiState =
                 pickItemUiState.copy(currentDialogue = outOfOptionsAgree)
-
-            pickItemUiState.currentDialogue == startAgainDialogue -> {} //TODO go back to selection
             else -> pickItemUiState = pickItemUiState.copy(currentDialogue = pickedDialogue)
         }
     }

@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,6 +22,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.entropia.helpmepick.R
+import com.entropia.helpmepick.TopAppBar
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
 
 
@@ -32,46 +35,61 @@ object RegularDestination : NavigationDestination {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PickRandomScreen(
     viewModel: PickRandomViewModel,
+    navigateUp: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        var firstRun by remember {
-            mutableStateOf(true)
-        }
-        Text(text = viewModel.pickItemUiState.currentPick?.name ?: " ")
-        if (firstRun) {
-            Button(onClick = {
-                viewModel.pickRandomFromSelected(viewModel.pickItemUiState.selectedList)
-                viewModel.updateSelected(viewModel.pickItemUiState.selectedList)
-                firstRun = false
-            }) {
-                Text(text = stringResource(id = R.string.help_me_pick_btn))
-            }
-        } else {
-            DialogueBar(
-                onYesButtonPressed = {
-                    viewModel.updatePicked()
-                    viewModel.pickedDialogue()
-                },
-                onNoButtonPressed = {
-                    viewModel.updateRejected()
-                    viewModel.pickRandomFromSelected(viewModel.pickItemUiState.selectedList)
-                    viewModel.nextDialogue()
-                },
-                buttonsVisible = viewModel.pickItemUiState.currentDialogue != pickedDialogue && viewModel.pickItemUiState.currentDialogue != outOfOptionsAgree,
-                text = stringResource(id = viewModel.pickItemUiState.currentDialogue, viewModel.pickItemUiState.currentPick!!.name)
+    Scaffold(modifier = modifier,
+        topBar = {
+            TopAppBar(
+                title = stringResource(id = RegularDestination.titleRes),
+                canNavigateBack = viewModel.pickItemUiState.currentDialogue == startAgainDialogue || viewModel.pickItemUiState.currentDialogue == pickedDialogue,
+                navigateUp = navigateUp
             )
+        }) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            var firstRun by remember {
+                mutableStateOf(true)
+            }
+            Text(text = viewModel.pickItemUiState.currentPick?.name ?: " ")
+            if (firstRun) {
+                Button(onClick = {
+                    viewModel.pickRandomFromSelected(viewModel.pickItemUiState.selectedList)
+                    viewModel.updateSelected(viewModel.pickItemUiState.selectedList)
+                    firstRun = false
+                }) {
+                    Text(text = stringResource(id = R.string.help_me_pick_btn))
+                }
+            } else {
+                DialogueBar(
+                    onYesButtonPressed = {
+                        viewModel.updatePicked()
+                        viewModel.pickedDialogue()
+                    },
+                    onNoButtonPressed = {
+                        viewModel.updateRejected()
+                        viewModel.pickRandomFromSelected(viewModel.pickItemUiState.selectedList)
+                        viewModel.nextDialogue()
+                    },
+                    buttonsVisible = viewModel.pickItemUiState.currentDialogue != pickedDialogue && viewModel.pickItemUiState.currentDialogue != outOfOptionsAgree,
+                    text = stringResource(
+                        id = viewModel.pickItemUiState.currentDialogue,
+                        viewModel.pickItemUiState.currentPick!!.name
+                    )
+                )
+            }
+
         }
-
     }
-
 }
 
 

@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.entropia.helpmepick.AppViewModelProvider
 import com.entropia.helpmepick.ui.BattleModeDestination
+import com.entropia.helpmepick.ui.BattleModeScreen
 import com.entropia.helpmepick.ui.PickRandomScreen
 import com.entropia.helpmepick.ui.RegularDestination
 import com.entropia.helpmepick.ui.SelectScreen
@@ -18,7 +19,10 @@ fun HelpMePickNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    NavHost(navController = navController, startDestination = SelectScreenDestination.route) {
+    NavHost(
+        navController = navController, startDestination = SelectScreenDestination.route,
+        modifier = modifier
+    ) {
         composable(route = SelectScreenDestination.route) {
             SelectScreen(
                 viewModel = viewModel(factory = AppViewModelProvider.Factory),
@@ -26,12 +30,14 @@ fun HelpMePickNavHost(
                 navigateToBattleMode = { })
         }
         composable(route = BattleModeDestination.route) {
-
+            BattleModeScreen(viewModel = viewModel(factory = AppViewModelProvider.Factory),
+                navigateUp = { navController.navigateUp() })
         }
         composable(
             route = RegularDestination.route
         ) {
-            PickRandomScreen(viewModel = viewModel(factory = AppViewModelProvider.Factory))
+            PickRandomScreen(viewModel = viewModel(factory = AppViewModelProvider.Factory),
+                navigateUp = { navController.navigateUp() })
         }
     }
 }
