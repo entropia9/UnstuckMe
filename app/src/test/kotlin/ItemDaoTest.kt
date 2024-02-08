@@ -1,5 +1,0 @@
-class ItemDaoTest {
-
-//TODO
-
-}
