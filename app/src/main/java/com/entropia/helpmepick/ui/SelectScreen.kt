@@ -154,9 +154,13 @@ fun SelectScreen(
             }
 
             Spacer(modifier = Modifier.weight(1f))
-            ModeSelectionButtons(regularButtonOnClick = {
-                navigateToRegular()
-            }, listSize = uiState.value.selectedItemsList.size)
+            ModeSelectionButtons(
+                regularButtonOnClick = {
+                    navigateToRegular()
+                },
+                battleModeButtonOnClick = { navigateToBattleMode() },
+                listSize = uiState.value.selectedItemsList.size
+            )
 
         }
     }

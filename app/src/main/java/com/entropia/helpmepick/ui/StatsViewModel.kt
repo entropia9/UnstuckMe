@@ -29,6 +29,22 @@ class StatsViewModel(val itemsRepository: ItemsRepository) : ViewModel() {
         }
     }
 
+    fun getNeverSelected() {
+        viewModelScope.launch {
+            getAllNeverSelected()
+        }
+    }
+
+    private suspend fun getAllNeverSelected() {
+        val neverSelectedDeferred = viewModelScope.async {
+            itemsRepository.getAllByTimesSelected().first()
+        }
+        val neverSelected = neverSelectedDeferred.await()
+        statsUiState = statsUiState.copy(
+            neverSelected = neverSelected
+        )
+    }
+
     private suspend fun getAllByTimesPicked() {
         val mostPickedDeferred = viewModelScope.async {
             itemsRepository.getAllItemsStream().first()
@@ -66,5 +82,6 @@ data class StatsUiState(
     val mostPicked: List<Item> = listOf(),
     val mostSelected: List<Item> = listOf(),
     val mostRejected: List<Item> = listOf(),
+    val neverSelected: List<Item> = listOf()
 )
 
