@@ -66,8 +66,8 @@ object SelectScreenDestination : NavigationDestination {
 @Composable
 fun SelectScreen(
     viewModel: ItemsListViewModel,
-    navigateToRegular: () -> Unit,
-    navigateToBattleMode: () -> Unit,
+    navigate: () -> Unit,
+    isEnabled: (Int) -> Boolean,
     modifier: Modifier = Modifier
 ) {
     val uiState = viewModel.itemsListUiState.collectAsState()
@@ -154,17 +154,24 @@ fun SelectScreen(
             }
 
             Spacer(modifier = Modifier.weight(1f))
-            ModeSelectionButtons(
-                regularButtonOnClick = {
-                    navigateToRegular()
-                },
-                battleModeButtonOnClick = { navigateToBattleMode() },
-                listSize = uiState.value.selectedItemsList.size
+            DoneButton(
+                navigate = { navigate() },
+                isEnabled = isEnabled,
+                size = uiState.value.selectedItemsList.size
             )
-
         }
     }
 
+}
+
+@Composable
+fun DoneButton(navigate: () -> Unit, isEnabled: (Int) -> Boolean, size: Int) {
+    Button(
+        onClick = { navigate() },
+        enabled = isEnabled(size)
+    ) {
+        Text(text = stringResource(id = R.string.done_button))
+    }
 }
 
 @Composable
