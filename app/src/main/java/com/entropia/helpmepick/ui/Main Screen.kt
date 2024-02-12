@@ -34,7 +34,8 @@ object MainScreenDestination : NavigationDestination {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
-    navigateToSelect: () -> Unit,
+    navigateToRegular: () -> Unit,
+    navigateToBattleMode: () -> Unit,
     navigateToStats: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -53,12 +54,12 @@ fun MainScreen(
             verticalArrangement = Arrangement.Center
         ) {
             MenuButton(
-                navigate = navigateToSelect,
+                navigate = navigateToRegular,
                 textRes = R.string.regular_mode,
                 iconRes = R.drawable.regular_mode_icon,
             )
             MenuButton(
-                navigate = navigateToSelect,
+                navigate = navigateToBattleMode,
                 textRes = R.string.battle_mode,
                 iconRes = R.drawable.battle_mode_icon
             )
@@ -93,5 +94,6 @@ private fun MenuButton(
 @Composable
 fun MainScreenPreview() {
     MainScreen(navigateToStats = { },
-        navigateToSelect = {})
+        navigateToRegular = {},
+        navigateToBattleMode = {})
 }

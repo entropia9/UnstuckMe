@@ -9,12 +9,14 @@ import androidx.navigation.compose.composable
 import com.entropia.helpmepick.AppViewModelProvider
 import com.entropia.helpmepick.ui.BattleModeDestination
 import com.entropia.helpmepick.ui.BattleModeScreen
+import com.entropia.helpmepick.ui.BattleModeSelectScreen
+import com.entropia.helpmepick.ui.BattleModeSelectScreenDestination
 import com.entropia.helpmepick.ui.MainScreen
 import com.entropia.helpmepick.ui.MainScreenDestination
 import com.entropia.helpmepick.ui.PickRandomScreen
 import com.entropia.helpmepick.ui.RegularDestination
-import com.entropia.helpmepick.ui.SelectScreen
-import com.entropia.helpmepick.ui.SelectScreenDestination
+import com.entropia.helpmepick.ui.RegularSelectScreen
+import com.entropia.helpmepick.ui.RegularSelectScreenDestination
 import com.entropia.helpmepick.ui.StatsDestination
 
 @Composable
@@ -28,14 +30,22 @@ fun HelpMePickNavHost(
     ) {
         composable(route = MainScreenDestination.route) {
             MainScreen(
-                navigateToSelect = { navController.navigate(SelectScreenDestination.route) },
+                navigateToRegular = { navController.navigate(RegularSelectScreenDestination.route) },
+                navigateToBattleMode = { navController.navigate(BattleModeSelectScreenDestination.route) },
                 navigateToStats = { navController.navigate(StatsDestination.route) })
         }
-        composable(route = SelectScreenDestination.route) {
-            SelectScreen(
+        composable(route = RegularSelectScreenDestination.route) {
+            RegularSelectScreen(
                 viewModel = viewModel(factory = AppViewModelProvider.Factory),
                 navigate = { navController.navigate(RegularDestination.route) },
-                isEnabled = {it -> false}
+                navigateUp = { navController.navigateUp() }
+            )
+        }
+        composable(route = BattleModeSelectScreenDestination.route) {
+            BattleModeSelectScreen(
+                viewModel = viewModel(factory = AppViewModelProvider.Factory),
+                navigate = { navController.navigate(BattleModeDestination.route) },
+                navigateUp = { navController.navigateUp() }
             )
         }
         composable(route = BattleModeDestination.route) {

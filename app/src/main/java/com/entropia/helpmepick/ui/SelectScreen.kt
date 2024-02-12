@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -37,30 +36,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.ui.bottomsheet.EntryBottomSheet
-import com.entropia.helpmepick.ui.navigation.NavigationDestination
-import com.entropia.helpmepick.ui.theme.HelpMePickTheme
 import kotlinx.coroutines.launch
-
-
-object SelectScreenDestination : NavigationDestination {
-    override val route: String
-        get() = "select_screen"
-    override val titleRes: Int
-        get() = R.string.app_name
-
-}
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -171,56 +155,6 @@ fun DoneButton(navigate: () -> Unit, isEnabled: (Int) -> Boolean, size: Int) {
         enabled = isEnabled(size)
     ) {
         Text(text = stringResource(id = R.string.done_button))
-    }
-}
-
-@Composable
-private fun ModeSelectionButtons(
-    listSize: Int,
-    modifier: Modifier = Modifier,
-    regularButtonOnClick: () -> Unit = {},
-    battleModeButtonOnClick: () -> Unit = {},
-
-    ) {
-    Row(modifier = modifier) {
-        Button(
-            onClick = { regularButtonOnClick() },
-            enabled = listSize > 1,
-            shape = RoundedCornerShape(15),
-            modifier = Modifier
-                .size(135.dp)
-                .padding(dimensionResource(id = R.dimen.padding_small))
-        ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.regular_mode_icon),
-                    contentDescription = ""
-                )
-                Text(text = stringResource(id = R.string.regular))
-            }
-        }
-        Button(
-            onClick = { battleModeButtonOnClick() },
-            enabled = listSize > 3 && listSize % 4 == 0,
-            shape = RoundedCornerShape(15),
-            modifier = Modifier
-                .size(135.dp)
-                .padding(dimensionResource(id = R.dimen.padding_small))
-        ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.battle_mode_icon),
-                    contentDescription = ""
-                )
-                Text(text = stringResource(id = R.string.battle_mode))
-            }
-        }
     }
 }
 
@@ -336,15 +270,4 @@ fun ItemButton(
     }
 
 }
-
-@Preview
-@Composable
-fun PreviewSelect() {
-    HelpMePickTheme {
-        Column() {
-            ModeSelectionButtons(listSize = 4)
-        }
-    }
-}
-
 
