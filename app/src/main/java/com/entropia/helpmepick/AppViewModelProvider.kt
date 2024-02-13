@@ -8,6 +8,7 @@ import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.ui.BattleModeViewModel
 import com.entropia.helpmepick.ui.ItemsListViewModel
 import com.entropia.helpmepick.ui.PickRandomViewModel
+import com.entropia.helpmepick.ui.StatsViewModel
 
 object AppViewModelProvider {
     var items = listOf<Item>()
@@ -20,13 +21,18 @@ object AppViewModelProvider {
         initializer {
             PickRandomViewModel(
                 itemsRepository = helpMePickApplication().container.itemsRepository,
-                items=items
+                items = items
             )
         }
         initializer {
             BattleModeViewModel(
                 itemsRepository = helpMePickApplication().container.itemsRepository,
-                items=items
+                items = items
+            )
+        }
+        initializer {
+            StatsViewModel(
+                itemsRepository = helpMePickApplication().container.itemsRepository
             )
         }
     }

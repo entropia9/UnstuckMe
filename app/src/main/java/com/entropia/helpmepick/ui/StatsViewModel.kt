@@ -16,6 +16,13 @@ class StatsViewModel(val itemsRepository: ItemsRepository) : ViewModel() {
     var statsUiState by mutableStateOf(StatsUiState())
         private set
 
+    init {
+        getMostSelected()
+        getMostPicked()
+        getMostRejected()
+        getNeverSelected()
+
+    }
 
     fun getMostPicked() {
         viewModelScope.launch {
@@ -32,6 +39,12 @@ class StatsViewModel(val itemsRepository: ItemsRepository) : ViewModel() {
     fun getNeverSelected() {
         viewModelScope.launch {
             getAllNeverSelected()
+        }
+    }
+
+    fun getMostRejected() {
+        viewModelScope.launch {
+            getAllByTimesRejected()
         }
     }
 

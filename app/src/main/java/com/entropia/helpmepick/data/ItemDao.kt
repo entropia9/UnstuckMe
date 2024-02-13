@@ -34,4 +34,5 @@ interface ItemDao {
 
     @Query("SELECT * FROM items WHERE timesSelected = 0")
     fun getNeverSelected():Flow<List<Item>>
+
 }

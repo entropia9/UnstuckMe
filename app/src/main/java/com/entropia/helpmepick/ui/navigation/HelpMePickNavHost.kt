@@ -18,6 +18,7 @@ import com.entropia.helpmepick.ui.RegularDestination
 import com.entropia.helpmepick.ui.RegularSelectScreen
 import com.entropia.helpmepick.ui.RegularSelectScreenDestination
 import com.entropia.helpmepick.ui.StatsDestination
+import com.entropia.helpmepick.ui.StatsScreen
 
 @Composable
 fun HelpMePickNavHost(
@@ -61,7 +62,10 @@ fun HelpMePickNavHost(
         composable(
             route = StatsDestination.route
         ) {
-            //TODO
+            StatsScreen(
+                navigateUp = { navController.navigateUp() },
+                viewModel = viewModel(factory = AppViewModelProvider.Factory)
+            )
         }
     }
 }
