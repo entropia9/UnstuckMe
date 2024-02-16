@@ -17,7 +17,21 @@ class BattleModeViewModel(private val itemsRepository: ItemsRepository, items: L
         )
     )
 
-
+    fun onItemPick(item: Item) {
+        battleModeUiState.nextRoundList.add(item)
+        if (battleModeUiState.availableForSelection.isNotEmpty()) {
+            getTwoItems()
+        } else {
+            if (battleModeUiState.nextRoundList.size > 1) {
+                battleModeUiState.availableForSelection = battleModeUiState.nextRoundList
+                battleModeUiState.nextRoundList = mutableListOf()
+            } else {
+                battleModeUiState = battleModeUiState.copy(
+                    winner = item
+                )
+            }
+        }
+    }
 
     fun getTwoItems() {
         val item1 = battleModeUiState.availableForSelection.random()
@@ -28,12 +42,14 @@ class BattleModeViewModel(private val itemsRepository: ItemsRepository, items: L
             item2 = item2
         )
     }
-    //TODO remove items
+
 }
 
 data class BattleModeUiState(
     val items: List<Item> = listOf(),
     var availableForSelection: MutableList<Item> = mutableListOf(),
+    var nextRoundList: MutableList<Item> = mutableListOf(),
     val item1: Item? = null,
-    val item2: Item? = null
+    val item2: Item? = null,
+    val winner: Item? = null
 )
