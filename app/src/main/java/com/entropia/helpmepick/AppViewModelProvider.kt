@@ -26,7 +26,6 @@ object AppViewModelProvider {
         }
         initializer {
             BattleModeViewModel(
-                itemsRepository = helpMePickApplication().container.itemsRepository,
                 items = items
             )
         }

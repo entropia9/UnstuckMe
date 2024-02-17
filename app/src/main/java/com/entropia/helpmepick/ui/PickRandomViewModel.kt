@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import co.yml.charts.common.extensions.isNotNull
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.data.ItemsRepository
@@ -29,7 +28,7 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
 
     private var mutableSelectedList = pickItemUiState.selectedList.toMutableList()
     fun updateRejected() {
-        if (pickItemUiState.currentPick.isNotNull()) {
+        if (pickItemUiState.currentPick != null) {
             val timesRejected = pickItemUiState.currentPick!!.timesRejected + 1
             viewModelScope.launch {
                 itemsRepository.updateItem(pickItemUiState.currentPick!!.copy(timesRejected = timesRejected))
@@ -42,7 +41,7 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
     }
 
     fun updatePicked() {
-        if (pickItemUiState.currentPick.isNotNull()) {
+        if (pickItemUiState.currentPick != null) {
             val timesPicked = pickItemUiState.currentPick!!.timesPicked + 1
             viewModelScope.launch {
                 itemsRepository.updateItem(pickItemUiState.currentPick!!.copy(timesPicked = timesPicked))
@@ -73,6 +72,7 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
         when {
             pickItemUiState.currentDialogue == outOfOptions -> pickItemUiState =
                 pickItemUiState.copy(currentDialogue = outOfOptionsAgree)
+
             else -> pickItemUiState = pickItemUiState.copy(currentDialogue = pickedDialogue)
         }
     }
