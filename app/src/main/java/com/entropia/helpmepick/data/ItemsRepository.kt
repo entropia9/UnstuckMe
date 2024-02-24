@@ -16,9 +16,14 @@ interface ItemsRepository {
 
     suspend fun updateItem(item: Item)
 
+    fun getAllByTimesPicked(): Flow<List<Item>>
     fun getAllByTimesSelected(): Flow<List<Item>>
 
     fun getAllByTimesRejected(): Flow<List<Item>>
 
-    fun getNeverSelected():Flow<List<Item>>
+    fun getNeverSelected(): Flow<List<Item>>
+
+    fun getCategories(): Flow<List<String>>
+
+    fun getItemsInCategory(category: String): Flow<List<Item>>
 }

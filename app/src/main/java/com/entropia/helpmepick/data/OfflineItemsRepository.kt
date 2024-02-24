@@ -12,9 +12,15 @@ class OfflineItemsRepository(private val itemDao: ItemDao) : ItemsRepository {
     override suspend fun deleteItem(item: Item) = itemDao.delete(item)
 
     override suspend fun updateItem(item: Item) = itemDao.update(item)
+    override fun getAllByTimesPicked(): Flow<List<Item>> = itemDao.getAllItemsByTimesPicked()
+
     override fun getAllByTimesSelected(): Flow<List<Item>> = itemDao.getAllItemsByTimesSelected()
 
     override fun getAllByTimesRejected(): Flow<List<Item>> = itemDao.getAllItemsByTimesRejected()
     override fun getNeverSelected(): Flow<List<Item>> = itemDao.getNeverSelected()
+    override fun getCategories(): Flow<List<String>> = itemDao.getAllCategories()
+
+    override fun getItemsInCategory(category: String): Flow<List<Item>> =
+        itemDao.getItemsInCategory(category)
 
 }

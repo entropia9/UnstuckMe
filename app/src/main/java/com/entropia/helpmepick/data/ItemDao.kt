@@ -21,18 +21,27 @@ interface ItemDao {
     suspend fun delete(item: Item)
 
     @Query("SELECT * FROM items WHERE name=:name COLLATE NOCASE")
-    fun getItem(name: String):Item?
+    fun getItem(name: String): Item?
 
-    @Query("SELECT * FROM items ORDER BY timesPicked DESC")
+    @Query("SELECT * FROM items ORDER BY name ASC")
     fun getAllItems(): Flow<List<Item>>
 
+    @Query("SELECT * FROM items ORDER BY timesPicked DESC")
+    fun getAllItemsByTimesPicked(): Flow<List<Item>>
+
     @Query("SELECT * FROM items ORDER BY timesSelected DESC")
-    fun getAllItemsByTimesSelected():Flow<List<Item>>
+    fun getAllItemsByTimesSelected(): Flow<List<Item>>
 
     @Query("SELECT * FROM items ORDER BY timesRejected DESC")
-    fun getAllItemsByTimesRejected():Flow<List<Item>>
+    fun getAllItemsByTimesRejected(): Flow<List<Item>>
 
     @Query("SELECT * FROM items WHERE timesSelected = 0")
-    fun getNeverSelected():Flow<List<Item>>
+    fun getNeverSelected(): Flow<List<Item>>
+
+    @Query("SELECT DISTINCT category FROM items ORDER BY name")
+    fun getAllCategories(): Flow<List<String>>
+
+    @Query("SELECT * FROM items WHERE category=:category COLLATE NOCASE")
+    fun getItemsInCategory(category: String):Flow<List<Item>>
 
 }

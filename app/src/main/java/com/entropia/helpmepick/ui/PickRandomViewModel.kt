@@ -25,6 +25,7 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
     ViewModel() {
 
     var pickItemUiState by mutableStateOf(PickItemUiState(selectedList = items))
+        private set
 
     private var mutableSelectedList = pickItemUiState.selectedList.toMutableList()
     fun updateRejected() {
@@ -59,34 +60,28 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
     }
 
     fun pickRandomFromSelected(items: List<Item>) {
-        if (items.isNotEmpty()) {
-            pickItemUiState =
-                pickItemUiState.copy(currentPick = items.random())
+        pickItemUiState = if (items.isNotEmpty()) {
+            pickItemUiState.copy(currentPick = items.random())
         } else {
-            pickItemUiState =
-                pickItemUiState.copy(currentPick = null)
+            pickItemUiState.copy(currentPick = null)
         }
     }
 
     fun pickedDialogue() {
-        when {
-            pickItemUiState.currentDialogue == outOfOptions -> pickItemUiState =
+        when (pickItemUiState.currentDialogue) {
+            outOfOptions -> pickItemUiState =
                 pickItemUiState.copy(currentDialogue = outOfOptionsAgree)
-
             else -> pickItemUiState = pickItemUiState.copy(currentDialogue = pickedDialogue)
         }
     }
 
     fun nextDialogue() {
-        when {
-            pickItemUiState.selectedList.isEmpty() -> pickItemUiState =
-                pickItemUiState.copy(currentDialogue = outOfOptions)
+        pickItemUiState = when {
+            pickItemUiState.selectedList.isEmpty() -> pickItemUiState.copy(currentDialogue = outOfOptions)
 
-            pickItemUiState.currentDialogue == outOfOptions -> pickItemUiState =
-                pickItemUiState.copy(currentDialogue = startAgainDialogue)
+            pickItemUiState.currentDialogue == outOfOptions -> pickItemUiState.copy(currentDialogue = startAgainDialogue)
 
-            else -> pickItemUiState =
-                pickItemUiState.copy(currentDialogue = questionDialogueList.random())
+            else -> pickItemUiState.copy(currentDialogue = questionDialogueList.random())
         }
     }
 }

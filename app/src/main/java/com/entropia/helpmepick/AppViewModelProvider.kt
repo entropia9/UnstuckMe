@@ -5,7 +5,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.entropia.helpmepick.data.Item
-import com.entropia.helpmepick.ui.BattleModeViewModel
+import com.entropia.helpmepick.ui.battlemode.BattleModeViewModel
 import com.entropia.helpmepick.ui.ItemsListViewModel
 import com.entropia.helpmepick.ui.PickRandomViewModel
 import com.entropia.helpmepick.ui.StatsViewModel

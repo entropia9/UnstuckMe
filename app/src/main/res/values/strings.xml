@@ -7,6 +7,8 @@
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="back_button">Back</string>
+    <string name="add_edit_item">Add/Edit Item</string>
+    <string name="items">Items</string>
     <string name="regular">Regular Mode</string>
     <string name="battle_mode">Battle Mode</string>
     <string name="regular_mode">Pick Random</string>
@@ -35,4 +37,5 @@
     <string name="most_rejected">Most Rejected</string>
     <string name="yes_answer_button">Yes</string>
     <string name="no_answer_button">No</string>
+    <string name="all">All</string>
 </resources>

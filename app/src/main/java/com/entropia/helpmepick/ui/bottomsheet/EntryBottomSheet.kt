@@ -83,7 +83,7 @@ fun SheetForm(
             onCancel = onCancel,
             onSubmit = {
                 onSubmit()
-                addItem(Item(name))
+                addItem(Item(name=name))
             },
             submitButtonEnabled = name.isNotEmpty()
         )
