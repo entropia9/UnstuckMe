@@ -69,7 +69,7 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
     }
 
     fun selectAll() {
-        _itemsListUiState.value.itemsList.forEach { item ->
+        categoriesItemUiState.currentItems.forEach { item ->
             selectItem(item)
         }
     }
@@ -80,7 +80,7 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
 
     fun selectRandom(amountToSelect: Int) {
         if (_itemsListUiState.value.itemsList.isNotEmpty()) {
-            val list: MutableList<Item> = _itemsListUiState.value.itemsList.toMutableList()
+            val list: MutableList<Item> = categoriesItemUiState.currentItems.toMutableList()
             clearAll()
             repeat(amountToSelect) {
                 val item = list.random()

@@ -25,6 +25,7 @@ object BattleModeSelectScreenDestination : NavigationDestination {
 fun BattleModeSelectScreen(
     viewModel: ItemsListViewModel,
     navigate: () -> Unit,
+    navigateToAddEdit: () -> Unit,
     navigateUp: () -> Unit
 ) {
     Scaffold(topBar = {
@@ -36,6 +37,7 @@ fun BattleModeSelectScreen(
         SelectScreen(
             viewModel = viewModel,
             navigate = { navigate() },
+            navigateToAddEdit = { navigateToAddEdit() },
             isEnabled = { size -> size >= 4 && size % 4 == 0 },
             modifier = Modifier.padding(innerPadding)
         )

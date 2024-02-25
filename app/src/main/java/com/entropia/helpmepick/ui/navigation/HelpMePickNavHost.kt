@@ -46,6 +46,7 @@ fun HelpMePickNavHost(
             RegularSelectScreen(
                 viewModel = viewModel(factory = AppViewModelProvider.Factory),
                 navigate = { navController.navigate(RegularDestination.route) },
+                navigateToAddEdit = { navController.navigate(AddEditItemsScreenDestination.route) },
                 navigateUp = { navController.navigateUp() }
             )
         }
@@ -53,6 +54,7 @@ fun HelpMePickNavHost(
             BattleModeSelectScreen(
                 viewModel = viewModel(factory = AppViewModelProvider.Factory),
                 navigate = { navController.navigate(BattleModeDestination.route) },
+                navigateToAddEdit = { navController.navigate(AddEditItemsScreenDestination.route) },
                 navigateUp = { navController.navigateUp() }
             )
         }

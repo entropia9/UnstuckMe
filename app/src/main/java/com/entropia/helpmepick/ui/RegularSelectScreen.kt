@@ -23,6 +23,7 @@ object RegularSelectScreenDestination : NavigationDestination {
 fun RegularSelectScreen(
     viewModel: ItemsListViewModel,
     navigate: () -> Unit,
+    navigateToAddEdit: () -> Unit,
     navigateUp: () -> Unit
 ) {
     Scaffold(
@@ -37,6 +38,7 @@ fun RegularSelectScreen(
         SelectScreen(
             viewModel = viewModel,
             navigate = { navigate() },
+            navigateToAddEdit = { navigateToAddEdit() },
             isEnabled = { size -> size >= 2 },
             modifier = Modifier.padding(innerPadding)
         )
