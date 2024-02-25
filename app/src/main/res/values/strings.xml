@@ -38,5 +38,6 @@
     <string name="yes_answer_button">Yes</string>
     <string name="no_answer_button">No</string>
     <string name="navigate_to_add_button">Add or Edit Items</string>
+    <string name="add_item">Add Item</string>
     <string name="all">All</string>
 </resources>

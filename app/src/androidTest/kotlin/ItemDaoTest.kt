@@ -21,8 +21,8 @@ class ItemDaoTest {
     private lateinit var itemDao: ItemDao
     private lateinit var itemsDatabase: ItemsDatabase
 
-    private var item1 = Item("Catfood Calculator", 2, 3, 1)
-    private var item2 = Item("Liminal Sauna", 0, 2, 2)
+    private var item1 = Item(1, "Catfood Calculator", "Android", 2, 3, 1)
+    private var item2 = Item(2, "Liminal Sauna", "3d", 0, 2, 2)
 
     @Before
     fun createDb() {

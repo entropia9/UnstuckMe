@@ -8,19 +8,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,7 +39,9 @@ import androidx.compose.ui.unit.dp
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
 import com.entropia.helpmepick.data.Item
+import com.entropia.helpmepick.ui.bottomsheet.EntryBottomSheet
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 object AddEditItemsScreenDestination : NavigationDestination {
@@ -46,27 +56,53 @@ object AddEditItemsScreenDestination : NavigationDestination {
 @Composable
 fun AddEditItemsScreen(viewModel: ItemsListViewModel, navigateUp: () -> Unit) {
     val uiState = viewModel.categoriesItemUiState
-    Scaffold(topBar = {
-        TopAppBar(
-            title = stringResource(id = R.string.items),
-            canNavigateBack = true,
-            navigateUp = navigateUp
-        )
-    }) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues)) {
-            CategoriesRow(
-                categories = uiState.categories,
-                currentCategory = uiState.currentCategory,
-                onAllClick = { viewModel.showAllItems() },
-                onCategoryClick = viewModel::showCurrentCategory
-            )
-            ItemsList(
-                items = uiState.currentItems,
-                updateItem = viewModel::updateItem,
-                modifier = Modifier.weight(1f)
-            )
-        }
 
+    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = rememberStandardBottomSheetState(
+            initialValue = SheetValue.Hidden,
+            skipHiddenState = false,
+        )
+    )
+
+    val scope = rememberCoroutineScope()
+
+    EntryBottomSheet(
+        itemsListViewModel = viewModel,
+        sheetScaffoldState = bottomSheetScaffoldState,
+        onCancel = {
+            scope.launch {
+                bottomSheetScaffoldState.bottomSheetState.hide()
+            }
+        },
+        onSubmit = {
+            scope.launch {
+                bottomSheetScaffoldState.bottomSheetState.hide()
+            }
+        }) {
+        Scaffold(topBar = {
+            TopAppBar(
+                title = stringResource(id = R.string.items),
+                canNavigateBack = true,
+                navigateUp = navigateUp
+            )
+        }, floatingActionButton = {
+            AddItemFAB(onClick = { scope.launch { bottomSheetScaffoldState.bottomSheetState.expand() } })
+        }) { paddingValues ->
+            Column(modifier = Modifier.padding(paddingValues)) {
+                CategoriesRow(
+                    categories = uiState.categories,
+                    currentCategory = uiState.currentCategory,
+                    onAllClick = { viewModel.showAllItems() },
+                    onCategoryClick = viewModel::showCurrentCategory
+                )
+                ItemsList(
+                    items = uiState.currentItems,
+                    updateItem = viewModel::updateItem,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+        }
     }
 
 }
@@ -110,10 +146,8 @@ fun CategoriesRow(
 fun ItemsList(items: List<Item>, updateItem: (Item) -> Unit, modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxSize()) {
         items.forEach { item ->
-            Form(
-                updateItem = updateItem,
-                item = item,
-                modifier = Modifier
+            ItemCard(
+                updateItem = updateItem, item = item, modifier = Modifier
             )
         }
     }
@@ -121,7 +155,7 @@ fun ItemsList(items: List<Item>, updateItem: (Item) -> Unit, modifier: Modifier 
 
 
 @Composable
-fun Form(
+fun ItemCard(
     updateItem: (Item) -> Unit,
     modifier: Modifier = Modifier,
     item: Item,
@@ -156,11 +190,9 @@ fun Form(
             ButtonRow(
                 modifier = Modifier
                     .padding(dimensionResource(id = R.dimen.padding_small))
-                    .align(Alignment.CenterVertically),
-                onSubmit = {
+                    .align(Alignment.CenterVertically), onSubmit = {
                     updateItem(Item(id = item.id, name = name, category = category))
-                },
-                submitButtonEnabled = name.isNotEmpty()
+                }, submitButtonEnabled = name.isNotEmpty()
             )
         }
 
@@ -172,9 +204,7 @@ fun Form(
 
 @Composable
 fun ButtonRow(
-    onSubmit: () -> Unit,
-    submitButtonEnabled: Boolean,
-    modifier: Modifier = Modifier
+    onSubmit: () -> Unit, submitButtonEnabled: Boolean, modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier.padding(bottom = 16.dp),
@@ -211,3 +241,14 @@ fun TextInputRow(
         )
 }
 
+@Composable
+fun AddItemFAB(
+    onClick: () -> Unit, modifier: Modifier = Modifier
+) {
+    FloatingActionButton(onClick = onClick, modifier = modifier) {
+        Icon(
+            imageVector = Icons.Default.Add,
+            contentDescription = stringResource(R.string.add_item),
+        )
+    }
+}
