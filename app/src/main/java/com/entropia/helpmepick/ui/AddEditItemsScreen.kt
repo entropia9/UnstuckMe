@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
@@ -25,11 +26,8 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -55,7 +53,7 @@ object AddEditItemsScreenDestination : NavigationDestination {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditItemsScreen(viewModel: ItemsListViewModel, navigateUp: () -> Unit) {
-    val uiState = viewModel.categoriesItemUiState
+    val uiState = viewModel.categoriesItemUiState.collectAsState()
 
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberStandardBottomSheetState(
@@ -69,6 +67,7 @@ fun AddEditItemsScreen(viewModel: ItemsListViewModel, navigateUp: () -> Unit) {
     EntryBottomSheet(
         itemsListViewModel = viewModel,
         sheetScaffoldState = bottomSheetScaffoldState,
+        categories = uiState.value.categories,
         onCancel = {
             scope.launch {
                 bottomSheetScaffoldState.bottomSheetState.hide()
@@ -90,13 +89,13 @@ fun AddEditItemsScreen(viewModel: ItemsListViewModel, navigateUp: () -> Unit) {
         }) { paddingValues ->
             Column(modifier = Modifier.padding(paddingValues)) {
                 CategoriesRow(
-                    categories = uiState.categories,
-                    currentCategory = uiState.currentCategory,
-                    onAllClick = { viewModel.showAllItems() },
+                    categories = uiState.value.categories,
+                    currentCategory = uiState.value.currentCategory,
+                    onAllClick = viewModel::showAllItems,
                     onCategoryClick = viewModel::showCurrentCategory
                 )
                 ItemsList(
-                    items = uiState.currentItems,
+                    items = uiState.value.currentItems,
                     updateItem = viewModel::updateItem,
                     modifier = Modifier.weight(1f)
                 )
@@ -144,10 +143,14 @@ fun CategoriesRow(
 
 @Composable
 fun ItemsList(items: List<Item>, updateItem: (Item) -> Unit, modifier: Modifier = Modifier) {
-    Column(modifier = modifier.fillMaxSize()) {
-        items.forEach { item ->
+    LazyColumn(modifier = modifier.fillMaxSize()) {
+        items(items) { item ->
             ItemCard(
-                updateItem = updateItem, item = item, modifier = Modifier
+                updateItem = updateItem,
+                item = item,
+                name = item.name,
+                category = item.category,
+                modifier = Modifier
             )
         }
     }
@@ -159,13 +162,9 @@ fun ItemCard(
     updateItem: (Item) -> Unit,
     modifier: Modifier = Modifier,
     item: Item,
+    name: String,
+    category: String
 ) {
-    var name by remember {
-        mutableStateOf(item.name)
-    }
-    var category by remember {
-        mutableStateOf(item.category)
-    }
 
     Card(modifier = modifier.padding(dimensionResource(id = R.dimen.padding_small))) {
         Row(
@@ -174,16 +173,16 @@ fun ItemCard(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
         ) {
             Column(modifier = Modifier.weight(0.7f)) {
-                TextInputRow(
+                TextRow(
                     inputLabel = stringResource(R.string.name),
                     fieldValue = name,
-                    onValueChange = { name = it },
+                    onValueChange = {  },
                     modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small)),
                 )
-                TextInputRow(
+                TextRow(
                     inputLabel = stringResource(R.string.category),
                     fieldValue = category,
-                    onValueChange = { category = it },
+                    onValueChange = { },
                     modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small)),
                 )
             }
@@ -219,7 +218,7 @@ fun ButtonRow(
 }
 
 @Composable
-fun TextInputRow(
+fun TextRow(
     inputLabel: String,
     fieldValue: String,
     onValueChange: (String) -> Unit,

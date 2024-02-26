@@ -41,6 +41,7 @@ fun EntryBottomSheet(
     sheetScaffoldState: BottomSheetScaffoldState,
     onCancel: () -> Unit,
     onSubmit: () -> Unit,
+    categories: List<String>,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
@@ -53,6 +54,7 @@ fun EntryBottomSheet(
                 SheetForm(
                     onCancel = onCancel,
                     onSubmit = onSubmit,
+                    categories = categories,
                     addItem = itemsListViewModel::addItem
                 )
             }
@@ -66,10 +68,14 @@ fun EntryBottomSheet(
 fun SheetForm(
     onCancel: () -> Unit,
     onSubmit: () -> Unit,
+    categories: List<String>,
     addItem: (Item) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var name by remember {
+        mutableStateOf("")
+    }
+    var category by remember {
         mutableStateOf("")
     }
     Column(modifier.padding(horizontal = 16.dp)) {
@@ -78,12 +84,17 @@ fun SheetForm(
             fieldValue = name,
             onValueChange = { name = it }
         )
+        SpinnerRow(
+            inputLabel = stringResource(id = R.string.category),
+            categories = categories,
+            category = category,
+            onValueChange = { category = it })
         ButtonRow(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             onCancel = onCancel,
             onSubmit = {
                 onSubmit()
-                addItem(Item(name=name))
+                addItem(Item(name = name, category = category))
             },
             submitButtonEnabled = name.isNotEmpty()
         )
@@ -149,6 +160,24 @@ fun TextInputRow(
                 disabledContainerColor = MaterialTheme.colorScheme.surface,
             ),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+        )
+    }
+}
+
+
+@Composable
+fun SpinnerRow(
+    inputLabel: String,
+    categories: List<String>,
+    category: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    InputRow(inputLabel = inputLabel, modifier = modifier) {
+        CategorySpinner(
+            categories = categories,
+            selectedOptionText = category,
+            onValueChange = onValueChange
         )
     }
 }

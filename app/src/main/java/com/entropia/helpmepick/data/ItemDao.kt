@@ -41,7 +41,7 @@ interface ItemDao {
     @Query("SELECT DISTINCT category FROM items ORDER BY name")
     fun getAllCategories(): Flow<List<String>>
 
-    @Query("SELECT * FROM items WHERE category=:category COLLATE NOCASE")
+    @Query("SELECT * FROM items WHERE category=:category")
     fun getItemsInCategory(category: String):Flow<List<Item>>
 
 }

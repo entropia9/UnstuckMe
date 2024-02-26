@@ -48,6 +48,7 @@ fun SelectScreen(
     modifier: Modifier = Modifier
 ) {
     val uiState = viewModel.itemsListUiState.collectAsState()
+    val categoriesUiState = viewModel.categoriesItemUiState.collectAsState()
 
     Column(
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
@@ -55,8 +56,8 @@ fun SelectScreen(
     ) {
 
         CategoriesRow(
-            categories = viewModel.categoriesItemUiState.categories,
-            currentCategory = viewModel.categoriesItemUiState.currentCategory,
+            categories = categoriesUiState.value.categories,
+            currentCategory = categoriesUiState.value.currentCategory,
             onAllClick = { viewModel.showAllItems() },
             onCategoryClick = viewModel::showCurrentCategory
         )
@@ -67,7 +68,7 @@ fun SelectScreen(
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
             )
             ItemsGrid(
-                itemList = viewModel.categoriesItemUiState.currentItems,
+                itemList = categoriesUiState.value.currentItems,
                 viewModel = viewModel,
                 modifier = Modifier.padding(
                     dimensionResource(id = R.dimen.padding_medium)

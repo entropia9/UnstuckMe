@@ -1,15 +1,14 @@
 package com.entropia.helpmepick.ui
 
-import androidx.compose.runtime.getValue
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.entropia.helpmepick.AppViewModelProvider
 import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.data.ItemsRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -30,14 +29,13 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
             initialValue = ItemsListUiState()
         )
     val itemsListUiState: StateFlow<ItemsListUiState> = _itemsListUiState
-    var categoriesItemUiState by mutableStateOf(CategoryUiState())
-        private set
+    val categoriesItemUiState: StateFlow<CategoryUiState> = MutableStateFlow(CategoryUiState())
 
     private val defaultDispatcher = Dispatchers.Default
 
     init {
         viewModelScope.launch {
-            categoriesItemUiState = CategoryUiState(
+            (categoriesItemUiState as MutableStateFlow).value = CategoryUiState(
                 itemsRepository.getCategories().first(),
                 currentItems = itemsRepository.getAllItemsStream().first()
             )
@@ -69,7 +67,7 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
     }
 
     fun selectAll() {
-        categoriesItemUiState.currentItems.forEach { item ->
+        categoriesItemUiState.value.currentItems.forEach { item ->
             selectItem(item)
         }
     }
@@ -80,7 +78,7 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
 
     fun selectRandom(amountToSelect: Int) {
         if (_itemsListUiState.value.itemsList.isNotEmpty()) {
-            val list: MutableList<Item> = categoriesItemUiState.currentItems.toMutableList()
+            val list: MutableList<Item> = categoriesItemUiState.value.currentItems.toMutableList()
             clearAll()
             repeat(amountToSelect) {
                 val item = list.random()
@@ -91,21 +89,24 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
     }
 
     fun showAllItems() {
-        categoriesItemUiState = categoriesItemUiState.copy(
-            currentCategory = "",
-            currentItems = _itemsListUiState.value.itemsList
-        )
+        viewModelScope.launch {
+            (categoriesItemUiState as MutableStateFlow).value = categoriesItemUiState.value.copy(
+                currentCategory = "",
+                currentItems = itemsRepository.getAllItemsStream().first()
+            )
+        }
+        Log.d("ALLITEMS", categoriesItemUiState.value.currentItems.toString())
     }
 
 
     fun showCurrentCategory(category: String) = viewModelScope.launch {
 
-        categoriesItemUiState =
-            categoriesItemUiState.copy(
+        (categoriesItemUiState as MutableStateFlow).value =
+            categoriesItemUiState.value.copy(
                 currentCategory = category,
                 currentItems = itemsRepository.getItemsInCategory(category).first()
             )
-
+        Log.d(categoriesItemUiState.value.currentCategory, categoriesItemUiState.value.currentItems.toString())
     }
 
     private fun isSelected(item: Item) =
@@ -130,5 +131,5 @@ data class ItemsListUiState(
 data class CategoryUiState(
     val categories: List<String> = listOf(),
     val currentCategory: String = "",
-    val currentItems: List<Item> = listOf()
+    var currentItems: List<Item> = listOf()
 )
