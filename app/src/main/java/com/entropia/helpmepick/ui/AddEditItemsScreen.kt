@@ -1,8 +1,10 @@
 package com.entropia.helpmepick.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,6 +13,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -33,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
@@ -40,7 +45,6 @@ import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.ui.bottomsheet.EntryBottomSheet
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 object AddEditItemsScreenDestination : NavigationDestination {
     override val route: String
@@ -176,7 +180,7 @@ fun ItemCard(
                 TextRow(
                     inputLabel = stringResource(R.string.name),
                     fieldValue = name,
-                    onValueChange = {  },
+                    onValueChange = { },
                     modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small)),
                 )
                 TextRow(
@@ -205,15 +209,24 @@ fun ItemCard(
 fun ButtonRow(
     onSubmit: () -> Unit, submitButtonEnabled: Boolean, modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier.padding(bottom = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(24.dp)
+    Column(
+        modifier = modifier.padding(16.dp),
+        verticalArrangement = Arrangement.SpaceEvenly,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(
-            onClick = onSubmit, enabled = submitButtonEnabled
-        ) {
-            Text(stringResource(R.string.save).uppercase(Locale.getDefault()))
-        }
+        Icon(
+            imageVector = Icons.Default.Edit, contentDescription = "Edit",
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium)).clickable {
+                //TODO
+            }
+        )
+        Spacer(modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium)))
+        Icon(
+            imageVector = Icons.Default.Delete, contentDescription = "Delete",
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium)).clickable {
+                //TODO
+            }
+        )
     }
 }
 
@@ -227,6 +240,7 @@ fun TextRow(
     OutlinedTextField(
         modifier = modifier,
         value = fieldValue,
+        readOnly = true,
         onValueChange = onValueChange,
         label = { Text(inputLabel) },
         singleLine = true,
@@ -248,6 +262,19 @@ fun AddItemFAB(
         Icon(
             imageVector = Icons.Default.Add,
             contentDescription = stringResource(R.string.add_item),
+        )
+    }
+}
+
+@Preview
+@Composable
+fun ItemCardPreview() {
+    MaterialTheme {
+        ItemCard(
+            updateItem = {},
+            item = Item(1, "Catfood Calculator", "Android"),
+            name = "Catfood Calculator",
+            category = "Android"
         )
     }
 }

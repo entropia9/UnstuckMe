@@ -46,11 +46,39 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
     fun addItem(item: Item) = viewModelScope.launch(defaultDispatcher) {
         if (validateInput(item.name)) {
             itemsRepository.insertItem(item)
+            updateCategories(item, categoriesItemUiState)
+        }
+    }
+
+    private suspend fun updateCategories(
+        item: Item,
+        categoriesItemUiState: StateFlow<CategoryUiState>
+    ) {
+        if (item.category != "" && !categoriesItemUiState.value.categories.contains(item.category)) {
+            (categoriesItemUiState as MutableStateFlow).value = CategoryUiState(
+                itemsRepository.getCategories().first(),
+                categoriesItemUiState.value.currentCategory
+            )
+            if (categoriesItemUiState.value.currentCategory == "") showAllItems() else showCurrentCategory(
+                categoriesItemUiState.value.currentCategory
+            )
         }
     }
 
     fun updateItem(item: Item) = viewModelScope.launch(defaultDispatcher) {
         itemsRepository.updateItem(item)
+        updateCategories(item, categoriesItemUiState)
+    }
+
+    fun deleteItem(item: Item) = viewModelScope.launch {
+        itemsRepository.deleteItem(item)
+        (categoriesItemUiState as MutableStateFlow).value = CategoryUiState(
+            itemsRepository.getCategories().first(),
+            categoriesItemUiState.value.currentCategory
+        )
+        if (categoriesItemUiState.value.currentCategory == "") showAllItems() else showCurrentCategory(
+            categoriesItemUiState.value.currentCategory
+        )
     }
 
     fun selectItem(item: Item) {
@@ -106,7 +134,10 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
                 currentCategory = category,
                 currentItems = itemsRepository.getItemsInCategory(category).first()
             )
-        Log.d(categoriesItemUiState.value.currentCategory, categoriesItemUiState.value.currentItems.toString())
+        Log.d(
+            categoriesItemUiState.value.currentCategory,
+            categoriesItemUiState.value.currentItems.toString()
+        )
     }
 
     private fun isSelected(item: Item) =
