@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -26,12 +27,17 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -101,6 +107,7 @@ fun AddEditItemsScreen(viewModel: ItemsListViewModel, navigateUp: () -> Unit) {
                 ItemsList(
                     items = uiState.value.currentItems,
                     updateItem = viewModel::updateItem,
+                    deleteItem = viewModel::deleteItem,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -146,11 +153,17 @@ fun CategoriesRow(
 
 
 @Composable
-fun ItemsList(items: List<Item>, updateItem: (Item) -> Unit, modifier: Modifier = Modifier) {
+fun ItemsList(
+    items: List<Item>,
+    updateItem: (Item) -> Unit,
+    deleteItem: (Item) -> Unit,
+    modifier: Modifier = Modifier
+) {
     LazyColumn(modifier = modifier.fillMaxSize()) {
         items(items) { item ->
             ItemCard(
                 updateItem = updateItem,
+                deleteItem = deleteItem,
                 item = item,
                 name = item.name,
                 category = item.category,
@@ -164,11 +177,26 @@ fun ItemsList(items: List<Item>, updateItem: (Item) -> Unit, modifier: Modifier 
 @Composable
 fun ItemCard(
     updateItem: (Item) -> Unit,
+    deleteItem: (Item) -> Unit,
     modifier: Modifier = Modifier,
     item: Item,
     name: String,
     category: String
 ) {
+    var showDialog by remember {
+        mutableStateOf(false)
+    }
+
+    if (showDialog) {
+        DeleteDialog(
+            onDismissRequest = { showDialog = false },
+            onConfirmation = {
+                deleteItem(item)
+                showDialog = false
+            },
+            item = item,
+        )
+    }
 
     Card(modifier = modifier.padding(dimensionResource(id = R.dimen.padding_small))) {
         Row(
@@ -190,44 +218,51 @@ fun ItemCard(
                     modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small)),
                 )
             }
-            ButtonRow(
-                modifier = Modifier
-                    .padding(dimensionResource(id = R.dimen.padding_small))
-                    .align(Alignment.CenterVertically), onSubmit = {
-                    updateItem(Item(id = item.id, name = name, category = category))
-                }, submitButtonEnabled = name.isNotEmpty()
-            )
+            Column(
+                modifier = modifier.padding(16.dp),
+                verticalArrangement = Arrangement.SpaceEvenly,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit, contentDescription = "Edit",
+                    modifier = Modifier
+                        .padding(dimensionResource(id = R.dimen.padding_medium))
+                        .clickable {
+                            //TODO
+                        }
+                )
+                Spacer(modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium)))
+                Icon(
+                    imageVector = Icons.Default.Delete, contentDescription = "Delete",
+                    modifier = Modifier
+                        .padding(dimensionResource(id = R.dimen.padding_medium))
+                        .clickable {
+                            showDialog = true
+                        }
+                )
+            }
         }
-
     }
-
-
 }
 
-
 @Composable
-fun ButtonRow(
-    onSubmit: () -> Unit, submitButtonEnabled: Boolean, modifier: Modifier = Modifier
+fun DeleteDialog(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    item: Item,
 ) {
-    Column(
-        modifier = modifier.padding(16.dp),
-        verticalArrangement = Arrangement.SpaceEvenly,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(
-            imageVector = Icons.Default.Edit, contentDescription = "Edit",
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium)).clickable {
-                //TODO
+    AlertDialog(onDismissRequest = { onDismissRequest() },
+        text = { Text(stringResource(id = R.string.delete_confirmation, item.name)) },
+        confirmButton = {
+            TextButton(onClick = { onConfirmation() }) {
+                Text(text = stringResource(id = R.string.yes_answer_button))
             }
-        )
-        Spacer(modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium)))
-        Icon(
-            imageVector = Icons.Default.Delete, contentDescription = "Delete",
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium)).clickable {
-                //TODO
+        },
+        dismissButton = {
+            TextButton(onClick = { onDismissRequest() }) {
+                Text(text = stringResource(id = R.string.no_answer_button))
             }
-        )
-    }
+        })
 }
 
 @Composable
@@ -272,6 +307,7 @@ fun ItemCardPreview() {
     MaterialTheme {
         ItemCard(
             updateItem = {},
+            deleteItem = {},
             item = Item(1, "Catfood Calculator", "Android"),
             name = "Catfood Calculator",
             category = "Android"

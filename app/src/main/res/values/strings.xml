@@ -31,6 +31,7 @@
     <string name="out_of_options_agree">That\'s okay, sometimes there are no good options.</string>
     <string name="start_again_dialogue2">Do you want to start again then?</string>
     <string name="win_dialogue">%1$s won!</string>
+    <string name="delete_confirmation">Are you sure you want to delete %1$s? </string>
     <string name="most_selected">Most Selected</string>
     <string name="never_selected">Never Selected</string>
     <string name="most_picked">Most Picked</string>
