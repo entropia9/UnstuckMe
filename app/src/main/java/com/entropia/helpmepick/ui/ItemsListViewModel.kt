@@ -1,7 +1,9 @@
 package com.entropia.helpmepick.ui
 
-import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.entropia.helpmepick.AppViewModelProvider
@@ -33,6 +35,9 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
 
     private val defaultDispatcher = Dispatchers.Default
 
+    var editedItem:Pair<String, String> by mutableStateOf(Pair("",""))
+        private set
+
     init {
         viewModelScope.launch {
             (categoriesItemUiState as MutableStateFlow).value = CategoryUiState(
@@ -59,10 +64,11 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
                 itemsRepository.getCategories().first(),
                 categoriesItemUiState.value.currentCategory
             )
-            if (categoriesItemUiState.value.currentCategory == "") showAllItems() else showCurrentCategory(
-                categoriesItemUiState.value.currentCategory
-            )
+
         }
+        if (categoriesItemUiState.value.currentCategory == "") showAllItems() else showCurrentCategory(
+            categoriesItemUiState.value.currentCategory
+        )
     }
 
     fun updateItem(item: Item) = viewModelScope.launch(defaultDispatcher) {
@@ -123,7 +129,6 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
                 currentItems = itemsRepository.getAllItemsStream().first()
             )
         }
-        Log.d("ALLITEMS", categoriesItemUiState.value.currentItems.toString())
     }
 
 
@@ -134,11 +139,15 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
                 currentCategory = category,
                 currentItems = itemsRepository.getItemsInCategory(category).first()
             )
-        Log.d(
-            categoriesItemUiState.value.currentCategory,
-            categoriesItemUiState.value.currentItems.toString()
-        )
     }
+
+
+
+    fun updateEditedItem(name: String, category: String){
+        editedItem=Pair(name, category)
+
+    }
+
 
     private fun isSelected(item: Item) =
         _itemsListUiState.value.selectedItemsList.contains(item)

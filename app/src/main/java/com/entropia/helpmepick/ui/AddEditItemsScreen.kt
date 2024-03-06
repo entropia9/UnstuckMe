@@ -13,6 +13,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
@@ -32,6 +34,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,6 +54,7 @@ import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.ui.bottomsheet.EntryBottomSheet
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch
+import kotlin.reflect.KFunction2
 
 object AddEditItemsScreenDestination : NavigationDestination {
     override val route: String
@@ -105,7 +109,9 @@ fun AddEditItemsScreen(viewModel: ItemsListViewModel, navigateUp: () -> Unit) {
                     onCategoryClick = viewModel::showCurrentCategory
                 )
                 ItemsList(
-                    items = uiState.value.currentItems,
+                    uiState = uiState,
+                    viewModel = viewModel,
+                    onEditItem = viewModel::updateEditedItem,
                     updateItem = viewModel::updateItem,
                     deleteItem = viewModel::deleteItem,
                     modifier = Modifier.weight(1f)
@@ -154,19 +160,21 @@ fun CategoriesRow(
 
 @Composable
 fun ItemsList(
-    items: List<Item>,
+    uiState: State<CategoryUiState>,
+    viewModel: ItemsListViewModel,
     updateItem: (Item) -> Unit,
+    onEditItem: KFunction2<String, String, Unit>,
     deleteItem: (Item) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier = modifier.fillMaxSize()) {
-        items(items) { item ->
+        items(uiState.value.currentItems) { item ->
             ItemCard(
+                viewModel = viewModel,
                 updateItem = updateItem,
+                onEditItem = onEditItem,
                 deleteItem = deleteItem,
                 item = item,
-                name = item.name,
-                category = item.category,
                 modifier = Modifier
             )
         }
@@ -176,14 +184,17 @@ fun ItemsList(
 
 @Composable
 fun ItemCard(
+    viewModel: ItemsListViewModel,
     updateItem: (Item) -> Unit,
+    onEditItem: KFunction2<String, String, Unit>,
     deleteItem: (Item) -> Unit,
     modifier: Modifier = Modifier,
     item: Item,
-    name: String,
-    category: String
 ) {
     var showDialog by remember {
+        mutableStateOf(false)
+    }
+    var isEditable by remember {
         mutableStateOf(false)
     }
 
@@ -207,14 +218,16 @@ fun ItemCard(
             Column(modifier = Modifier.weight(0.7f)) {
                 TextRow(
                     inputLabel = stringResource(R.string.name),
-                    fieldValue = name,
-                    onValueChange = { },
+                    fieldValue = if (!isEditable) item.name else viewModel.editedItem.first,
+                    onValueChange = { viewModel.updateEditedItem(it, viewModel.editedItem.second) },
+                    isEditable = isEditable,
                     modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small)),
                 )
                 TextRow(
                     inputLabel = stringResource(R.string.category),
-                    fieldValue = category,
-                    onValueChange = { },
+                    fieldValue = if (!isEditable) item.category else viewModel.editedItem.second,
+                    onValueChange = { viewModel.updateEditedItem(viewModel.editedItem.first, it) },
+                    isEditable = isEditable,
                     modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small)),
                 )
             }
@@ -223,14 +236,44 @@ fun ItemCard(
                 verticalArrangement = Arrangement.SpaceEvenly,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(
-                    imageVector = Icons.Default.Edit, contentDescription = "Edit",
-                    modifier = Modifier
-                        .padding(dimensionResource(id = R.dimen.padding_medium))
-                        .clickable {
-                            //TODO
-                        }
-                )
+                if (isEditable) {
+                    Row {
+                        Icon(
+                            imageVector = Icons.Default.Check, contentDescription = "Edit",
+                            modifier = Modifier
+                                .padding(dimensionResource(id = R.dimen.padding_medium))
+                                .clickable {
+                                    isEditable = false
+                                    updateItem(
+                                        Item(
+                                            item.id,
+                                            viewModel.editedItem.first,
+                                            viewModel.editedItem.second
+                                        )
+                                    )
+                                }
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Clear, contentDescription = "Edit",
+                            modifier = Modifier
+                                .padding(dimensionResource(id = R.dimen.padding_medium))
+                                .clickable {
+                                    isEditable = false
+                                }
+                        )
+                    }
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Edit, contentDescription = "Edit",
+                        modifier = Modifier
+                            .padding(dimensionResource(id = R.dimen.padding_medium))
+                            .clickable {
+                                isEditable = true
+                                onEditItem(item.name, item.category)
+                            }
+                    )
+
+                }
                 Spacer(modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium)))
                 Icon(
                     imageVector = Icons.Default.Delete, contentDescription = "Delete",
@@ -269,13 +312,14 @@ fun DeleteDialog(
 fun TextRow(
     inputLabel: String,
     fieldValue: String,
+    isEditable: Boolean,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     OutlinedTextField(
         modifier = modifier,
         value = fieldValue,
-        readOnly = true,
+        readOnly = !isEditable,
         onValueChange = onValueChange,
         label = { Text(inputLabel) },
         singleLine = true,
@@ -305,12 +349,5 @@ fun AddItemFAB(
 @Composable
 fun ItemCardPreview() {
     MaterialTheme {
-        ItemCard(
-            updateItem = {},
-            deleteItem = {},
-            item = Item(1, "Catfood Calculator", "Android"),
-            name = "Catfood Calculator",
-            category = "Android"
-        )
     }
 }
