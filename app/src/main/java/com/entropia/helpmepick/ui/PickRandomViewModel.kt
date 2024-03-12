@@ -68,10 +68,9 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
     }
 
     fun pickedDialogue() {
-        when (pickItemUiState.currentDialogue) {
-            outOfOptions -> pickItemUiState =
-                pickItemUiState.copy(currentDialogue = outOfOptionsAgree)
-            else -> pickItemUiState = pickItemUiState.copy(currentDialogue = pickedDialogue)
+        pickItemUiState = when (pickItemUiState.currentDialogue) {
+            outOfOptions -> pickItemUiState.copy(currentDialogue = outOfOptionsAgree)
+            else -> pickItemUiState.copy(currentDialogue = pickedDialogue)
         }
     }
 

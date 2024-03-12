@@ -245,10 +245,9 @@ fun ItemCard(
                                 .clickable {
                                     isEditable = false
                                     updateItem(
-                                        Item(
-                                            item.id,
-                                            viewModel.editedItem.first,
-                                            viewModel.editedItem.second
+                                        item.copy(
+                                            name = viewModel.editedItem.first,
+                                            category = viewModel.editedItem.second
                                         )
                                     )
                                 }

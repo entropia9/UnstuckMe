@@ -60,13 +60,13 @@ fun HelpMePickNavHost(
         }
         composable(route = BattleModeDestination.route) {
             BattleModeScreen(viewModel = viewModel(factory = AppViewModelProvider.Factory),
-                navigateUp = { navController.navigateUp() })
+                navigateUp = { navController.navigate(MainScreenDestination.route)})
         }
         composable(
             route = RegularDestination.route
         ) {
             PickRandomScreen(viewModel = viewModel(factory = AppViewModelProvider.Factory),
-                navigateUp = { navController.navigateUp() })
+                navigateUp = { navController.navigate(MainScreenDestination.route) })
         }
         composable(
             route = StatsDestination.route

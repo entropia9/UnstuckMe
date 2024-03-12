@@ -63,8 +63,8 @@ fun PickRandomScreen(
             Text(text = viewModel.pickItemUiState.currentPick?.name ?: " ")
             if (firstRun) {
                 Button(onClick = {
-                    viewModel.pickRandomFromSelected(viewModel.pickItemUiState.selectedList)
                     viewModel.updateSelected(viewModel.pickItemUiState.selectedList)
+                    viewModel.pickRandomFromSelected(viewModel.pickItemUiState.selectedList)
                     firstRun = false
                 }) {
                     Text(text = stringResource(id = R.string.help_me_pick_btn))
