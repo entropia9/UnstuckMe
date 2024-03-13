@@ -4,9 +4,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.entropia.helpmepick.data.Item
+import com.entropia.helpmepick.data.ItemsRepository
+import kotlinx.coroutines.launch
 
-class BattleModeViewModel(items: List<Item>) :
+class BattleModeViewModel(items: List<Item>, private val itemsRepository: ItemsRepository) :
     ViewModel() {
 
     var battleModeUiState by mutableStateOf(
@@ -17,7 +20,17 @@ class BattleModeViewModel(items: List<Item>) :
     )
 
     init {
+        updateSelected(items)
         getTwoItems()
+    }
+
+    fun updateSelected(items: List<Item>) {
+        items.forEach { item ->
+            val timesSelected = item.timesSelected + 1
+            viewModelScope.launch {
+                itemsRepository.updateItem(item.copy(timesSelected = timesSelected))
+            }
+        }
     }
 
     fun onItemPick(item: Item) {
@@ -33,6 +46,9 @@ class BattleModeViewModel(items: List<Item>) :
                 battleModeUiState = battleModeUiState.copy(
                     winner = item
                 )
+                viewModelScope.launch {
+                    itemsRepository.updateItem(item.copy(battleWins = item.battleWins + 1))
+                }
             }
         }
     }

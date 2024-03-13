@@ -3,6 +3,7 @@ package com.entropia.helpmepick.ui
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -27,6 +28,13 @@ import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
 
 
+enum class StatsType {
+    Selected,
+    Picked,
+    Rejected,
+    BattleWins
+}
+
 object StatsDestination : NavigationDestination {
     override val route: String
         get() = "stats_screen"
@@ -46,24 +54,58 @@ fun StatsScreen(modifier: Modifier = Modifier, navigateUp: () -> Unit, viewModel
             navigateUp = navigateUp
         )
     }) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
-            MostByStats(
-                itemList = viewModel.statsUiState.mostSelected,
-                label = stringResource(id = R.string.most_selected)
-            )
+        LazyColumn(modifier = Modifier.padding(innerPadding)) {
+            item {
+                MostByStats(
+                    itemList = viewModel.statsUiState.mostSelected,
+                    statsType = StatsType.Selected
+                )
+            }
+            item {
+                MostByStats(
+                    itemList = viewModel.statsUiState.mostPicked,
+                    statsType = StatsType.Picked
+                )
+            }
+            item {
+                MostByStats(
+                    itemList = viewModel.statsUiState.mostRejected,
+                    statsType = StatsType.Rejected
+                )
+            }
+
         }
     }
 }
 
 @Composable
-fun MostByStats(itemList: List<Item>, label: String, modifier: Modifier = Modifier) {
+fun MostByStats(itemList: List<Item>, statsType: StatsType, modifier: Modifier = Modifier) {
     if (itemList.isNotEmpty()) {
-        val nameList=itemList.map { item -> item.name  }
-        val maxRange= itemList[0].timesSelected
-
-        val barData:List<BarData> = itemList.mapIndexed { index, item->
+        val nameList = itemList.map { item -> item.name }
+        val maxRange = when (statsType) {
+            StatsType.Selected -> itemList[0].timesSelected
+            StatsType.Picked -> itemList[0].timesPicked
+            StatsType.Rejected -> itemList[0].timesRejected
+            StatsType.BattleWins -> itemList[0].battleWins
+        }
+        val label = stringResource(
+            id = when (statsType) {
+                StatsType.Selected -> R.string.most_selected
+                StatsType.Picked -> R.string.most_picked
+                StatsType.Rejected -> R.string.most_rejected
+                StatsType.BattleWins -> R.string.most_battle_wins
+            }
+        )
+        val barData: List<BarData> = itemList.mapIndexed { index, item ->
             BarData(
-                point = Point(item.timesSelected.toFloat(), index.toFloat()),
+                point = Point(
+                    when (statsType) {
+                        StatsType.Selected -> item.timesSelected.toFloat()
+                        StatsType.Picked -> item.timesPicked.toFloat()
+                        StatsType.Rejected -> item.timesRejected.toFloat()
+                        StatsType.BattleWins -> item.battleWins.toFloat()
+                    }, index.toFloat()
+                ),
                 label = item.name,
                 dataCategoryOptions = DataCategoryOptions(isDataCategoryInYAxis = true)
             )
@@ -71,14 +113,14 @@ fun MostByStats(itemList: List<Item>, label: String, modifier: Modifier = Modifi
         val xStepSize = 1
 
         val xAxisData = AxisData.Builder()
-            .steps(xStepSize)
+            .steps(maxRange/xStepSize)
             .bottomPadding(12.dp)
             .endPadding(40.dp)
-            .labelData { index -> (index * (maxRange / xStepSize)).toString() }
+            .labelData { index -> (index * xStepSize).toString() }
             .build()
         val yAxisData = AxisData.Builder()
             .axisStepSize(30.dp)
-            .steps(barData.size - 1)
+            .steps(barData.size)
             .labelAndAxisLinePadding(20.dp)
             .axisOffset(20.dp)
             .setDataCategoryOptions(
@@ -112,7 +154,7 @@ fun MostByStats(itemList: List<Item>, label: String, modifier: Modifier = Modifi
         )
 
         Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text=label)
+            Text(text = label)
             BarChart(
                 modifier = Modifier.height(350.dp),
                 barChartData = barChartData

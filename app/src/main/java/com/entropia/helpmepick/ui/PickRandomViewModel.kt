@@ -28,6 +28,9 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
         private set
 
     private var mutableSelectedList = pickItemUiState.selectedList.toMutableList()
+
+    
+
     fun updateRejected() {
         if (pickItemUiState.currentPick != null) {
             val timesRejected = pickItemUiState.currentPick!!.timesRejected + 1
