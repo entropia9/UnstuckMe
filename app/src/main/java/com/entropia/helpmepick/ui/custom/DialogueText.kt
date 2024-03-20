@@ -29,7 +29,7 @@ fun DialogueText(
 ) {
     var textToAnimate by remember { mutableStateOf("") }
 
-    var index = remember {
+    val index = remember {
         Animatable(initialValue = 0, typeConverter = Int.VectorConverter)
     }
 
