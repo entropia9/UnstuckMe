@@ -20,7 +20,7 @@ class StatsViewModel(val itemsRepository: ItemsRepository) : ViewModel() {
         getMostSelected()
         getMostPicked()
         getMostRejected()
-        getNeverSelected()
+        getMostBattleWins()
 
     }
 
@@ -36,9 +36,9 @@ class StatsViewModel(val itemsRepository: ItemsRepository) : ViewModel() {
         }
     }
 
-    fun getNeverSelected() {
+    fun getMostBattleWins() {
         viewModelScope.launch {
-            getAllNeverSelected()
+            getAllByBattleWins()
         }
     }
 
@@ -48,19 +48,9 @@ class StatsViewModel(val itemsRepository: ItemsRepository) : ViewModel() {
         }
     }
 
-    private suspend fun getAllNeverSelected() {
-        val neverSelectedDeferred = viewModelScope.async {
-            itemsRepository.getAllByTimesSelected().first()
-        }
-        val neverSelected = neverSelectedDeferred.await()
-        statsUiState = statsUiState.copy(
-            neverSelected = neverSelected
-        )
-    }
-
     private suspend fun getAllByTimesPicked() {
         val mostPickedDeferred = viewModelScope.async {
-            itemsRepository.getAllItemsStream().first()
+            itemsRepository.getAllByTimesPicked().first()
         }
         val mostPicked = mostPickedDeferred.await()
         statsUiState = statsUiState.copy(
@@ -88,13 +78,21 @@ class StatsViewModel(val itemsRepository: ItemsRepository) : ViewModel() {
         )
     }
 
-
+    private suspend fun getAllByBattleWins() {
+        val mostBattleWinsDeferred = viewModelScope.async {
+            itemsRepository.getAllByBattleWins().first()
+        }
+        val mostBattleWins = mostBattleWinsDeferred.await()
+        statsUiState = statsUiState.copy(
+            mostBattleWins = mostBattleWins
+        )
+    }
 }
 
 data class StatsUiState(
     val mostPicked: List<Item> = listOf(),
     val mostSelected: List<Item> = listOf(),
     val mostRejected: List<Item> = listOf(),
-    val neverSelected: List<Item> = listOf()
+    val mostBattleWins: List<Item> = listOf()
 )
 

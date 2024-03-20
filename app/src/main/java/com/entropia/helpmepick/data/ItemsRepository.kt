@@ -21,6 +21,8 @@ interface ItemsRepository {
 
     fun getAllByTimesRejected(): Flow<List<Item>>
 
+    fun getAllByBattleWins(): Flow<List<Item>>
+
     fun getNeverSelected(): Flow<List<Item>>
 
     fun getCategories(): Flow<List<String>>

@@ -17,6 +17,8 @@ class OfflineItemsRepository(private val itemDao: ItemDao) : ItemsRepository {
     override fun getAllByTimesSelected(): Flow<List<Item>> = itemDao.getAllItemsByTimesSelected()
 
     override fun getAllByTimesRejected(): Flow<List<Item>> = itemDao.getAllItemsByTimesRejected()
+    override fun getAllByBattleWins(): Flow<List<Item>> = itemDao.getAllItemsByBattleWins()
+
     override fun getNeverSelected(): Flow<List<Item>> = itemDao.getNeverSelected()
     override fun getCategories(): Flow<List<String>> = itemDao.getAllCategories()
 

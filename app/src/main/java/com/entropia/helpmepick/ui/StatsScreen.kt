@@ -11,8 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.times
 import co.yml.charts.axis.AxisData
 import co.yml.charts.axis.DataCategoryOptions
 import co.yml.charts.common.model.Point
@@ -73,6 +75,12 @@ fun StatsScreen(modifier: Modifier = Modifier, navigateUp: () -> Unit, viewModel
                     statsType = StatsType.Rejected
                 )
             }
+            item {
+                MostByStats(
+                    itemList = viewModel.statsUiState.mostBattleWins,
+                    statsType = StatsType.BattleWins
+                )
+            }
 
         }
     }
@@ -81,7 +89,6 @@ fun StatsScreen(modifier: Modifier = Modifier, navigateUp: () -> Unit, viewModel
 @Composable
 fun MostByStats(itemList: List<Item>, statsType: StatsType, modifier: Modifier = Modifier) {
     if (itemList.isNotEmpty()) {
-        val nameList = itemList.map { item -> item.name }
         val maxRange = when (statsType) {
             StatsType.Selected -> itemList[0].timesSelected
             StatsType.Picked -> itemList[0].timesPicked
@@ -113,7 +120,7 @@ fun MostByStats(itemList: List<Item>, statsType: StatsType, modifier: Modifier =
         val xStepSize = 1
 
         val xAxisData = AxisData.Builder()
-            .steps(maxRange/xStepSize)
+            .steps(maxRange / xStepSize)
             .bottomPadding(12.dp)
             .endPadding(40.dp)
             .labelData { index -> (index * xStepSize).toString() }
@@ -130,7 +137,7 @@ fun MostByStats(itemList: List<Item>, statsType: StatsType, modifier: Modifier =
                 )
             )
             .startDrawPadding(48.dp)
-            .labelData { index -> nameList[index] }
+            .labelData { index -> barData[index].label }
             .build()
         val barChartData = BarChartData(
             chartData = barData,
@@ -153,10 +160,13 @@ fun MostByStats(itemList: List<Item>, statsType: StatsType, modifier: Modifier =
             barChartType = BarChartType.HORIZONTAL
         )
 
-        Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(text = label)
             BarChart(
-                modifier = Modifier.height(350.dp),
+                modifier = Modifier.height(barData.size * 70.dp),
                 barChartData = barChartData
             )
         }

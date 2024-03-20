@@ -1,14 +1,22 @@
 package com.entropia.helpmepick.ui
 
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,8 +29,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
+import com.entropia.helpmepick.ui.custom.DialogueText
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
 
 
@@ -94,6 +104,37 @@ fun PickRandomScreen(
 
 
 @Composable
+fun RandomScreen(name: String, modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(250.dp)
+    ) {
+        Box {
+            Column(
+                Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(text = name)
+            }
+            Box(
+                Modifier
+                    .background(MaterialTheme.colorScheme.primary)
+                    .fillMaxSize()
+            ) {
+
+            }
+
+
+        }
+
+    }
+
+}
+
+
+@Composable
 fun DialogueBar(
     onYesButtonPressed: () -> Unit,
     onNoButtonPressed: () -> Unit,
@@ -106,8 +147,12 @@ fun DialogueBar(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
+        DialogueText(
             text = text,
+            spec = tween(
+                durationMillis = text.length * 50,
+                easing = LinearEasing
+            ),
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
         )
         if (buttonsVisible) {
@@ -127,7 +172,13 @@ fun DialogueBar(
 @Preview
 @Composable
 fun Preview() {
-    DialogueBar(text = stringResource(id = R.string.question_dialogue1),
-        onYesButtonPressed = {},
-        onNoButtonPressed = {})
+    Column {
+        var text = stringResource(id = R.string.question_dialogue1)
+        val text2 = stringResource(id = R.string.question_dialogue2)
+        RandomScreen("Catfood Calculator")
+        DialogueBar(text = text,
+            onYesButtonPressed = { text = text2 },
+            onNoButtonPressed = {})
+    }
+
 }
