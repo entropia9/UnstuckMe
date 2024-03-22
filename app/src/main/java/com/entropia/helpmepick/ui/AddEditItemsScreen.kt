@@ -1,5 +1,6 @@
 package com.entropia.helpmepick.ui
 
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -52,6 +54,8 @@ import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
 import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.ui.bottomsheet.EntryBottomSheet
+import com.entropia.helpmepick.ui.custom.FadingSide
+import com.entropia.helpmepick.ui.custom.fadingEdge
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch
 import kotlin.reflect.KFunction2
@@ -132,8 +136,23 @@ fun CategoriesRow(
     onCategoryClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val listState = rememberLazyListState()
     val list = listOf(stringResource(id = R.string.all)) + categories
-    LazyRow(modifier = modifier, horizontalArrangement = Arrangement.SpaceEvenly) {
+    LazyRow(
+        state = listState, modifier = modifier
+            .fadingEdge(
+                FadingSide.LEFT,
+                color = MaterialTheme.colorScheme.background,
+                spec = tween(500),
+                isVisible = listState.canScrollBackward
+            )
+            .fadingEdge(
+                FadingSide.RIGHT,
+                color = MaterialTheme.colorScheme.background,
+                spec = tween(500),
+                isVisible = listState.canScrollForward
+            ), horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
         items(list) { item ->
             Button(
                 onClick = { if (item != list[0]) onCategoryClick(item) else onAllClick() },

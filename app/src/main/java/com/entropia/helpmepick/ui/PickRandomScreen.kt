@@ -56,7 +56,7 @@ fun PickRandomScreen(
         topBar = {
             TopAppBar(
                 title = stringResource(id = RegularDestination.titleRes),
-                canNavigateBack = viewModel.pickItemUiState.currentDialogue == startAgainDialogue || viewModel.pickItemUiState.currentDialogue == pickedDialogue,
+                canNavigateBack = viewModel.pickItemUiState.currentDialogue == startAgainDialogue || viewModel.pickItemUiState.currentDialogue == pickedDialogue || viewModel.pickItemUiState.currentDialogue == outOfOptions,
                 navigateUp = navigateUp
             )
         }) { innerPadding ->
@@ -70,7 +70,8 @@ fun PickRandomScreen(
             var firstRun by remember {
                 mutableStateOf(true)
             }
-            Text(text = viewModel.pickItemUiState.currentPick?.name ?: " ")
+            val itemName = viewModel.pickItemUiState.currentPick?.name ?: " "
+            Text(text = itemName)
             if (firstRun) {
                 Button(onClick = {
                     viewModel.updateSelected(viewModel.pickItemUiState.selectedList)
@@ -82,18 +83,15 @@ fun PickRandomScreen(
             } else {
                 DialogueBar(
                     onYesButtonPressed = {
-                        viewModel.updatePicked()
-                        viewModel.pickedDialogue()
+                        viewModel.updatePickedStatsAndShowDialogue(navigateUp)
                     },
                     onNoButtonPressed = {
-                        viewModel.updateRejected()
-                        viewModel.pickRandomFromSelected(viewModel.pickItemUiState.selectedList)
-                        viewModel.nextDialogue()
+                        viewModel.updateRejectedStatsAndShowDialogue(navigateUp)
                     },
                     buttonsVisible = viewModel.pickItemUiState.currentDialogue != pickedDialogue && viewModel.pickItemUiState.currentDialogue != outOfOptionsAgree,
                     text = stringResource(
                         id = viewModel.pickItemUiState.currentDialogue,
-                        viewModel.pickItemUiState.currentPick!!.name
+                        itemName
                     )
                 )
             }

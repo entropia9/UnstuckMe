@@ -29,7 +29,6 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
 
     private var mutableSelectedList = pickItemUiState.selectedList.toMutableList()
 
-    
 
     fun updateRejected() {
         if (pickItemUiState.currentPick != null) {
@@ -44,7 +43,7 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
         }
     }
 
-    fun updatePicked() {
+    private fun updatePicked() {
         if (pickItemUiState.currentPick != null) {
             val timesPicked = pickItemUiState.currentPick!!.timesPicked + 1
             viewModelScope.launch {
@@ -70,16 +69,44 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
         }
     }
 
-    fun pickedDialogue() {
+    private fun showPickedDialogue() {
         pickItemUiState = when (pickItemUiState.currentDialogue) {
             outOfOptions -> pickItemUiState.copy(currentDialogue = outOfOptionsAgree)
             else -> pickItemUiState.copy(currentDialogue = pickedDialogue)
         }
     }
 
+
+    fun updatePickedStatsAndShowDialogue(navigateUp: () -> Unit) {
+        when (pickItemUiState.currentDialogue) {
+            startAgainDialogue -> navigateUp()
+            else -> {
+                updatePicked()
+                showPickedDialogue()
+            }
+        }
+    }
+
+
+    fun updateRejectedStatsAndShowDialogue(navigateUp: () -> Unit) {
+        when (pickItemUiState.currentDialogue) {
+            startAgainDialogue -> {
+                navigateUp()
+                navigateUp()
+            }
+            else -> {
+                updateRejected()
+                pickRandomFromSelected(pickItemUiState.selectedList)
+                nextDialogue()
+            }
+        }
+    }
+
     fun nextDialogue() {
         pickItemUiState = when {
-            pickItemUiState.selectedList.isEmpty() -> pickItemUiState.copy(currentDialogue = outOfOptions)
+            pickItemUiState.selectedList.isEmpty() && pickItemUiState.currentDialogue != outOfOptions -> pickItemUiState.copy(
+                currentDialogue = outOfOptions
+            )
 
             pickItemUiState.currentDialogue == outOfOptions -> pickItemUiState.copy(currentDialogue = startAgainDialogue)
 
