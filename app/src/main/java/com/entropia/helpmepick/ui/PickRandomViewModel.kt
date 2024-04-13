@@ -30,7 +30,7 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
     private var mutableSelectedList = pickItemUiState.selectedList.toMutableList()
 
 
-    fun updateRejected() {
+    private fun updateRejected() {
         if (pickItemUiState.currentPick != null) {
             val timesRejected = pickItemUiState.currentPick!!.timesRejected + 1
             viewModelScope.launch {
@@ -102,7 +102,7 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
         }
     }
 
-    fun nextDialogue() {
+    private fun nextDialogue() {
         pickItemUiState = when {
             pickItemUiState.selectedList.isEmpty() && pickItemUiState.currentDialogue != outOfOptions -> pickItemUiState.copy(
                 currentDialogue = outOfOptions
