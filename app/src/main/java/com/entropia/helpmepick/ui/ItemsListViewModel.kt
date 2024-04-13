@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.entropia.helpmepick.AppViewModelProvider
 import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.data.ItemsRepository
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -48,7 +49,7 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
 
     }
 
-    fun addItem(item: Item) = viewModelScope.launch(defaultDispatcher) {
+    fun addItem(item: Item, dispatcher: CoroutineDispatcher=defaultDispatcher) = viewModelScope.launch(dispatcher) {
         if (validateInput(item.name)) {
             itemsRepository.insertItem(item)
             updateCategories(item, categoriesItemUiState)
@@ -71,7 +72,7 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
         )
     }
 
-    fun updateItem(item: Item) = viewModelScope.launch(defaultDispatcher) {
+    fun updateItem(item: Item, dispatcher: CoroutineDispatcher=defaultDispatcher) = viewModelScope.launch(dispatcher) {
         itemsRepository.updateItem(item)
         updateCategories(item, categoriesItemUiState)
     }
@@ -107,7 +108,7 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
     }
 
     fun clearAll() {
-        _itemsListUiState.value.selectedItemsList.removeAll(itemsListUiState.value.itemsList)
+        _itemsListUiState.value.selectedItemsList.clear()
     }
 
     fun selectRandom(amountToSelect: Int) {
