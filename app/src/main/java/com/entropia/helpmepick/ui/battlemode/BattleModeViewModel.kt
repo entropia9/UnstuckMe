@@ -24,7 +24,7 @@ class BattleModeViewModel(items: List<Item>, private val itemsRepository: ItemsR
         getTwoItems()
     }
 
-    fun updateSelected(items: List<Item>) {
+    private fun updateSelected(items: List<Item>) {
         items.forEach { item ->
             val timesSelected = item.timesSelected + 1
             viewModelScope.launch {
