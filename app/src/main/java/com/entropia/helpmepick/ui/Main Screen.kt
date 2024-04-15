@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
+import com.entropia.helpmepick.ui.theme.HelpMePickTheme
 
 object MainScreenDestination : NavigationDestination {
     override val route: String
@@ -201,8 +202,10 @@ private fun AboutAlert(onDismissRequest: () -> Unit,
 @Preview
 @Composable
 fun MainScreenPreview() {
-    MainScreen(navigateToAddEditItems = {},
-        navigateToStats = { },
-        navigateToRegular = {},
-        navigateToBattleMode = {})
+    HelpMePickTheme {
+        MainScreen(navigateToAddEditItems = {},
+            navigateToStats = { },
+            navigateToRegular = {},
+            navigateToBattleMode = {})
+    }
 }
