@@ -42,4 +42,7 @@
     <string name="navigate_to_add_button">Add or Edit Items</string>
     <string name="add_item">Add Item</string>
     <string name="all">All</string>
+    <string name="about">About</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="about_text">Help me pick is an app developed by entropia to combat her choice paralysis when it comes to having to many projects to work on. </string>
 </resources>
