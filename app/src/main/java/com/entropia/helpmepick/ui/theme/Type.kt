@@ -13,10 +13,21 @@ val Jersey10Family= FontFamily(
     Font(R.font.jersey10_charted_regular, FontWeight.Normal)
 )
 
+val FiraSans = FontFamily(
+    Font(R.font.fira_sans_regular, FontWeight.Normal),
+    Font(R.font.fira_sans_medium, FontWeight.Medium)
+)
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = FiraSans,
+        fontWeight = FontWeight.Medium,
+        fontSize = 18.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = FiraSans,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
