@@ -1,5 +1,7 @@
 package com.entropia.helpmepick.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,11 +28,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -60,7 +65,10 @@ fun MainScreen(
     navigateToStats: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
     val openAlertDialog = remember { mutableStateOf(false) }
+    var visible by remember { mutableStateOf(true) }
+
     when {
         openAlertDialog.value -> {
             AboutAlert(
@@ -78,52 +86,70 @@ fun MainScreen(
                 canNavigateBack = false
             )
         }) {
-        Column(
-            Modifier
-                .fillMaxSize()
-                .padding(it)
-                .padding(dimensionResource(id = R.dimen.padding_large)),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        AnimatedVisibility(
+            visible = visible,
+            exit = fadeOut()
         ) {
-            Spacer(modifier = Modifier.weight(0.3f))
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .padding(it)
+                    .padding(dimensionResource(id = R.dimen.padding_large)),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Spacer(modifier = Modifier.weight(0.3f))
 
-            MenuButton(
-                navigate = navigateToRegular,
-                textRes = R.string.regular_mode,
-                iconRes = R.drawable.regular_mode_icon,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = dimensionResource(id = R.dimen.padding_medium))
-            )
-            MenuButton(
-                navigate = navigateToBattleMode,
-                textRes = R.string.battle_mode,
-                iconRes = R.drawable.battle_mode_icon,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = dimensionResource(id = R.dimen.padding_medium))
-            )
+                MenuButton(
+                    navigate = {
+                        visible = false
+                        navigateToRegular()
+                    },
+                    textRes = R.string.regular_mode,
+                    iconRes = R.drawable.regular_mode_icon,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = dimensionResource(id = R.dimen.padding_medium))
+                )
+                MenuButton(
+                    navigate = {
+                        visible = false
+                        navigateToBattleMode()
+                    },
+                    textRes = R.string.battle_mode,
+                    iconRes = R.drawable.battle_mode_icon,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = dimensionResource(id = R.dimen.padding_medium))
+                )
 
-            MenuButton(
-                navigate = navigateToAddEditItems,
-                textRes = R.string.add_edit_item,
-                iconRes = R.drawable.edit_icon,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = dimensionResource(id = R.dimen.padding_medium))
-            )
+                MenuButton(
+                    navigate = {
+                        visible = false
+                        navigateToAddEditItems()
+                    },
+                    textRes = R.string.add_edit_item,
+                    iconRes = R.drawable.edit_icon,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = dimensionResource(id = R.dimen.padding_medium))
+                )
 
-            MenuButton(
-                navigate = navigateToStats,
-                textRes = R.string.stats,
-                iconRes = R.drawable.stats_icon,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.weight(0.3f))
-            AboutButton(onClick = { openAlertDialog.value = true })
-            Spacer(modifier = Modifier.weight(0.05f))
+                MenuButton(
+                    navigate = {
+                        visible = false
+                        navigateToStats()
+                    },
+                    textRes = R.string.stats,
+                    iconRes = R.drawable.stats_icon,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.weight(0.3f))
+                AboutButton(onClick = { openAlertDialog.value = true })
+                Spacer(modifier = Modifier.weight(0.05f))
+            }
         }
+
     }
 
 }
@@ -148,9 +174,19 @@ private fun MenuButton(
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(
-                dimensionResource(id = R.dimen.padding_medium)
-            )
+            modifier = Modifier
+                .padding(
+                    dimensionResource(id = R.dimen.padding_medium)
+                )
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.colorScheme.primaryContainer
+                        ), 0f, 250f
+                    ),
+                    shape = MaterialTheme.shapes.large
+                )
         ) {
             Box(
                 contentAlignment = Alignment.Center, modifier = Modifier
@@ -172,7 +208,8 @@ private fun MenuButton(
             Text(
                 text = stringResource(textRes),
                 style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.weight(0.6f)
+                modifier = Modifier.weight(0.6f),
+                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
 
@@ -181,11 +218,12 @@ private fun MenuButton(
 
 @Composable
 private fun AboutButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
-    Row(modifier = modifier
-        .wrapContentSize()
-        .clickable {
-            onClick()
-        }, horizontalArrangement = Arrangement.Center
+    Row(
+        modifier = modifier
+            .wrapContentSize()
+            .clickable {
+                onClick()
+            }, horizontalArrangement = Arrangement.Center
     ) {
         Icon(
             imageVector = Icons.Filled.Info, contentDescription = null,
