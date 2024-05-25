@@ -74,6 +74,7 @@ dependencies {
     ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
     implementation("androidx.room:room-ktx:${rootProject.extra["room_version"]}")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
+    implementation ("androidx.compose.foundation:foundation:1.6.7")
 
     implementation ("co.yml:ycharts:2.1.0")
 }

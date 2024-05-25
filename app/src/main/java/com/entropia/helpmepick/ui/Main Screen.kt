@@ -2,25 +2,17 @@ package com.entropia.helpmepick.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -34,17 +26,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
+import com.entropia.helpmepick.ui.custom.Thumb
+import com.entropia.helpmepick.ui.custom.Track
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
 import com.entropia.helpmepick.ui.theme.HelpMePickTheme
 
@@ -99,51 +89,39 @@ fun MainScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 Spacer(modifier = Modifier.weight(0.3f))
-
-                MenuButton(
-                    navigate = {
+                Track(
+                    textRes = R.string.regular_mode, onDragComplete = {
                         visible = false
                         navigateToRegular()
                     },
-                    textRes = R.string.regular_mode,
-                    iconRes = R.drawable.regular_mode_icon,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = dimensionResource(id = R.dimen.padding_medium))
-                )
-                MenuButton(
-                    navigate = {
-                        visible = false
-                        navigateToBattleMode()
-                    },
-                    textRes = R.string.battle_mode,
-                    iconRes = R.drawable.battle_mode_icon,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = dimensionResource(id = R.dimen.padding_medium))
-                )
+                    modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_medium))
+                ) {
+                    Thumb(iconRes = R.drawable.regular_mode_icon)
+                }
 
-                MenuButton(
-                    navigate = {
-                        visible = false
-                        navigateToAddEditItems()
-                    },
-                    textRes = R.string.add_edit_item,
-                    iconRes = R.drawable.edit_icon,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = dimensionResource(id = R.dimen.padding_medium))
-                )
+                Track(textRes = R.string.battle_mode, onDragComplete = {
+                    visible = false
+                    navigateToBattleMode()
+                },
+                    modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_medium))) {
+                    Thumb(iconRes = R.drawable.battle_mode_icon)
+                }
 
-                MenuButton(
-                    navigate = {
-                        visible = false
-                        navigateToStats()
-                    },
-                    textRes = R.string.stats,
-                    iconRes = R.drawable.stats_icon,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                Track(textRes = R.string.add_edit_item, onDragComplete = {
+                    visible = false
+                    navigateToAddEditItems()
+                },
+                    modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_medium))) {
+                    Thumb(iconRes = R.drawable.edit_icon)
+                }
+
+                Track(textRes = R.string.stats, onDragComplete = {
+                    visible = false
+                    navigateToStats()
+                },
+                    modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_medium))) {
+                    Thumb(iconRes = R.drawable.stats_icon)
+                }
                 Spacer(modifier = Modifier.weight(0.3f))
                 AboutButton(onClick = { openAlertDialog.value = true })
                 Spacer(modifier = Modifier.weight(0.05f))
@@ -152,68 +130,6 @@ fun MainScreen(
 
     }
 
-}
-
-@Composable
-private fun MenuButton(
-    navigate: () -> Unit,
-    textRes: Int,
-    iconRes: Int,
-    modifier: Modifier = Modifier
-) {
-    Button(
-        onClick = { navigate() },
-        modifier = modifier
-            .width(200.dp)
-            .height(100.dp),
-        shape = RoundedCornerShape(
-            topEnd = 20.dp, topStart = 40.dp,
-            bottomEnd = 20.dp, bottomStart = 40.dp
-        )
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .padding(
-                    dimensionResource(id = R.dimen.padding_medium)
-                )
-                .background(
-                    brush = Brush.horizontalGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.primary,
-                            MaterialTheme.colorScheme.primaryContainer
-                        ), 0f, 250f
-                    ),
-                    shape = MaterialTheme.shapes.large
-                )
-        ) {
-            Box(
-                contentAlignment = Alignment.Center, modifier = Modifier
-                    .size(60.dp)
-                    .clip(MaterialTheme.shapes.extraLarge)
-                    .background(MaterialTheme.colorScheme.primaryContainer)
-                    .weight(0.2f)
-            ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(iconRes),
-                    contentDescription = "",
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier
-                        .size(35.dp)
-
-                )
-            }
-            Spacer(modifier = Modifier.weight(0.2f))
-            Text(
-                text = stringResource(textRes),
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.weight(0.6f),
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-        }
-
-    }
 }
 
 @Composable
