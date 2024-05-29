@@ -43,7 +43,7 @@ import com.entropia.helpmepick.data.Item
 fun SelectScreen(
     viewModel: ItemsListViewModel,
     navigate: () -> Unit,
-    navigateToAddEdit: ()->Unit,
+    navigateToAddEdit: () -> Unit,
     isEnabled: (Int) -> Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -112,7 +112,7 @@ fun SelectScreen(
         }
 
         Spacer(modifier = Modifier.weight(1f))
-        Row(){
+        Row() {
             Button(onClick = { navigateToAddEdit() }) {
                 Text(text = stringResource(id = R.string.add_edit_item))
             }

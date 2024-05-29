@@ -2,8 +2,10 @@ package com.entropia.helpmepick.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +19,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -26,6 +29,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -80,52 +85,58 @@ fun MainScreen(
             visible = visible,
             exit = fadeOut()
         ) {
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .padding(it)
-                    .padding(dimensionResource(id = R.dimen.padding_large)),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Spacer(modifier = Modifier.weight(0.3f))
-                Track(
-                    textRes = R.string.regular_mode, onDragComplete = {
-                        visible = false
-                        navigateToRegular()
-                    },
-                    modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_medium))
+            Box(Modifier.fillMaxSize().padding(dimensionResource(id = R.dimen.padding_large))
+                .background( brush = Brush.linearGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.onPrimary,
+                        MaterialTheme.colorScheme.secondaryContainer
+                    ), Offset.Zero, Offset.Infinite
+                ), shape = MaterialTheme.shapes.small)){
+                Column(
+                    Modifier
+                        //  .fillMaxSize()
+                        .padding(it)
+                        .padding(dimensionResource(id = R.dimen.padding_large)),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    Thumb(iconRes = R.drawable.regular_mode_icon)
+                    Spacer(modifier = Modifier.weight(0.3f))
+                    Track(
+                        textRes = R.string.regular_mode, onDragComplete = {
+                            visible = false
+                            navigateToRegular()
+                        },
+                        modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_medium))
+                    ) {
+                        Thumb(iconRes = R.drawable.regular_mode_icon)
+                    }
+                    Track(textRes = R.string.battle_mode, onDragComplete = {
+                        visible = false
+                        navigateToBattleMode()
+                    },
+                        modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_medium))) {
+                        Thumb(iconRes = R.drawable.battle_mode_icon)
+                    }
+                    Track(textRes = R.string.add_edit_item, onDragComplete = {
+                        visible = false
+                        navigateToAddEditItems()
+                    },
+                        modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_medium))) {
+                        Thumb(iconRes = R.drawable.edit_icon)
+                    }
+                    Track(textRes = R.string.stats, onDragComplete = {
+                        visible = false
+                        navigateToStats()
+                    },
+                        modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_medium))) {
+                        Thumb(iconRes = R.drawable.stats_icon)
+                    }
+                    Spacer(modifier = Modifier.weight(0.3f))
+                    AboutButton(onClick = { openAlertDialog.value = true })
+                    Spacer(modifier = Modifier.weight(0.05f))
                 }
-
-                Track(textRes = R.string.battle_mode, onDragComplete = {
-                    visible = false
-                    navigateToBattleMode()
-                },
-                    modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_medium))) {
-                    Thumb(iconRes = R.drawable.battle_mode_icon)
-                }
-
-                Track(textRes = R.string.add_edit_item, onDragComplete = {
-                    visible = false
-                    navigateToAddEditItems()
-                },
-                    modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_medium))) {
-                    Thumb(iconRes = R.drawable.edit_icon)
-                }
-
-                Track(textRes = R.string.stats, onDragComplete = {
-                    visible = false
-                    navigateToStats()
-                },
-                    modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_medium))) {
-                    Thumb(iconRes = R.drawable.stats_icon)
-                }
-                Spacer(modifier = Modifier.weight(0.3f))
-                AboutButton(onClick = { openAlertDialog.value = true })
-                Spacer(modifier = Modifier.weight(0.05f))
             }
+
         }
 
     }
@@ -152,7 +163,7 @@ private fun AboutButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 private fun AboutAlert(
     onDismissRequest: () -> Unit,
@@ -178,6 +189,7 @@ private fun AboutAlert(
         },
         confirmButton = {
         },
+        shape = ShapeDefaults.Medium,
         dismissButton = {
             TextButton(
                 onClick = {
