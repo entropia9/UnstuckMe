@@ -85,13 +85,18 @@ fun MainScreen(
             visible = visible,
             exit = fadeOut()
         ) {
-            Box(Modifier.fillMaxSize().padding(dimensionResource(id = R.dimen.padding_large))
-                .background( brush = Brush.linearGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.onPrimary,
-                        MaterialTheme.colorScheme.secondaryContainer
-                    ), Offset.Zero, Offset.Infinite
-                ), shape = MaterialTheme.shapes.small)){
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .padding(dimensionResource(id = R.dimen.padding_large))
+                    .background(
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.onPrimary,
+                                MaterialTheme.colorScheme.secondaryContainer
+                            ), Offset.Zero, Offset.Infinite
+                        ), shape = MaterialTheme.shapes.small
+                    )){
                 Column(
                     Modifier
                         //  .fillMaxSize()
@@ -150,7 +155,18 @@ private fun AboutButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
             .wrapContentSize()
             .clickable {
                 onClick()
-            }, horizontalArrangement = Arrangement.Center
+            }
+
+            .background(
+                //color = MaterialTheme.colorScheme.primaryContainer,
+                brush=Brush.linearGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.onPrimary,
+                        MaterialTheme.colorScheme.primaryContainer
+                    ), Offset.Zero, Offset(0f,100f)
+                ),
+                shape = ShapeDefaults.Medium
+            ).padding(dimensionResource(id = R.dimen.padding_large)), horizontalArrangement = Arrangement.Center
     ) {
         Icon(
             imageVector = Icons.Filled.Info, contentDescription = null,

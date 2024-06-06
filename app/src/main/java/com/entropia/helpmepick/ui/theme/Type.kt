@@ -9,33 +9,41 @@ import androidx.compose.ui.unit.sp
 import com.entropia.helpmepick.R
 
 
-val Jersey10Family= FontFamily(
-    Font(R.font.jersey10_charted_regular, FontWeight.Normal)
+val Dosis = FontFamily(
+    Font(R.font.dosis_regular, FontWeight.Normal)
 )
 
-val FiraSans = FontFamily(
-    Font(R.font.fira_sans_regular, FontWeight.Normal),
-    Font(R.font.fira_sans_medium, FontWeight.Medium)
+
+
+val BarlowSemiCondensed = FontFamily(
+    Font(R.font.barlow_semicondensed_medium, FontWeight.Medium)
 )
+
+val AmaticSC = FontFamily(
+    Font(R.font.amaticsc_regular, FontWeight.Normal),
+    Font(R.font.amaticsc_bold, FontWeight.Bold)
+)
+
+
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(
-        fontFamily = FiraSans,
-        fontWeight = FontWeight.Medium,
+        fontFamily = Dosis,
+        fontWeight = FontWeight.Bold,
         fontSize = 18.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),
     bodyMedium = TextStyle(
-        fontFamily = FiraSans,
-        fontWeight = FontWeight.Normal,
+        fontFamily = Dosis,
+        fontWeight = FontWeight.SemiBold,
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),
     titleLarge = TextStyle(
-        fontFamily = Jersey10Family,
-        fontWeight = FontWeight.Normal,
+        fontFamily = AmaticSC,
+        fontWeight = FontWeight.Bold,
         fontSize = 48.sp,
         lineHeight = 28.sp,
         letterSpacing = 0.sp
