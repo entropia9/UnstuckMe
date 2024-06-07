@@ -49,9 +49,6 @@ import com.entropia.helpmepick.ui.theme.Shapes
 @Composable
 fun SelectScreen(
     viewModel: ItemsListViewModel,
-    navigate: () -> Unit,
-    navigateToAddEdit: () -> Unit,
-    isEnabled: (Int) -> Boolean,
     modifier: Modifier = Modifier
 ) {
     val uiState = viewModel.itemsListUiState.collectAsState()
@@ -84,6 +81,7 @@ fun SelectScreen(
                     )
                 })
 
+
                 ContentTab(label = stringResource(id = R.string.batch_select), content = {
                     Column(
                         verticalArrangement = Arrangement.Center,
@@ -115,36 +113,46 @@ fun SelectScreen(
 
             }
         }
-        Spacer(modifier = Modifier.weight(1f))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.secondaryContainer,
-                            MaterialTheme.colorScheme.onPrimary
-                        ),
-                    ),
-                    shape = Shapes.extraLarge
-                ),
-        ) {
-            Row(Modifier.padding(dimensionResource(id = R.dimen.padding_large))) {
-                Button(onClick = { navigateToAddEdit() }) {
-                    Text(text = stringResource(id = R.string.add_edit_item))
-                }
-                Spacer(modifier = Modifier.weight(1f))
-                DoneButton(
-                    navigate = { navigate() },
-                    isEnabled = isEnabled,
-                    size = uiState.value.selectedItemsList.size
-                )
-            }
-        }
-
 
     }
 }
+
+@Composable
+fun SelectBottomAppBar(
+    viewModel: ItemsListViewModel,
+    navigate: () -> Unit,
+    navigateToAddEdit: () -> Unit,
+    isEnabled: (Int) -> Boolean,
+    modifier: Modifier = Modifier
+) {
+    val uiState = viewModel.itemsListUiState.collectAsState()
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.secondaryContainer,
+                        MaterialTheme.colorScheme.onPrimary
+                    ),
+                ),
+                shape = Shapes.extraLarge
+            ),
+    ) {
+        Row(Modifier.padding(dimensionResource(id = R.dimen.padding_large))) {
+            Button(onClick = { navigateToAddEdit() }) {
+                Text(text = stringResource(id = R.string.add_edit_item))
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            DoneButton(
+                navigate = { navigate() },
+                isEnabled = isEnabled,
+                size = uiState.value.selectedItemsList.size
+            )
+        }
+    }
+}
+
 
 @Composable
 fun DoneButton(navigate: () -> Unit, isEnabled: (Int) -> Boolean, size: Int) {

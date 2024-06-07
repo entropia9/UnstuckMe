@@ -33,13 +33,18 @@ fun RegularSelectScreen(
                 canNavigateBack = true,
                 navigateUp = navigateUp
             )
+        },
+        bottomBar = {
+            SelectBottomAppBar(
+                viewModel = viewModel,
+                navigate = { navigate() },
+                navigateToAddEdit = { navigateToAddEdit() },
+                isEnabled = { size -> size >= 2 }
+            )
         }
     ) { innerPadding ->
         SelectScreen(
             viewModel = viewModel,
-            navigate = { navigate() },
-            navigateToAddEdit = { navigateToAddEdit() },
-            isEnabled = { size -> size >= 2 },
             modifier = Modifier.padding(innerPadding)
         )
     }
