@@ -1,5 +1,6 @@
 package com.entropia.helpmepick.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,16 +9,18 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,6 +33,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -37,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.data.Item
+import com.entropia.helpmepick.ui.theme.Shapes
 
 
 @Composable
@@ -51,7 +58,9 @@ fun SelectScreen(
     val categoriesUiState = viewModel.categoriesItemUiState.collectAsState()
 
     Column(
-        modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
+        modifier = modifier
+            .padding(dimensionResource(id = R.dimen.padding_medium))
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -59,70 +68,80 @@ fun SelectScreen(
             categories = categoriesUiState.value.categories,
             currentCategory = categoriesUiState.value.currentCategory,
             onAllClick = { viewModel.showAllItems() },
-            onCategoryClick = viewModel::showCurrentCategory
+            onCategoryClick = viewModel::showCurrentCategory,
+            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_large))
         )
+        Column(Modifier.verticalScroll(rememberScrollState())) {
+            if (uiState.value.itemsList.isNotEmpty()) {
 
-        if (uiState.value.itemsList.isNotEmpty()) {
-            Text(
-                text = stringResource(id = R.string.select),
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
-            )
-            ItemsGrid(
-                itemList = categoriesUiState.value.currentItems,
-                viewModel = viewModel,
-                modifier = Modifier.padding(
-                    dimensionResource(id = R.dimen.padding_medium)
-                )
-            )
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimensionResource(id = R.dimen.padding_medium)),
-            ) {
-                Column(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(dimensionResource(id = R.dimen.padding_medium)),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Row {
-                        Button(
-                            onClick = { viewModel.selectAll() },
-                            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
-                        ) {
-                            Text(text = (stringResource(id = R.string.select_all)))
-                        }
-                        Button(
-                            onClick = { viewModel.clearAll() },
-                            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
-                        ) {
-                            Text(text = (stringResource(id = R.string.clear_all)))
-                        }
-                    }
-                    if (uiState.value.itemsList.size > 2) {
-                        SelectRandom(
-                            viewModel::selectRandom, uiState.value.itemsList.size - 1
+                ContentTab(label = stringResource(id = R.string.select), content = {
+                    ItemsGrid(
+                        itemList = categoriesUiState.value.currentItems,
+                        viewModel = viewModel,
+                        modifier = Modifier.padding(
+                            dimensionResource(id = R.dimen.padding_medium)
                         )
+                    )
+                })
+
+                ContentTab(label = stringResource(id = R.string.batch_select), content = {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row() {
+                            Button(
+                                onClick = { viewModel.selectAll() },
+                                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+                            ) {
+                                Text(text = (stringResource(id = R.string.select_all)))
+                            }
+                            Button(
+                                onClick = { viewModel.clearAll() },
+                                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+                            ) {
+                                Text(text = (stringResource(id = R.string.clear_all)))
+                            }
+                        }
+                        if (uiState.value.itemsList.size > 2) {
+                            SelectRandom(
+                                viewModel::selectRandom, uiState.value.itemsList.size - 1,
+                                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+                            )
+                        }
                     }
+                })
 
-                }
             }
         }
-
         Spacer(modifier = Modifier.weight(1f))
-        Row() {
-            Button(onClick = { navigateToAddEdit() }) {
-                Text(text = stringResource(id = R.string.add_edit_item))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.secondaryContainer,
+                            MaterialTheme.colorScheme.onPrimary
+                        ),
+                    ),
+                    shape = Shapes.extraLarge
+                ),
+        ) {
+            Row(Modifier.padding(dimensionResource(id = R.dimen.padding_large))) {
+                Button(onClick = { navigateToAddEdit() }) {
+                    Text(text = stringResource(id = R.string.add_edit_item))
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                DoneButton(
+                    navigate = { navigate() },
+                    isEnabled = isEnabled,
+                    size = uiState.value.selectedItemsList.size
+                )
             }
-            Spacer(modifier = Modifier.weight(1f))
-            DoneButton(
-                navigate = { navigate() },
-                isEnabled = isEnabled,
-                size = uiState.value.selectedItemsList.size
-            )
         }
+
 
     }
 }
@@ -134,6 +153,51 @@ fun DoneButton(navigate: () -> Unit, isEnabled: (Int) -> Boolean, size: Int) {
         enabled = isEnabled(size)
     ) {
         Text(text = stringResource(id = R.string.done_button))
+    }
+}
+
+
+@Composable
+fun ContentTab(
+    label: String,
+    content: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    labelBackgroundColor: Color = MaterialTheme.colorScheme.secondaryContainer,
+    brush: Brush = Brush.verticalGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.onPrimary,
+            MaterialTheme.colorScheme.secondaryContainer
+        ),
+    )
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(dimensionResource(id = R.dimen.padding_medium))
+            .background(
+                brush = brush,
+                shape = Shapes.small
+            ),
+    ) {
+        Column {
+            if (label != "") {
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(shape = RoundedCornerShape(topEnd = 30.dp, topStart = 15.dp))
+                        .background(color = labelBackgroundColor)
+
+                ) {
+                    Text(
+                        text = label,
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+                    )
+                }
+            }
+
+            content()
+        }
     }
 }
 
@@ -163,7 +227,13 @@ private fun SelectRandom(
                     if (number > lowerLimit) number--
                 })
         }
-        Text(text = stringResource(id = R.string.select_random2))
+        Text(
+            text = stringResource(id = R.string.select_random2), modifier = Modifier.padding(
+                end = dimensionResource(
+                    id = R.dimen.padding_medium
+                )
+            )
+        )
 
         Button(onClick = { selectFunction(number) }) {
             Text(text = stringResource(id = R.string.select_btn))
@@ -249,4 +319,3 @@ fun ItemButton(
     }
 
 }
-

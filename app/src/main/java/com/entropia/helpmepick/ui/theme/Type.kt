@@ -14,11 +14,6 @@ val Dosis = FontFamily(
 )
 
 
-
-val BarlowSemiCondensed = FontFamily(
-    Font(R.font.barlow_semicondensed_medium, FontWeight.Medium)
-)
-
 val AmaticSC = FontFamily(
     Font(R.font.amaticsc_regular, FontWeight.Normal),
     Font(R.font.amaticsc_bold, FontWeight.Bold)
@@ -54,6 +49,13 @@ val Typography = Typography(
         fontSize = 11.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp
-    )
+    ),
+    titleMedium = TextStyle(
+        fontFamily = Dosis,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 20.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.5.sp
+    ),
 
 )

@@ -18,6 +18,7 @@
     <string name="clear_all">Clear All</string>
     <string name="select_btn">Select</string>
     <string name="stats">Stats</string>
+    <string name="batch_select">Batch Select</string>
     <string name="select_random">Or select </string>
     <string name="select_random2"> random?</string>
     <string name="done_button">Done</string>

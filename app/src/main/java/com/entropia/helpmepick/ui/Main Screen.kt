@@ -99,7 +99,6 @@ fun MainScreen(
                     )){
                 Column(
                     Modifier
-                        //  .fillMaxSize()
                         .padding(it)
                         .padding(dimensionResource(id = R.dimen.padding_large)),
                     horizontalAlignment = Alignment.CenterHorizontally,
