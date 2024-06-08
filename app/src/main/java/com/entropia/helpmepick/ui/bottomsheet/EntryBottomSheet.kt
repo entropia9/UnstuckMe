@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
@@ -47,6 +48,7 @@ fun EntryBottomSheet(
 ) {
     BottomSheetScaffold(
         modifier = modifier,
+        sheetShape= RoundedCornerShape(topStartPercent=20, topEndPercent = 20),
         scaffoldState = sheetScaffoldState,
         sheetContent = {
             Column {

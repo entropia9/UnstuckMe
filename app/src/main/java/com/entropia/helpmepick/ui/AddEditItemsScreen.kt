@@ -1,8 +1,10 @@
 package com.entropia.helpmepick.ui
 
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -22,8 +25,8 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -45,10 +48,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
@@ -57,6 +60,7 @@ import com.entropia.helpmepick.ui.bottomsheet.EntryBottomSheet
 import com.entropia.helpmepick.ui.custom.FadingSide
 import com.entropia.helpmepick.ui.custom.fadingEdge
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
+import com.entropia.helpmepick.ui.theme.Shapes
 import kotlinx.coroutines.launch
 import kotlin.reflect.KFunction2
 
@@ -72,6 +76,7 @@ object AddEditItemsScreenDestination : NavigationDestination {
 @Composable
 fun AddEditItemsScreen(viewModel: ItemsListViewModel, navigateUp: () -> Unit) {
     val uiState = viewModel.categoriesItemUiState.collectAsState()
+    val editUiState = viewModel.addEditUiState.collectAsState()
 
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberStandardBottomSheetState(
@@ -103,9 +108,13 @@ fun AddEditItemsScreen(viewModel: ItemsListViewModel, navigateUp: () -> Unit) {
                 navigateUp = navigateUp
             )
         }, floatingActionButton = {
-            AddItemFAB(onClick = { scope.launch { bottomSheetScaffoldState.bottomSheetState.expand() } })
-        }) { paddingValues ->
-            Column(modifier = Modifier.padding(paddingValues)) {
+            if (!editUiState.value.isEdited) {
+                AddItemFAB(onClick = { scope.launch { bottomSheetScaffoldState.bottomSheetState.expand() } })
+            }
+        },
+            floatingActionButtonPosition = FabPosition.Center
+        ) { paddingValues ->
+            Column(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
                 CategoriesRow(
                     categories = uiState.value.categories,
                     currentCategory = uiState.value.currentCategory,
@@ -186,7 +195,11 @@ fun ItemsList(
     deleteItem: (Item) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier = modifier.fillMaxSize()) {
+    LazyColumn(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(dimensionResource(id = R.dimen.padding_medium))
+    ) {
         items(uiState.value.currentItems) { item ->
             ItemCard(
                 viewModel = viewModel,
@@ -228,13 +241,33 @@ fun ItemCard(
         )
     }
 
-    Card(modifier = modifier.padding(dimensionResource(id = R.dimen.padding_small))) {
+    Box(
+        modifier = modifier
+            .padding(dimensionResource(id = R.dimen.padding_small))
+            .background(
+                Brush.linearGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.onPrimary,
+                        MaterialTheme.colorScheme.secondaryContainer
+                    )
+                ), shape = Shapes.medium
+            )
+    ) {
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
         ) {
-            Column(modifier = Modifier.weight(0.7f)) {
+            Column(
+                modifier = Modifier
+                    .weight(0.7f)
+                    .padding(
+                        start = dimensionResource(id = R.dimen.padding_medium),
+                        bottom = dimensionResource(
+                            id = R.dimen.padding_small
+                        )
+                    )
+            ) {
                 TextRow(
                     inputLabel = stringResource(R.string.name),
                     fieldValue = if (!isEditable) item.name else viewModel.editedItem.first,
@@ -262,6 +295,7 @@ fun ItemCard(
                             modifier = Modifier
                                 .padding(dimensionResource(id = R.dimen.padding_medium))
                                 .clickable {
+                                    viewModel.updateIsBeingEdited(false)
                                     isEditable = false
                                     updateItem(
                                         item.copy(
@@ -276,6 +310,7 @@ fun ItemCard(
                             modifier = Modifier
                                 .padding(dimensionResource(id = R.dimen.padding_medium))
                                 .clickable {
+                                    viewModel.updateIsBeingEdited(false)
                                     isEditable = false
                                 }
                         )
@@ -286,6 +321,7 @@ fun ItemCard(
                         modifier = Modifier
                             .padding(dimensionResource(id = R.dimen.padding_medium))
                             .clickable {
+                                viewModel.updateIsBeingEdited(true)
                                 isEditable = true
                                 onEditItem(item.name, item.category)
                             }
@@ -312,7 +348,8 @@ fun DeleteDialog(
     onConfirmation: () -> Unit,
     item: Item,
 ) {
-    AlertDialog(onDismissRequest = { onDismissRequest() },
+    AlertDialog(
+        onDismissRequest = { onDismissRequest() },
         text = { Text(stringResource(id = R.string.delete_confirmation, item.name)) },
         confirmButton = {
             TextButton(onClick = { onConfirmation() }) {
@@ -323,7 +360,9 @@ fun DeleteDialog(
             TextButton(onClick = { onDismissRequest() }) {
                 Text(text = stringResource(id = R.string.no_answer_button))
             }
-        })
+        },
+        shape = RoundedCornerShape(20)
+    )
 }
 
 @Composable
@@ -337,6 +376,7 @@ fun TextRow(
     OutlinedTextField(
         modifier = modifier,
         value = fieldValue,
+        enabled = isEditable,
         readOnly = !isEditable,
         onValueChange = onValueChange,
         label = { Text(inputLabel) },
@@ -363,9 +403,4 @@ fun AddItemFAB(
     }
 }
 
-@Preview
-@Composable
-fun ItemCardPreview() {
-    MaterialTheme {
-    }
-}
+

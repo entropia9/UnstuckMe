@@ -9,6 +9,7 @@ import androidx.compose.ui.res.stringResource
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
 import com.entropia.helpmepick.ui.ItemsListViewModel
+import com.entropia.helpmepick.ui.SelectBottomAppBar
 import com.entropia.helpmepick.ui.SelectScreen
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
 
@@ -33,12 +34,17 @@ fun BattleModeSelectScreen(
             title = stringResource(id = R.string.select_btn), canNavigateBack = true,
             navigateUp = navigateUp
         )
-    }) { innerPadding ->
+    },
+        bottomBar = {
+            SelectBottomAppBar(
+                viewModel = viewModel,
+                navigate = { navigate() },
+                navigateToAddEdit = { navigateToAddEdit() },
+                isEnabled = { size -> size >= 4 && size % 4 == 0 }
+            )
+        }) { innerPadding ->
         SelectScreen(
             viewModel = viewModel,
-            navigate = { navigate() },
-            navigateToAddEdit = { navigateToAddEdit() },
-            isEnabled = { size -> size >= 4 && size % 4 == 0 },
             modifier = Modifier.padding(innerPadding)
         )
     }

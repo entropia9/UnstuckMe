@@ -33,10 +33,10 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
         )
     val itemsListUiState: StateFlow<ItemsListUiState> = _itemsListUiState
     val categoriesItemUiState: StateFlow<CategoryUiState> = MutableStateFlow(CategoryUiState())
-
+    val addEditUiState: StateFlow<AddEditUiState> = MutableStateFlow(AddEditUiState())
     private val defaultDispatcher = Dispatchers.Default
 
-    var editedItem:Pair<String, String> by mutableStateOf(Pair("",""))
+    var editedItem: Pair<String, String> by mutableStateOf(Pair("", ""))
         private set
 
     init {
@@ -49,12 +49,13 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
 
     }
 
-    fun addItem(item: Item, dispatcher: CoroutineDispatcher=defaultDispatcher) = viewModelScope.launch(dispatcher) {
-        if (validateInput(item.name)) {
-            itemsRepository.insertItem(item)
-            updateCategories(item, categoriesItemUiState)
+    fun addItem(item: Item, dispatcher: CoroutineDispatcher = defaultDispatcher) =
+        viewModelScope.launch(dispatcher) {
+            if (validateInput(item.name)) {
+                itemsRepository.insertItem(item)
+                updateCategories(item, categoriesItemUiState)
+            }
         }
-    }
 
     private suspend fun updateCategories(
         item: Item,
@@ -72,10 +73,11 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
         )
     }
 
-    fun updateItem(item: Item, dispatcher: CoroutineDispatcher=defaultDispatcher) = viewModelScope.launch(dispatcher) {
-        itemsRepository.updateItem(item)
-        updateCategories(item, categoriesItemUiState)
-    }
+    fun updateItem(item: Item, dispatcher: CoroutineDispatcher = defaultDispatcher) =
+        viewModelScope.launch(dispatcher) {
+            itemsRepository.updateItem(item)
+            updateCategories(item, categoriesItemUiState)
+        }
 
     fun deleteItem(item: Item) = viewModelScope.launch {
         itemsRepository.deleteItem(item)
@@ -143,12 +145,17 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
     }
 
 
-
-    fun updateEditedItem(name: String, category: String){
-        editedItem=Pair(name, category)
+    fun updateEditedItem(name: String, category: String) {
+        editedItem = Pair(name, category)
 
     }
 
+    fun updateIsBeingEdited(isEdited: Boolean) {
+        (addEditUiState as MutableStateFlow).value =
+            addEditUiState.value.copy(
+                isEdited = isEdited
+            )
+    }
 
     private fun isSelected(item: Item) =
         _itemsListUiState.value.selectedItemsList.contains(item)
@@ -173,4 +180,8 @@ data class CategoryUiState(
     val categories: List<String> = listOf(),
     val currentCategory: String = "",
     var currentItems: List<Item> = listOf()
+)
+
+data class AddEditUiState(
+    val isEdited: Boolean = false
 )
