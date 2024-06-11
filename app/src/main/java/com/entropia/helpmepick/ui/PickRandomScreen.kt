@@ -1,8 +1,12 @@
 package com.entropia.helpmepick.ui
 
-
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,7 +38,11 @@ import androidx.compose.ui.unit.dp
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
 import com.entropia.helpmepick.ui.custom.DialogueText
+import com.entropia.helpmepick.ui.custom.ShakeConfig
+import com.entropia.helpmepick.ui.custom.rememberShakeController
+import com.entropia.helpmepick.ui.custom.shake
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
+import kotlinx.coroutines.delay
 
 
 object RegularDestination : NavigationDestination {
@@ -102,32 +111,93 @@ fun PickRandomScreen(
 
 
 @Composable
-fun RandomScreen(name: String, modifier: Modifier = Modifier) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(250.dp)
-    ) {
-        Box {
-            Column(
-                Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(text = name)
-            }
-            Box(
-                Modifier
-                    .background(MaterialTheme.colorScheme.primary)
-                    .fillMaxSize()
-            ) {
+fun RandomScreen(
+    name: String, modifier: Modifier = Modifier, dialogueText: String,
+    onYesButtonPressed: () -> Unit,
+    onNoButtonPressed: () -> Unit
+) {
+    val shakeController = rememberShakeController()
+    var trigger by remember { mutableStateOf(0L) }
+    var visible by remember { mutableStateOf(false) }
+    val iterations = 10
+    LaunchedEffect(visible) {
+        if (visible) {
+            delay(200)
+            shakeController.shake(
+                ShakeConfig(
+                    iterations = iterations,
+                    intensity = 1_000f,
+                    rotateY = (-15..15).random().toFloat(),
+                    rotateX = (-15..15).random().toFloat(),
+                    translateX = (-40..40).random().toFloat(),
+                    translateY = (-40..40).random().toFloat()
+                )
+            )
+            delay((iterations * 400).toLong())
+            visible = false
+            delay(200)
+        }
+    }
+
+    Column {
+        Card(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(250.dp)
+                .shake(shakeController)
+                .padding(30.dp)
+        ) {
+            Box {
+                Column(
+                    Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    AnimatedVisibility(
+                        visible = true,
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
+                        Text(text = name)
+                    }
+
+                }
+
+
+                this@Column.AnimatedVisibility(
+                    visible = visible,
+                    enter = slideInVertically(),
+                    exit = slideOutVertically()
+                ) {
+                    Box(
+                        Modifier
+                            .background(MaterialTheme.colorScheme.primary)
+                            .fillMaxSize()
+                    ) {
+
+                    }
+                }
 
             }
-
 
         }
+        DialogueBar(
+            onYesButtonPressed = {
+                visible = true
 
+                onYesButtonPressed()
+
+            },
+            onNoButtonPressed = {
+                visible = false
+                onNoButtonPressed()
+                trigger = System.currentTimeMillis()
+            },
+            text = dialogueText,
+            buttonsVisible = !visible
+        )
     }
+
 
 }
 
@@ -145,6 +215,7 @@ fun DialogueBar(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        if (buttonsVisible) {
         DialogueText(
             text = text,
             spec = tween(
@@ -153,7 +224,6 @@ fun DialogueBar(
             ),
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
         )
-        if (buttonsVisible) {
             Row {
                 Button(onClick = { onYesButtonPressed() }) {
                     Text(text = stringResource(id = R.string.yes_answer_button))
@@ -170,13 +240,17 @@ fun DialogueBar(
 @Preview
 @Composable
 fun Preview() {
+
     Column {
         var text = stringResource(id = R.string.question_dialogue1)
         val text2 = stringResource(id = R.string.question_dialogue2)
-        RandomScreen("Catfood Calculator")
-        DialogueBar(text = text,
+        RandomScreen("Catfood Calculator", dialogueText = text,
             onYesButtonPressed = { text = text2 },
             onNoButtonPressed = {})
+//            DialogueBar(text = text,
+//                onYesButtonPressed = { text = text2 },
+//                onNoButtonPressed = {})
     }
+
 
 }
