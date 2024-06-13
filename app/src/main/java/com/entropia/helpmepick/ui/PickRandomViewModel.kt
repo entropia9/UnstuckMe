@@ -45,20 +45,26 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
 
     private fun updatePicked() {
         if (pickItemUiState.currentPick != null) {
-            val timesPicked = pickItemUiState.currentPick!!.timesPicked + 1
+            val newItem =
+                pickItemUiState.currentPick!!.copy(timesPicked = pickItemUiState.currentPick!!.timesPicked + 1)
+            pickItemUiState = pickItemUiState.copy(pickedItem = newItem)
             viewModelScope.launch {
-                itemsRepository.updateItem(pickItemUiState.currentPick!!.copy(timesPicked = timesPicked))
+                itemsRepository.updateItem(newItem)
             }
         }
     }
 
     fun updateSelected(items: List<Item>) {
+        val newList: MutableList<Item> = mutableListOf()
         items.forEach { item ->
-            val timesSelected = item.timesSelected + 1
+            val newItem = item.copy(timesSelected = item.timesSelected + 1)
             viewModelScope.launch {
-                itemsRepository.updateItem(item.copy(timesSelected = timesSelected))
+                itemsRepository.updateItem(newItem)
             }
+            newList.add(newItem)
         }
+        mutableSelectedList = newList
+        pickItemUiState = pickItemUiState.copy(selectedList = newList)
     }
 
     fun pickRandomFromSelected(items: List<Item>) {
@@ -94,6 +100,7 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
                 navigateUp()
                 navigateUp()
             }
+
             else -> {
                 updateRejected()
                 pickRandomFromSelected(pickItemUiState.selectedList)
@@ -117,6 +124,7 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
 
 data class PickItemUiState(
     val currentPick: Item? = null,
+    val pickedItem: Item? = null,
     val selectedList: List<Item>,
     val currentDialogue: Int = R.string.question_dialogue1
 )

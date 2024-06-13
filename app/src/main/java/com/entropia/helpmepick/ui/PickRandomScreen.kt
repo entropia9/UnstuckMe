@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -34,9 +33,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.alexmercerind.movingletters.FinalText
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
 import com.entropia.helpmepick.ui.custom.DialogueText
@@ -76,11 +76,13 @@ fun PickRandomScreen(
             mutableStateOf(true)
         }
         val itemName = viewModel.pickItemUiState.currentPick?.name ?: " "
-
+        val lastDialogueReached =
+            viewModel.pickItemUiState.currentDialogue == pickedDialogue || viewModel.pickItemUiState.currentDialogue == outOfOptionsAgree
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .padding(dimensionResource(id = R.dimen.padding_large)),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -93,6 +95,7 @@ fun PickRandomScreen(
                     Text(text = stringResource(id = R.string.help_me_pick_btn))
                 }
             } else {
+
                 RandomScreen(
                     name = itemName,
                     dialogueText = stringResource(
@@ -101,13 +104,63 @@ fun PickRandomScreen(
                     ),
                     onYesButtonPressed = { viewModel.updatePickedStatsAndShowDialogue(navigateUp) },
                     onNoButtonPressed = { viewModel.updateRejectedStatsAndShowDialogue(navigateUp) },
-                    lastDialogueReached = viewModel.pickItemUiState.currentDialogue == pickedDialogue || viewModel.pickItemUiState.currentDialogue == outOfOptionsAgree,
+                    lastDialogueReached = lastDialogueReached,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(dimensionResource(id = R.dimen.padding_large))
+                        .fillMaxSize(),
+                    listSize = viewModel.pickItemUiState.selectedList.size
                 )
             }
+            AnimatedVisibility(visible = lastDialogueReached, enter = slideInVertically()) {
+                Column {
+                    FinalText(
+                        text = stringResource(
+                            id = viewModel.pickItemUiState.currentDialogue,
+                            itemName
+                        ),
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier.padding(
+                            dimensionResource(id = R.dimen.padding_large)
+                        )
+                    )
+                    Box(
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .background(
+                                brush = Brush.verticalGradient(
+                                    colors = listOf(
+                                        MaterialTheme.colorScheme.secondaryContainer,
+                                        MaterialTheme.colorScheme.onPrimary
+                                    ),
+                                ),
+                                shape = Shapes.large
+                            )
+                            .padding(dimensionResource(id = R.dimen.padding_large))
+                    ) {
 
+                        Column {
+                            viewModel.pickItemUiState.pickedItem?.let { item ->
+                                pluralStringResource(
+                                    id = R.plurals.picked_stats1,
+                                    count = item.timesSelected, item.timesSelected
+                                ).let { DialogueText(text = it) }
+                                when (item.timesRejected) {
+                                    0 -> stringResource(id = R.string.zero)
+                                    else -> pluralStringResource(
+                                        id = R.plurals.picked_stats2,
+                                        count = item.timesRejected,
+                                        item.timesRejected
+                                    )
+                                }.let { DialogueText(text = it) }
+                                pluralStringResource(
+                                    id = R.plurals.picked_stats3,
+                                    count = item.timesPicked,
+                                    item.timesPicked
+                                ).let { DialogueText(text = it) }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -119,7 +172,8 @@ fun RandomScreen(
     dialogueText: String,
     onYesButtonPressed: () -> Unit,
     onNoButtonPressed: () -> Unit,
-    lastDialogueReached: Boolean
+    lastDialogueReached: Boolean,
+    listSize: Int
 ) {
     val shakeController = rememberShakeController()
     var visible by remember { mutableStateOf(false) }
@@ -151,38 +205,39 @@ fun RandomScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(250.dp)
-                    .shake(shakeController)
-                    .padding(30.dp)
-            ) {
-                Box {
-                    Column(
-                        Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(text = name)
-                    }
-                    this@Column.AnimatedVisibility(
-                        visible = visible,
-                        enter = slideInVertically(),
-                        exit = slideOutVertically()
-                    ) {
-                        Box(
-                            Modifier
-                                .background(MaterialTheme.colorScheme.primary)
-                                .fillMaxSize()
+            if (listSize != 0) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(250.dp)
+                        .shake(shakeController)
+                        .padding(30.dp)
+                ) {
+                    Box {
+                        Column(
+                            Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
                         ) {
-
+                            Text(text = name)
                         }
+                        this@Column.AnimatedVisibility(
+                            visible = visible,
+                            enter = slideInVertically(),
+                            exit = slideOutVertically()
+                        ) {
+                            Box(
+                                Modifier
+                                    .background(MaterialTheme.colorScheme.primary)
+                                    .fillMaxSize()
+                            ) {
+
+                            }
+                        }
+
                     }
 
                 }
-
             }
             DialogueBar(
                 onYesButtonPressed = {
@@ -190,7 +245,9 @@ fun RandomScreen(
 
                 },
                 onNoButtonPressed = {
-                    visible = true
+                    if (listSize > 1) {
+                        visible = true
+                    }
                     onNoButtonPressed()
                 },
                 text = dialogueText,
@@ -198,9 +255,7 @@ fun RandomScreen(
             )
         }
     }
-    AnimatedVisibility(visible = lastDialogueReached, enter = fadeIn()) {
-        DialogueText(text = dialogueText)
-    }
+
 }
 
 
@@ -253,25 +308,4 @@ fun DialogueBar(
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun Preview() {
-
-    Column {
-        var text = stringResource(id = R.string.question_dialogue1)
-        val text2 = stringResource(id = R.string.question_dialogue2)
-        RandomScreen(
-            "Catfood Calculator", dialogueText = text,
-            onYesButtonPressed = { text = text2 },
-            onNoButtonPressed = {},
-            lastDialogueReached = true
-        )
-//            DialogueBar(text = text,
-//                onYesButtonPressed = { text = text2 },
-//                onNoButtonPressed = {})
-    }
-
-
 }
