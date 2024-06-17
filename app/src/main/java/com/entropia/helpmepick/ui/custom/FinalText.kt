@@ -1,4 +1,4 @@
-package com.alexmercerind.movingletters
+
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.EaseInOut
@@ -112,29 +112,39 @@ fun FinalText(
                 style = currentStyle,
             )
         }
-        for (i in text.indices) {
-            AnimatedVisibility(
-                visible = currentState.visibility[i].value,
-                enter = scaleIn(
-                    transformOrigin = currentState.transformOrigin[i],
-                    animationSpec = animationSpec,
-                    initialScale = 2.0F
-                ) + fadeIn(animationSpec = animationSpec),
-                exit = fadeOut(animationSpec = tween(0))
-            ) {
-                Text(
-                    text = buildAnnotatedString {
-                        addStyle(currentStyle.toSpanStyle().copy(color = Color.Transparent), 0, i)
-                        addStyle(
-                            currentStyle.toSpanStyle().copy(color = Color.Transparent),
-                            i + 1,
-                            text.length
-                        )
-                        append(text)
-                    },
-                    style = currentStyle,
-                )
-            }
+        animateVisibility(text, currentState, animationSpec, currentStyle)
+    }
+}
+
+@Composable
+private fun animateVisibility(
+    text: String,
+    currentState: AnimatedTextState,
+    animationSpec: FiniteAnimationSpec<Float>,
+    currentStyle: TextStyle
+) {
+    for (i in text.indices) {
+        AnimatedVisibility(
+            visible = currentState.visibility[i].value,
+            enter = scaleIn(
+                transformOrigin = currentState.transformOrigin[i],
+                animationSpec = animationSpec,
+                initialScale = 2.0F
+            ) + fadeIn(animationSpec = animationSpec),
+            exit = fadeOut(animationSpec = tween(0))
+        ) {
+            Text(
+                text = buildAnnotatedString {
+                    addStyle(currentStyle.toSpanStyle().copy(color = Color.Transparent), 0, i)
+                    addStyle(
+                        currentStyle.toSpanStyle().copy(color = Color.Transparent),
+                        i + 1,
+                        text.length
+                    )
+                    append(text)
+                },
+                style = currentStyle,
+            )
         }
     }
 }
@@ -142,8 +152,7 @@ fun FinalText(
 @OptIn(DelicateCoroutinesApi::class)
 class AnimatedTextState() {
     /** Whether animation is currently paused. */
-    val paused: StateFlow<Boolean> get() = _paused
-
+    private val paused: StateFlow<Boolean> get() = _paused
 
     /** Whether this instance is attached to an animated text. */
     internal var attached = false

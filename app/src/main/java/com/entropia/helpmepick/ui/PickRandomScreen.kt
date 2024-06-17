@@ -1,5 +1,6 @@
 package com.entropia.helpmepick.ui
 
+import FinalText
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
@@ -36,7 +37,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.alexmercerind.movingletters.FinalText
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
 import com.entropia.helpmepick.ui.custom.DialogueText
@@ -138,24 +138,30 @@ fun PickRandomScreen(
                     ) {
 
                         Column {
+                            val stringBuilder = StringBuilder()
                             viewModel.pickItemUiState.pickedItem?.let { item ->
-                                pluralStringResource(
-                                    id = R.plurals.picked_stats1,
-                                    count = item.timesSelected, item.timesSelected
-                                ).let { DialogueText(text = it) }
-                                when (item.timesRejected) {
-                                    0 -> stringResource(id = R.string.zero)
-                                    else -> pluralStringResource(
-                                        id = R.plurals.picked_stats2,
-                                        count = item.timesRejected,
-                                        item.timesRejected
+                                stringBuilder.append(
+                                    pluralStringResource(
+                                        id = R.plurals.picked_stats1,
+                                        count = item.timesSelected, item.timesSelected
                                     )
-                                }.let { DialogueText(text = it) }
-                                pluralStringResource(
-                                    id = R.plurals.picked_stats3,
-                                    count = item.timesPicked,
-                                    item.timesPicked
-                                ).let { DialogueText(text = it) }
+                                ).appendLine().appendLine().append(
+                                    when (item.timesRejected) {
+                                        0 -> stringResource(id = R.string.zero)
+                                        else -> pluralStringResource(
+                                            id = R.plurals.picked_stats2,
+                                            count = item.timesRejected,
+                                            item.timesRejected
+                                        )
+                                    }
+                                ).appendLine().appendLine().append(
+                                    pluralStringResource(
+                                        id = R.plurals.picked_stats3,
+                                        count = item.timesPicked,
+                                        item.timesPicked
+                                    )
+                                ).toString()
+                                    .let { DialogueText(text = it) }
                             }
                         }
                     }
