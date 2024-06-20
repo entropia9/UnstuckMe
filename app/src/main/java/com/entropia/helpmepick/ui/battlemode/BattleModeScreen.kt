@@ -1,21 +1,28 @@
 package com.entropia.helpmepick.ui.battlemode
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
+import com.entropia.helpmepick.ui.theme.Shapes
 
 object BattleModeDestination : NavigationDestination {
     override val route: String
@@ -45,29 +52,76 @@ fun BattleModeScreen(
             verticalArrangement = Arrangement.Center
         ) {
             if (viewModel.battleModeUiState.winner == null) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                Column(
+                    verticalArrangement = Arrangement.Center,
                 ) {
-                    Button(onClick = {
-                        viewModel.battleModeUiState.item1?.let {
-                            viewModel.onItemPick(
-                                it
-                            )
+                    Row(){
+                        Box(
+                            modifier = modifier
+                                .background(
+                                    brush = Brush.horizontalGradient(
+                                        colors = listOf(
+                                            MaterialTheme.colorScheme.onPrimary,
+                                            MaterialTheme.colorScheme.secondaryContainer
+                                        ),
+                                    ),
+                                    shape = Shapes.extraLarge
+                                )
+                                .padding(dimensionResource(id = R.dimen.padding_large))
+                        ) {
+                            Button(onClick = {
+                                viewModel.battleModeUiState.item1?.let {
+                                    viewModel.onItemPick(
+                                        it
+                                    )
+                                }
+                            }) {
+                                viewModel.battleModeUiState.item1?.let {
+                                    Text(
+                                        text = it.name,
+                                        style = MaterialTheme.typography.titleLarge
+                                    )
+                                }
+                            }
                         }
-                    }) {
-                        viewModel.battleModeUiState.item1?.let { Text(text = it.name) }
+                        Spacer(modifier = Modifier.weight(1f))
                     }
-                    Button(onClick = {
-                        viewModel.battleModeUiState.item2?.let {
-                            viewModel.onItemPick(
-                                it
-                            )
+
+                    Row {
+                        Spacer(modifier = Modifier.weight(1f))
+                        Box(
+                            modifier = modifier
+                                .background(
+                                    brush = Brush.horizontalGradient(
+                                        colors = listOf(
+                                            MaterialTheme.colorScheme.secondaryContainer,
+                                            MaterialTheme.colorScheme.onPrimary
+                                        ),
+                                    ),
+                                    shape = Shapes.extraLarge
+                                )
+                                .padding(dimensionResource(id = R.dimen.padding_large))
+                        )
+                        {
+                            Button(onClick = {
+                                viewModel.battleModeUiState.item2?.let {
+                                    viewModel.onItemPick(
+                                        it
+                                    )
+                                }
+                            }) {
+                                viewModel.battleModeUiState.item2?.let {
+                                    Text(
+                                        text = it.name,
+                                        style = MaterialTheme.typography.titleLarge
+                                    )
+                                }
+                            }
                         }
-                    }) {
-                        viewModel.battleModeUiState.item2?.let { Text(text = it.name) }
                     }
-                }
+                    }
+
+
             } else {
                 Text(
                     text = stringResource(
