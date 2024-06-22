@@ -60,13 +60,15 @@ class BattleModeViewModel(items: List<Item>, private val itemsRepository: ItemsR
         battleModeUiState.availableForSelection.remove(item2)
         battleModeUiState = battleModeUiState.copy(
             item1 = item1,
-            item2 = item2
+            item2 = item2,
+            round = battleModeUiState.round + 1
         )
     }
 
 }
 
 data class BattleModeUiState(
+    val round: Int = 0,
     val items: List<Item> = listOf(),
     var availableForSelection: MutableList<Item> = mutableListOf(),
     var nextRoundList: MutableList<Item> = mutableListOf(),

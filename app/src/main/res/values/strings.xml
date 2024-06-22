@@ -11,6 +11,7 @@
     <string name="items">Items</string>
     <string name="regular">Regular Mode</string>
     <string name="battle_mode">Battle Mode</string>
+    <string name="round">Round %1$s</string>
     <string name="regular_mode">Pick Random</string>
     <string name="name">Name</string>
     <string name="category">Category</string>
@@ -40,6 +41,10 @@
     <plurals name="picked_stats3">
         <item quantity="other">And you\'ve picked it %1$s times!</item>
         <item quantity="one">And you\'ve picked it only %1$s time!</item>
+    </plurals>
+    <plurals name="battle_wins">
+        <item quantity="other">And it won %1$s times!</item>
+        <item quantity="one">It was its first victory!</item>
     </plurals>
     <string name="out_of_options_dialogue">Seems like you don\'t want to do any of these. Maybe you should just chill then?</string>
     <string name="out_of_options_agree">That\'s okay, sometimes there are no good options.</string>

@@ -1,5 +1,6 @@
 package com.entropia.helpmepick.ui.battlemode
 
+import FinalText
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.slideInHorizontally
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,9 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
+import com.entropia.helpmepick.ui.custom.DialogueText
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
 import com.entropia.helpmepick.ui.theme.Shapes
 import kotlinx.coroutines.delay
@@ -65,6 +69,13 @@ fun BattleModeScreen(
                 Column(
                     verticalArrangement = Arrangement.Center,
                 ) {
+                    Text(
+                        text = stringResource(
+                            id = R.string.round,
+                            viewModel.battleModeUiState.round
+                        ),
+                        modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
+                    )
 
                     val rightButtonState = remember {
                         MutableTransitionState(false).apply {
@@ -168,12 +179,59 @@ fun BattleModeScreen(
                 }
 
             } else {
-                Text(
-                    text = stringResource(
-                        id = R.string.win_dialogue,
-                        viewModel.battleModeUiState.winner!!.name
+                Column( modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(dimensionResource(id = R.dimen.padding_large)),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center) {
+                    FinalText(
+                        text = stringResource(
+                            id = R.string.win_dialogue,
+                            viewModel.battleModeUiState.winner!!.name
+
+                        ),
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier.padding(
+                            dimensionResource(id = R.dimen.padding_large)
+                        )
                     )
-                )
+                    Box(
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .background(
+                                brush = Brush.verticalGradient(
+                                    colors = listOf(
+                                        MaterialTheme.colorScheme.secondaryContainer,
+                                        MaterialTheme.colorScheme.onPrimary
+                                    ),
+                                ),
+                                shape = Shapes.large
+                            )
+                            .padding(dimensionResource(id = R.dimen.padding_large))
+                    ) {
+
+                        Column {
+                            val stringBuilder = StringBuilder()
+                            viewModel.battleModeUiState.winner?.let { item ->
+                                stringBuilder.append(
+                                    pluralStringResource(
+                                        id = R.plurals.picked_stats1,
+                                        count = item.timesSelected, item.timesSelected
+                                    )
+                                ).appendLine().append(
+                                    pluralStringResource(
+                                        id = R.plurals.battle_wins,
+                                        count = item.battleWins,
+                                        item.battleWins
+                                    )
+                                ).toString()
+                                    .let { DialogueText(text = it) }
+                            }
+                        }
+                    }
+                }
+
             }
         }
     }
