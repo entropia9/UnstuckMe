@@ -76,5 +76,4 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
     implementation ("androidx.compose.foundation:foundation:1.6.7")
 
-    implementation ("co.yml:ycharts:2.1.0")
 }
