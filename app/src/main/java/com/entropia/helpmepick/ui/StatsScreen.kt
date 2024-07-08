@@ -1,9 +1,13 @@
 package com.entropia.helpmepick.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -101,13 +105,25 @@ fun MostByStats(itemList: List<Item>, statsType: StatsType, modifier: Modifier =
             )
 
         }
-
-        Column(
-            modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = label)
-            BarChart(inputList = inputList, modifier = Modifier.fillMaxWidth())
+        Card(modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))){
+            Column(
+                modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = label)
+                Box(modifier= Modifier
+                    .padding(dimensionResource(id = R.dimen.padding_medium))
+                    .background(
+                        MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(10)
+                    )){
+                    BarChart(inputList = inputList, modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            dimensionResource(id = R.dimen.padding_medium)
+                        ))
+                }
+            }
         }
 
     }
