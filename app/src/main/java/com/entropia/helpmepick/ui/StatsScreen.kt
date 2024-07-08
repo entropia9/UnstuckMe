@@ -1,21 +1,29 @@
 package com.entropia.helpmepick.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
@@ -23,6 +31,7 @@ import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.ui.barchart.BarChart
 import com.entropia.helpmepick.ui.barchart.BarData
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
+import java.lang.Integer.min
 
 
 enum class StatsType {
@@ -40,6 +49,7 @@ object StatsDestination : NavigationDestination {
 
 }
 
+val numberOfItemsVisibleInStats = 3
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,80 +61,129 @@ fun StatsScreen(modifier: Modifier = Modifier, navigateUp: () -> Unit, viewModel
             navigateUp = navigateUp
         )
     }) { innerPadding ->
+
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
             item {
-                MostByStats(
-                    itemList = viewModel.statsUiState.mostSelected,
-                    statsType = StatsType.Selected
-                )
+                if (viewModel.statsUiState.mostBattleWins.isNotEmpty()) {
+                    MostByStats(
+                        itemList = viewModel.statsUiState.mostBattleWins,
+                        statsType = StatsType.BattleWins
+                    )
+                }
             }
             item {
-                MostByStats(
-                    itemList = viewModel.statsUiState.mostPicked,
-                    statsType = StatsType.Picked
-                )
+                if (viewModel.statsUiState.mostSelected.isNotEmpty()) {
+                    MostByStats(
+                        itemList = viewModel.statsUiState.mostSelected,
+                        statsType = StatsType.Selected
+                    )
+                }
             }
             item {
-                MostByStats(
-                    itemList = viewModel.statsUiState.mostRejected,
-                    statsType = StatsType.Rejected
-                )
+                if (viewModel.statsUiState.mostBattleWins.isNotEmpty()) {
+                    MostByStats(
+                        itemList = viewModel.statsUiState.mostPicked,
+                        statsType = StatsType.Picked
+                    )
+                }
             }
             item {
-                MostByStats(
-                    itemList = viewModel.statsUiState.mostBattleWins,
-                    statsType = StatsType.BattleWins
-                )
+                if (viewModel.statsUiState.mostRejected.isNotEmpty()) {
+                    MostByStats(
+                        itemList = viewModel.statsUiState.mostRejected,
+                        statsType = StatsType.Rejected
+                    )
+                }
             }
+
 
         }
     }
 }
 
 @Composable
-fun MostByStats(itemList: List<Item>, statsType: StatsType, modifier: Modifier = Modifier) {
-    if (itemList.isNotEmpty()) {
-        val label = stringResource(
-            id = when (statsType) {
-                StatsType.Selected -> R.string.most_selected
-                StatsType.Picked -> R.string.most_picked
-                StatsType.Rejected -> R.string.most_rejected
-                StatsType.BattleWins -> R.string.most_battle_wins
+fun MostByStats(
+    itemList: List<Item>,
+    statsType: StatsType,
+    modifier: Modifier = Modifier
+) {
+
+    val label = stringResource(
+        id = when (statsType) {
+            StatsType.Selected -> R.string.most_selected
+            StatsType.Picked -> R.string.most_picked
+            StatsType.Rejected -> R.string.most_rejected
+            StatsType.BattleWins -> R.string.most_battle_wins
+        }
+    )
+    val inputList: List<BarData> = itemList.map { item ->
+        BarData(
+            value = when (statsType) {
+                StatsType.Selected -> item.timesSelected
+                StatsType.Picked -> item.timesPicked
+                StatsType.Rejected -> item.timesRejected
+                StatsType.BattleWins -> item.battleWins
+            },
+            label = item.name,
+            color = when (statsType) {
+                StatsType.Selected -> MaterialTheme.colorScheme.secondaryContainer
+                StatsType.Picked -> MaterialTheme.colorScheme.tertiaryContainer
+                StatsType.Rejected -> MaterialTheme.colorScheme.error
+                StatsType.BattleWins -> MaterialTheme.colorScheme.primaryContainer
             }
         )
-        val inputList: List<BarData> = itemList.map { item ->
-            BarData(
-                value = when (statsType) {
-                    StatsType.Selected -> item.timesSelected
-                    StatsType.Picked -> item.timesPicked
-                    StatsType.Rejected -> item.timesRejected
-                    StatsType.BattleWins -> item.battleWins
-                },
-                label = item.name,
-                color = MaterialTheme.colorScheme.primaryContainer
-            )
 
-        }
-        Card(modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))){
+    }
+    var expanded by remember {
+        mutableStateOf(false)
+    }
+    Card(modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium))) {
+        Column(
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = label)
             Column(
-                modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(text = label)
-                Box(modifier= Modifier
+                modifier = Modifier
                     .padding(dimensionResource(id = R.dimen.padding_medium))
                     .background(
                         MaterialTheme.colorScheme.surface,
                         shape = RoundedCornerShape(10)
-                    )){
-                    BarChart(inputList = inputList, modifier = Modifier
+                    )
+            ) {
+                BarChart(
+                    inputList = if (expanded) inputList else inputList.subList(
+                        0,
+                        min(numberOfItemsVisibleInStats, inputList.size)
+                    ), modifier = Modifier
                         .fillMaxWidth()
                         .padding(
                             dimensionResource(id = R.dimen.padding_medium)
-                        ))
+                        )
+                )
+                if (itemList.size > numberOfItemsVisibleInStats) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Text(
+                            text = if (expanded) stringResource(id = R.string.hide) else stringResource(
+                                id = R.string.see_all
+                            )
+                        )
+                        Icon(painterResource(id = if (expanded) R.drawable.arrow_up else R.drawable.arrow_down),
+                            contentDescription = "expand",
+                            modifier = Modifier
+                                .padding(
+                                    end = dimensionResource(id = R.dimen.padding_large),
+                                    bottom = dimensionResource(id = R.dimen.padding_small)
+                                )
+                                .clickable { expanded = !expanded }
+                        )
+                    }
                 }
             }
         }
-
     }
+
 }
