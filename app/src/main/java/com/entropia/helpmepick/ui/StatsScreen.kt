@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -25,12 +26,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
 import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.ui.barchart.BarChart
 import com.entropia.helpmepick.ui.barchart.BarData
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
+import com.entropia.helpmepick.ui.theme.HelpMePickTheme
 import java.lang.Integer.min
 
 
@@ -53,7 +56,13 @@ const val numberOfItemsVisibleInStats = 3
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StatsScreen(modifier: Modifier = Modifier, navigateUp: () -> Unit, viewModel: StatsViewModel) {
+fun StatsScreen(
+    modifier: Modifier = Modifier,
+    navigateUp: () -> Unit,
+    navigateToBattleMode: () -> Unit,
+    navigateToRegularMode: () -> Unit,
+    viewModel: StatsViewModel
+) {
     Scaffold(modifier = modifier, topBar = {
         TopAppBar(
             title = stringResource(id = StatsDestination.titleRes),
@@ -64,46 +73,103 @@ fun StatsScreen(modifier: Modifier = Modifier, navigateUp: () -> Unit, viewModel
 
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
             item {
-                if (viewModel.statsUiState.mostBattleWins.isNotEmpty()) {
-                    MostByStats(
-                        itemList = viewModel.statsUiState.mostBattleWins,
-                        label = stringResource(id = R.string.most_battle_wins),
-                        statsType = StatsType.BattleWins
-                    )
-                }
+                DisplayStats(
+                    list = viewModel.statsUiState.mostBattleWins,
+                    label = stringResource(id = R.string.most_battle_wins),
+                    noItemsButtonLabel = stringResource(id = R.string.no_items_button_battle_mode),
+                    statsType = StatsType.BattleWins,
+                    navigateTo = navigateToBattleMode
+                )
             }
             item {
-                if (viewModel.statsUiState.mostSelected.isNotEmpty()) {
-                    MostByStats(
-                        itemList = viewModel.statsUiState.mostSelected,
-                        label = stringResource(id = R.string.most_selected),
-                        statsType = StatsType.Selected
-                    )
-                }
+                DisplayStats(
+                    list = viewModel.statsUiState.mostSelected,
+                    label = stringResource(id = R.string.most_selected),
+                    noItemsButtonLabel = stringResource(id = R.string.no_items_button_regular_mode),
+                    statsType = StatsType.Selected,
+                    navigateTo = navigateToRegularMode
+                )
             }
             item {
-                if (viewModel.statsUiState.mostBattleWins.isNotEmpty()) {
-                    MostByStats(
-                        itemList = viewModel.statsUiState.mostPicked,
-                        label = stringResource(id = R.string.most_picked),
-                        statsType = StatsType.Picked
-                    )
-                }
+                DisplayStats(
+                    list = viewModel.statsUiState.mostPicked,
+                    label = stringResource(id = R.string.most_picked),
+                    noItemsButtonLabel = stringResource(id = R.string.no_items_button_regular_mode),
+                    statsType = StatsType.Picked,
+                    navigateTo = navigateToRegularMode
+                )
             }
             item {
-                if (viewModel.statsUiState.mostRejected.isNotEmpty()) {
-                    MostByStats(
-                        itemList = viewModel.statsUiState.mostRejected,
-                        label = stringResource(id = R.string.most_rejected),
-                        statsType = StatsType.Rejected
-                    )
-                }
+                DisplayStats(
+                    list = viewModel.statsUiState.mostRejected,
+                    label = stringResource(id = R.string.most_rejected),
+                    noItemsButtonLabel = stringResource(id = R.string.no_items_button_regular_mode),
+                    statsType = StatsType.Rejected,
+                    navigateTo = navigateToRegularMode
+                )
             }
 
 
         }
     }
 }
+
+@Composable
+private fun DisplayStats(
+    list: List<Item>,
+    label: String,
+    noItemsButtonLabel: String,
+    statsType: StatsType,
+    navigateTo: () -> Unit
+) {
+    if (list.isNotEmpty()) {
+        MostByStats(
+            itemList = list,
+            label = label,
+            statsType = statsType
+        )
+    } else {
+        EmptyListCard(
+            text = stringResource(id = R.string.no_items), buttonText = noItemsButtonLabel
+        ) {
+            navigateTo()
+        }
+    }
+}
+
+@Composable
+fun EmptyListCard(
+    text: String,
+    buttonText: String,
+    modifier: Modifier = Modifier,
+    navigateTo: () -> Unit
+) {
+    Card(
+        modifier = modifier
+            .padding(dimensionResource(id = R.dimen.padding_medium))
+            .fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(dimensionResource(id = R.dimen.padding_medium))
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = text,
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+            )
+            Button(
+                onClick = navigateTo,
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+            ) {
+                Text(text = buttonText)
+            }
+        }
+    }
+}
+
 
 @Composable
 fun MostByStats(
@@ -180,6 +246,15 @@ private fun ExpandButton(expanded: Boolean, onClick: () -> Unit) {
     }
 }
 
+@Preview
+@Composable
+fun EmptyListPreview() {
+    HelpMePickTheme {
+        EmptyListCard(text = "No items to display", buttonText = "Play Some", navigateTo = { })
+    }
+
+}
+
 @Composable
 private fun determineBarDataColor(statsType: StatsType) = when (statsType) {
     StatsType.Selected -> MaterialTheme.colorScheme.secondaryContainer
@@ -188,7 +263,7 @@ private fun determineBarDataColor(statsType: StatsType) = when (statsType) {
     StatsType.BattleWins -> MaterialTheme.colorScheme.primaryContainer
 }
 
-@Composable
+
 private fun determineBarDataValue(
     statsType: StatsType,
     item: Item

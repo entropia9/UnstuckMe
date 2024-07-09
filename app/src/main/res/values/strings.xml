@@ -66,6 +66,9 @@
     <string name="add_item">Add Item</string>
     <string name="all">All</string>
     <string name="see_all">Expand</string>
+    <string name="no_items">No items to display</string>
+    <string name="no_items_button_battle_mode">Start Battle Mode</string>
+    <string name="no_items_button_regular_mode">Start Regular Mode</string>
     <string name="hide">Hide</string>
     <string name="about">About</string>
     <string name="dismiss">Dismiss</string>
