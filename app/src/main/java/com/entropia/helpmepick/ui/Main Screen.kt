@@ -92,9 +92,9 @@ fun MainScreen(
                     .background(
                         brush = Brush.linearGradient(
                             colors = listOf(
-                                MaterialTheme.colorScheme.onPrimary,
+                                MaterialTheme.colorScheme.background,
                                 MaterialTheme.colorScheme.secondaryContainer
-                            ), Offset.Zero, Offset.Infinite
+                            ), Offset(600f,600f), Offset.Infinite
                         ), shape = MaterialTheme.shapes.small
                     )){
                 Column(
