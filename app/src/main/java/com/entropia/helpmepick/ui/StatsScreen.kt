@@ -49,7 +49,7 @@ object StatsDestination : NavigationDestination {
 
 }
 
-val numberOfItemsVisibleInStats = 3
+const val numberOfItemsVisibleInStats = 3
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,6 +67,7 @@ fun StatsScreen(modifier: Modifier = Modifier, navigateUp: () -> Unit, viewModel
                 if (viewModel.statsUiState.mostBattleWins.isNotEmpty()) {
                     MostByStats(
                         itemList = viewModel.statsUiState.mostBattleWins,
+                        label = stringResource(id = R.string.most_battle_wins),
                         statsType = StatsType.BattleWins
                     )
                 }
@@ -75,6 +76,7 @@ fun StatsScreen(modifier: Modifier = Modifier, navigateUp: () -> Unit, viewModel
                 if (viewModel.statsUiState.mostSelected.isNotEmpty()) {
                     MostByStats(
                         itemList = viewModel.statsUiState.mostSelected,
+                        label = stringResource(id = R.string.most_selected),
                         statsType = StatsType.Selected
                     )
                 }
@@ -83,6 +85,7 @@ fun StatsScreen(modifier: Modifier = Modifier, navigateUp: () -> Unit, viewModel
                 if (viewModel.statsUiState.mostBattleWins.isNotEmpty()) {
                     MostByStats(
                         itemList = viewModel.statsUiState.mostPicked,
+                        label = stringResource(id = R.string.most_picked),
                         statsType = StatsType.Picked
                     )
                 }
@@ -91,6 +94,7 @@ fun StatsScreen(modifier: Modifier = Modifier, navigateUp: () -> Unit, viewModel
                 if (viewModel.statsUiState.mostRejected.isNotEmpty()) {
                     MostByStats(
                         itemList = viewModel.statsUiState.mostRejected,
+                        label = stringResource(id = R.string.most_rejected),
                         statsType = StatsType.Rejected
                     )
                 }
@@ -103,34 +107,17 @@ fun StatsScreen(modifier: Modifier = Modifier, navigateUp: () -> Unit, viewModel
 
 @Composable
 fun MostByStats(
+    label: String,
     itemList: List<Item>,
     statsType: StatsType,
     modifier: Modifier = Modifier
 ) {
 
-    val label = stringResource(
-        id = when (statsType) {
-            StatsType.Selected -> R.string.most_selected
-            StatsType.Picked -> R.string.most_picked
-            StatsType.Rejected -> R.string.most_rejected
-            StatsType.BattleWins -> R.string.most_battle_wins
-        }
-    )
     val inputList: List<BarData> = itemList.map { item ->
         BarData(
-            value = when (statsType) {
-                StatsType.Selected -> item.timesSelected
-                StatsType.Picked -> item.timesPicked
-                StatsType.Rejected -> item.timesRejected
-                StatsType.BattleWins -> item.battleWins
-            },
+            value = determineBarDataValue(statsType, item),
             label = item.name,
-            color = when (statsType) {
-                StatsType.Selected -> MaterialTheme.colorScheme.secondaryContainer
-                StatsType.Picked -> MaterialTheme.colorScheme.tertiaryContainer
-                StatsType.Rejected -> MaterialTheme.colorScheme.error
-                StatsType.BattleWins -> MaterialTheme.colorScheme.primaryContainer
-            }
+            color = determineBarDataColor(statsType)
         )
 
     }
@@ -162,28 +149,52 @@ fun MostByStats(
                         )
                 )
                 if (itemList.size > numberOfItemsVisibleInStats) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        Text(
-                            text = if (expanded) stringResource(id = R.string.hide) else stringResource(
-                                id = R.string.see_all
-                            )
-                        )
-                        Icon(painterResource(id = if (expanded) R.drawable.arrow_up else R.drawable.arrow_down),
-                            contentDescription = "expand",
-                            modifier = Modifier
-                                .padding(
-                                    end = dimensionResource(id = R.dimen.padding_large),
-                                    bottom = dimensionResource(id = R.dimen.padding_small)
-                                )
-                                .clickable { expanded = !expanded }
-                        )
-                    }
+                    ExpandButton(expanded) { expanded = !expanded }
                 }
             }
         }
     }
 
+}
+
+@Composable
+private fun ExpandButton(expanded: Boolean, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End
+    ) {
+        Text(
+            text = if (expanded) stringResource(id = R.string.hide) else stringResource(
+                id = R.string.see_all
+            )
+        )
+        Icon(painterResource(id = if (expanded) R.drawable.arrow_up else R.drawable.arrow_down),
+            contentDescription = "expand",
+            modifier = Modifier
+                .padding(
+                    end = dimensionResource(id = R.dimen.padding_large),
+                    bottom = dimensionResource(id = R.dimen.padding_small)
+                )
+                .clickable { onClick() }
+        )
+    }
+}
+
+@Composable
+private fun determineBarDataColor(statsType: StatsType) = when (statsType) {
+    StatsType.Selected -> MaterialTheme.colorScheme.secondaryContainer
+    StatsType.Picked -> MaterialTheme.colorScheme.tertiaryContainer
+    StatsType.Rejected -> MaterialTheme.colorScheme.error
+    StatsType.BattleWins -> MaterialTheme.colorScheme.primaryContainer
+}
+
+@Composable
+private fun determineBarDataValue(
+    statsType: StatsType,
+    item: Item
+) = when (statsType) {
+    StatsType.Selected -> item.timesSelected
+    StatsType.Picked -> item.timesPicked
+    StatsType.Rejected -> item.timesRejected
+    StatsType.BattleWins -> item.battleWins
 }
