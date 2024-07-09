@@ -157,7 +157,6 @@ private fun AboutButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
             }
 
             .background(
-                //color = MaterialTheme.colorScheme.primaryContainer,
                 brush=Brush.linearGradient(
                     colors = listOf(
                         MaterialTheme.colorScheme.onPrimary,

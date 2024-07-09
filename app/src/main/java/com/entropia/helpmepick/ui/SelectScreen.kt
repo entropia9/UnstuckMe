@@ -182,6 +182,7 @@ fun ContentTab(
         modifier = modifier
             .fillMaxWidth()
             .padding(dimensionResource(id = R.dimen.padding_medium))
+            .clip(RoundedCornerShape(topEnd = 30.dp, topStart = 15.dp))
             .background(
                 brush = brush,
                 shape = Shapes.small
