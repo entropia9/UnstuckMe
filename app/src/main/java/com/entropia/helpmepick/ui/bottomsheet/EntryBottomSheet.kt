@@ -48,7 +48,7 @@ fun EntryBottomSheet(
 ) {
     BottomSheetScaffold(
         modifier = modifier,
-        sheetShape= RoundedCornerShape(topStartPercent=20, topEndPercent = 20),
+        sheetShape = RoundedCornerShape(topStartPercent = 20, topEndPercent = 20),
         scaffoldState = sheetScaffoldState,
         sheetContent = {
             Column {
@@ -97,6 +97,8 @@ fun SheetForm(
             onSubmit = {
                 onSubmit()
                 addItem(Item(name = name, category = category))
+                name = ""
+                category = ""
             },
             submitButtonEnabled = name.isNotEmpty()
         )
