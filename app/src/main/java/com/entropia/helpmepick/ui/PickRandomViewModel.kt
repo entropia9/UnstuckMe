@@ -47,10 +47,11 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
         if (pickItemUiState.currentPick != null) {
             val newItem =
                 pickItemUiState.currentPick!!.copy(timesPicked = pickItemUiState.currentPick!!.timesPicked + 1)
-            pickItemUiState = pickItemUiState.copy(pickedItem = newItem)
             viewModelScope.launch {
                 itemsRepository.updateItem(newItem)
             }
+            pickItemUiState = pickItemUiState.copy(pickedItem = newItem)
+
         }
     }
 
