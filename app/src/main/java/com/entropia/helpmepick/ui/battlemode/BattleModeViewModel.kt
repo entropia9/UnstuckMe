@@ -43,11 +43,12 @@ class BattleModeViewModel(items: List<Item>, private val itemsRepository: ItemsR
                 battleModeUiState.nextRoundList = mutableListOf()
                 getTwoItems()
             } else {
+                val newItem = item.copy(battleWins = item.battleWins + 1)
                 viewModelScope.launch {
-                    itemsRepository.updateItem(item.copy(battleWins = item.battleWins + 1))
+                    itemsRepository.updateItem(newItem)
                 }
                 battleModeUiState = battleModeUiState.copy(
-                    winner = item
+                    winner = newItem
                 )
             }
         }
