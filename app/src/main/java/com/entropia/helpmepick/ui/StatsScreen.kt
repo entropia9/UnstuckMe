@@ -39,6 +39,7 @@ import java.lang.Integer.min
 
 enum class StatsType {
     Selected,
+    SelectedBattleMode,
     Picked,
     Rejected,
     BattleWins
@@ -81,6 +82,7 @@ fun StatsScreen(
                     navigateTo = navigateToBattleMode
                 )
             }
+
             item {
                 DisplayStats(
                     list = viewModel.statsUiState.mostSelected,
@@ -258,6 +260,7 @@ fun EmptyListPreview() {
 @Composable
 private fun determineBarDataColor(statsType: StatsType) = when (statsType) {
     StatsType.Selected -> MaterialTheme.colorScheme.secondaryContainer
+    StatsType.SelectedBattleMode -> MaterialTheme.colorScheme.secondaryContainer
     StatsType.Picked -> MaterialTheme.colorScheme.tertiaryContainer
     StatsType.Rejected -> MaterialTheme.colorScheme.error
     StatsType.BattleWins -> MaterialTheme.colorScheme.primaryContainer
@@ -269,6 +272,7 @@ private fun determineBarDataValue(
     item: Item
 ) = when (statsType) {
     StatsType.Selected -> item.timesSelected
+    StatsType.SelectedBattleMode -> item.timesSelectedBattleMode
     StatsType.Picked -> item.timesPicked
     StatsType.Rejected -> item.timesRejected
     StatsType.BattleWins -> item.battleWins

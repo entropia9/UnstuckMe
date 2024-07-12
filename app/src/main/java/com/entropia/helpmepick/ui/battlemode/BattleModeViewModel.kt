@@ -26,9 +26,9 @@ class BattleModeViewModel(items: List<Item>, private val itemsRepository: ItemsR
 
     private fun updateSelected(items: List<Item>) {
         items.forEach { item ->
-            val timesSelected = item.timesSelected + 1
+            val timesSelected = item.timesSelectedBattleMode + 1
             viewModelScope.launch {
-                itemsRepository.updateItem(item.copy(timesSelected = timesSelected))
+                itemsRepository.updateItem(item.copy(timesSelectedBattleMode = timesSelected))
             }
         }
     }
@@ -51,6 +51,13 @@ class BattleModeViewModel(items: List<Item>, private val itemsRepository: ItemsR
                     winner = newItem
                 )
             }
+        }
+    }
+
+    fun updateRejected(item: Item){
+        val newItem = item.copy(timesRejectedBattleMode = item.timesRejectedBattleMode + 1)
+        viewModelScope.launch {
+            itemsRepository.updateItem(newItem)
         }
     }
 

@@ -104,7 +104,7 @@ fun BattleModeScreen(
                         enter = slideInHorizontally { width -> -width / 3 },
                         exit = slideOutHorizontally { 3 * it / 2 }
                     ) {
-                        Row() {
+                        Row {
                             Box(
                                 modifier = modifier
                                     .background(
@@ -120,11 +120,17 @@ fun BattleModeScreen(
                             ) {
                                 Button(onClick = {
                                     trigger = true
+                                    viewModel.battleModeUiState.item2?.let {
+                                        viewModel.updateRejected(
+                                            it
+                                        )
+                                    }
                                     viewModel.battleModeUiState.item1?.let {
                                         viewModel.onItemPick(
                                             it
                                         )
                                     }
+
                                 }) {
                                     viewModel.battleModeUiState.item1?.let {
                                         Text(
@@ -160,6 +166,11 @@ fun BattleModeScreen(
                             {
                                 Button(onClick = {
                                     trigger = true
+                                    viewModel.battleModeUiState.item1?.let {
+                                        viewModel.updateRejected(
+                                            it
+                                        )
+                                    }
                                     viewModel.battleModeUiState.item2?.let {
                                         viewModel.onItemPick(
                                             it
@@ -179,12 +190,14 @@ fun BattleModeScreen(
                 }
 
             } else {
-                Column( modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(dimensionResource(id = R.dimen.padding_large)),
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .padding(dimensionResource(id = R.dimen.padding_large)),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center) {
+                    verticalArrangement = Arrangement.Center
+                ) {
                     FinalText(
                         text = stringResource(
                             id = R.string.win_dialogue,

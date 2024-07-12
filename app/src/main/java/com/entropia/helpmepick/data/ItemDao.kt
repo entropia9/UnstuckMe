@@ -31,8 +31,14 @@ interface ItemDao {
     @Query("SELECT * FROM items WHERE timesSelected > 0 ORDER BY timesSelected DESC")
     fun getAllItemsByTimesSelected(): Flow<List<Item>>
 
+    @Query("SELECT * FROM items WHERE timesSelectedBattleMode > 0 ORDER BY timesSelectedBattleMode DESC")
+    fun getAllItemsByTimesSelectedBattleMode(): Flow<List<Item>>
+
     @Query("SELECT * FROM items WHERE timesRejected > 0 ORDER BY timesRejected DESC")
     fun getAllItemsByTimesRejected(): Flow<List<Item>>
+
+    @Query("SELECT * FROM items WHERE timesRejectedBattleMode > 0 ORDER BY timesRejectedBattleMode DESC")
+    fun getAllItemsByTimesRejectedBattleMode(): Flow<List<Item>>
 
     @Query("SELECT * FROM items WHERE battleWins > 0 ORDER BY battleWins DESC")
     fun getAllItemsByBattleWins(): Flow<List<Item>>

@@ -18,31 +18,45 @@ class StatsViewModel(val itemsRepository: ItemsRepository) : ViewModel() {
 
     init {
         getMostSelected()
+        getMostSelectedBattleMode()
         getMostPicked()
         getMostRejected()
+        getMostRejectedBattleMode()
         getMostBattleWins()
 
     }
 
-    fun getMostPicked() {
+    private fun getMostRejectedBattleMode() {
+        viewModelScope.launch {
+            getAllByTimesRejectedBattleMode()
+        }
+    }
+
+    private fun getMostSelectedBattleMode() {
+        viewModelScope.launch {
+            getAllByTimesSelectedBattleMode()
+        }
+    }
+
+    private fun getMostPicked() {
         viewModelScope.launch {
             getAllByTimesPicked()
         }
     }
 
-    fun getMostSelected() {
+    private fun getMostSelected() {
         viewModelScope.launch {
             getAllByTimesSelected()
         }
     }
 
-    fun getMostBattleWins() {
+    private fun getMostBattleWins() {
         viewModelScope.launch {
             getAllByBattleWins()
         }
     }
 
-    fun getMostRejected() {
+    private fun getMostRejected() {
         viewModelScope.launch {
             getAllByTimesRejected()
         }
@@ -68,6 +82,16 @@ class StatsViewModel(val itemsRepository: ItemsRepository) : ViewModel() {
         )
     }
 
+    private suspend fun getAllByTimesSelectedBattleMode() {
+        val mostSelectedDeferred = viewModelScope.async {
+            itemsRepository.getAllByTimesSelectedBattleMode().first()
+        }
+        val mostSelected = mostSelectedDeferred.await()
+        statsUiState = statsUiState.copy(
+            mostSelectedBattleMode = mostSelected
+        )
+    }
+
     private suspend fun getAllByTimesRejected() {
         val mostRejectedDeferred = viewModelScope.async {
             itemsRepository.getAllByTimesRejected().first()
@@ -75,6 +99,16 @@ class StatsViewModel(val itemsRepository: ItemsRepository) : ViewModel() {
         val mostRejected = mostRejectedDeferred.await()
         statsUiState = statsUiState.copy(
             mostRejected = mostRejected
+        )
+    }
+
+    private suspend fun getAllByTimesRejectedBattleMode() {
+        val mostRejectedDeferred = viewModelScope.async {
+            itemsRepository.getAllByTimesRejectedBattleMode().first()
+        }
+        val mostRejected = mostRejectedDeferred.await()
+        statsUiState = statsUiState.copy(
+            mostRejectedBattleMode = mostRejected
         )
     }
 
@@ -92,7 +126,9 @@ class StatsViewModel(val itemsRepository: ItemsRepository) : ViewModel() {
 data class StatsUiState(
     val mostPicked: List<Item> = listOf(),
     val mostSelected: List<Item> = listOf(),
+    val mostSelectedBattleMode: List<Item> = listOf(),
     val mostRejected: List<Item> = listOf(),
+    val mostRejectedBattleMode: List<Item> = listOf(),
     val mostBattleWins: List<Item> = listOf()
 )
 

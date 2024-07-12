@@ -18,8 +18,10 @@ interface ItemsRepository {
 
     fun getAllByTimesPicked(): Flow<List<Item>>
     fun getAllByTimesSelected(): Flow<List<Item>>
+    fun getAllByTimesSelectedBattleMode(): Flow<List<Item>>
 
     fun getAllByTimesRejected(): Flow<List<Item>>
+    fun getAllByTimesRejectedBattleMode(): Flow<List<Item>>
 
     fun getAllByBattleWins(): Flow<List<Item>>
 
