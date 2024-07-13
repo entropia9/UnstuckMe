@@ -137,7 +137,7 @@ fun SelectBottomAppBar(
                     ),
                 ),
                 shape = Shapes.extraLarge
-            ),
+            )
     ) {
         Row(Modifier.padding(dimensionResource(id = R.dimen.padding_large))) {
             Button(onClick = { navigateToAddEdit() }) {

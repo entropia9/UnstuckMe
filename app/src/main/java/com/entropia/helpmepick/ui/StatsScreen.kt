@@ -3,7 +3,9 @@ package com.entropia.helpmepick.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -42,6 +45,7 @@ enum class StatsType {
     SelectedBattleMode,
     Picked,
     Rejected,
+    RejectedBattleMode,
     BattleWins
 }
 
@@ -74,45 +78,93 @@ fun StatsScreen(
 
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
             item {
-                DisplayStats(
-                    list = viewModel.statsUiState.mostBattleWins,
-                    label = stringResource(id = R.string.most_battle_wins),
-                    noItemsButtonLabel = stringResource(id = R.string.no_items_button_battle_mode),
-                    statsType = StatsType.BattleWins,
-                    navigateTo = navigateToBattleMode
-                )
-            }
+                StatsBox(label = stringResource(id = R.string.regular), content = {
+                    DisplayStats(
+                        list = viewModel.statsUiState.mostPicked,
+                        label = stringResource(id = R.string.most_picked),
+                        noItemsButtonLabel = stringResource(id = R.string.no_items_button_regular_mode),
+                        statsType = StatsType.Picked,
+                        navigateTo = navigateToRegularMode
+                    )
+                    DisplayStats(
+                        list = viewModel.statsUiState.mostSelected,
+                        label = stringResource(id = R.string.most_selected),
+                        noItemsButtonLabel = stringResource(id = R.string.no_items_button_regular_mode),
+                        statsType = StatsType.Selected,
+                        navigateTo = navigateToRegularMode
+                    )
 
-            item {
-                DisplayStats(
-                    list = viewModel.statsUiState.mostSelected,
-                    label = stringResource(id = R.string.most_selected),
-                    noItemsButtonLabel = stringResource(id = R.string.no_items_button_regular_mode),
-                    statsType = StatsType.Selected,
-                    navigateTo = navigateToRegularMode
-                )
-            }
-            item {
-                DisplayStats(
-                    list = viewModel.statsUiState.mostPicked,
-                    label = stringResource(id = R.string.most_picked),
-                    noItemsButtonLabel = stringResource(id = R.string.no_items_button_regular_mode),
-                    statsType = StatsType.Picked,
-                    navigateTo = navigateToRegularMode
-                )
+                    DisplayStats(
+                        list = viewModel.statsUiState.mostRejected,
+                        label = stringResource(id = R.string.most_rejected),
+                        noItemsButtonLabel = stringResource(id = R.string.no_items_button_regular_mode),
+                        statsType = StatsType.Rejected,
+                        navigateTo = navigateToRegularMode
+                    )
+                })
             }
             item {
-                DisplayStats(
-                    list = viewModel.statsUiState.mostRejected,
-                    label = stringResource(id = R.string.most_rejected),
-                    noItemsButtonLabel = stringResource(id = R.string.no_items_button_regular_mode),
-                    statsType = StatsType.Rejected,
-                    navigateTo = navigateToRegularMode
-                )
+                StatsBox(content = {
+                    DisplayStats(
+                        list = viewModel.statsUiState.mostBattleWins,
+                        label = stringResource(id = R.string.most_battle_wins),
+                        noItemsButtonLabel = stringResource(id = R.string.no_items_button_battle_mode),
+                        statsType = StatsType.BattleWins,
+                        navigateTo = navigateToBattleMode
+                    )
+                    DisplayStats(
+                        list = viewModel.statsUiState.mostSelectedBattleMode,
+                        label = stringResource(id = R.string.most_selected),
+                        noItemsButtonLabel = stringResource(id = R.string.no_items_button_battle_mode),
+                        statsType = StatsType.SelectedBattleMode,
+                        navigateTo = navigateToBattleMode
+                    )
+                    DisplayStats(
+                        list = viewModel.statsUiState.mostRejectedBattleMode,
+                        label = stringResource(id = R.string.most_rejected),
+                        noItemsButtonLabel = stringResource(id = R.string.no_items_button_battle_mode),
+                        statsType = StatsType.RejectedBattleMode,
+                        navigateTo = navigateToBattleMode
+                    )
+                }, label = stringResource(id = R.string.battle_mode))
             }
-
-
         }
+    }
+}
+
+@Composable
+fun StatsBox(
+    modifier: Modifier = Modifier,
+    content: @Composable (ColumnScope.() -> Unit),
+    label: String
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(dimensionResource(id = R.dimen.padding_medium))
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.secondaryContainer,
+                        MaterialTheme.colorScheme.onPrimary
+                    ),
+                ),
+                shape = RoundedCornerShape(10)
+            )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(id = R.dimen.padding_medium)),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.headlineMedium
+            )
+            content()
+        }
+
     }
 }
 
@@ -263,6 +315,7 @@ private fun determineBarDataColor(statsType: StatsType) = when (statsType) {
     StatsType.SelectedBattleMode -> MaterialTheme.colorScheme.secondaryContainer
     StatsType.Picked -> MaterialTheme.colorScheme.tertiaryContainer
     StatsType.Rejected -> MaterialTheme.colorScheme.error
+    StatsType.RejectedBattleMode -> MaterialTheme.colorScheme.error
     StatsType.BattleWins -> MaterialTheme.colorScheme.primaryContainer
 }
 
@@ -275,5 +328,6 @@ private fun determineBarDataValue(
     StatsType.SelectedBattleMode -> item.timesSelectedBattleMode
     StatsType.Picked -> item.timesPicked
     StatsType.Rejected -> item.timesRejected
+    StatsType.RejectedBattleMode -> item.timesRejectedBattleMode
     StatsType.BattleWins -> item.battleWins
 }
