@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,14 +25,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.entropia.helpmepick.R
@@ -50,31 +48,31 @@ private object Thumb {
 
 @Composable
 
-fun Thumb(iconRes: Int, modifier: Modifier = Modifier) {
+fun Thumb(
+    modifier: Modifier = Modifier,
+    shape: Shape = MaterialTheme.shapes.extraLarge,
+    content: @Composable BoxScope.() -> Unit = {}
+) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .size(Thumb.Size)
-            .clip(MaterialTheme.shapes.extraLarge)
+            .clip(shape)
             .background(MaterialTheme.colorScheme.primaryContainer)
     ) {
-        Icon(
-            imageVector = ImageVector.vectorResource(iconRes),
-            contentDescription = "",
-            tint = MaterialTheme.colorScheme.onPrimaryContainer,
-            modifier = Modifier.size(35.dp)
-
-        )
+        content()
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Track(
-    textRes: Int,
+
     modifier: Modifier = Modifier,
+    contentSize: Dp = 60.dp,
     onDragComplete: () -> Unit,
-    thumb: @Composable (BoxScope.() -> Unit)
+    thumb: @Composable (BoxScope.() -> Unit),
+    trackContent: @Composable (BoxScope.() -> Unit)
 ) {
 
     val density = LocalDensity.current
@@ -96,76 +94,53 @@ fun Track(
             })
         }
     }
-    val contentSize = 60.dp
     val contentSizePx = with(density) { contentSize.toPx() }
     val startX = Offset(state.progress * 1000, 0f)
     LaunchedEffect(state.currentValue) {
         if (state.currentValue == DragAnchors.End) onDragComplete()
     }
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(
-                    topEnd = 20.dp, topStart = 40.dp, bottomEnd = 20.dp, bottomStart = 40.dp
-                ),
-            ), contentAlignment = Alignment.Center
-    ) {
+
+    Box(modifier = modifier
+        .padding(
+            dimensionResource(id = R.dimen.padding_large)
+        )
+        .onSizeChanged { layoutSize ->
+
+            val dragEndPoint = layoutSize.width - contentSizePx
+            state.updateAnchors(DraggableAnchors {
+                DragAnchors
+                    .values()
+                    .forEach { anchor ->
+                        anchor at (dragEndPoint * anchor.fraction)
+                    }
+            })
+        }
+
+        .background(
+            brush = Brush.linearGradient(
+                colors = listOf(
+                    MaterialTheme.colorScheme.primary,
+                    MaterialTheme.colorScheme.primaryContainer
+                ), Offset.Zero, startX
+            ), shape = MaterialTheme.shapes.extraLarge
+        )
+        .fillMaxWidth()) {
+        trackContent()
         Box(modifier = Modifier
-            .padding(
-                dimensionResource(id = R.dimen.padding_large)
-            )
-            .onSizeChanged { layoutSize ->
-
-                val dragEndPoint = layoutSize.width - contentSizePx
-                state.updateAnchors(DraggableAnchors {
-                    DragAnchors
-                        .values()
-                        .forEach { anchor ->
-                            anchor at (dragEndPoint * anchor.fraction)
-                        }
-                })
-            }
-
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primary,
-                        MaterialTheme.colorScheme.primaryContainer
-                    ), Offset.Zero, startX
-                ), shape = MaterialTheme.shapes.extraLarge
-            )
-            .fillMaxWidth()) {
-            Row(
-                modifier = Modifier.matchParentSize(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = stringResource(textRes),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    textAlign = TextAlign.End
+            .size(contentSize)
+            .offset {
+                IntOffset(
+                    x = state
+                        .requireOffset()
+                        .roundToInt(),
+                    y = 0,
                 )
             }
-            Box(modifier = Modifier
-                .size(contentSize)
-                .offset {
-                    IntOffset(
-                        x = state
-                            .requireOffset()
-                            .roundToInt(),
-                        y = 0,
-                    )
-                }
-                .anchoredDraggable(state, Orientation.Horizontal)) {
-                thumb()
-            }
-
+            .anchoredDraggable(state, Orientation.Horizontal)) {
+            thumb()
         }
-    }
 
+    }
 }
 
 
@@ -173,8 +148,19 @@ fun Track(
 @Composable
 fun ButtonPreview() {
     HelpMePickTheme {
-        Track(textRes = R.string.regular_mode, onDragComplete = {}) {
-            Thumb(iconRes = R.drawable.regular_mode_icon)
+        Track(onDragComplete = {}, thumb = { Thumb() }) {
+            Row(
+                modifier = Modifier.matchParentSize(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.regular_mode),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    textAlign = TextAlign.End
+                )
+            }
         }
     }
 }
