@@ -6,7 +6,6 @@ import com.entropia.helpmepick.data.AppDataContainer
 
 class HelpMePickApplication : Application() {
     lateinit var container: AppContainer
-
     override fun onCreate() {
         super.onCreate()
         container = AppDataContainer(this)

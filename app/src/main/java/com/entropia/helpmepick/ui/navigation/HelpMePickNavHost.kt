@@ -11,16 +11,16 @@ import com.entropia.helpmepick.ui.AddEditItemsScreen
 import com.entropia.helpmepick.ui.AddEditItemsScreenDestination
 import com.entropia.helpmepick.ui.MainScreen
 import com.entropia.helpmepick.ui.MainScreenDestination
-import com.entropia.helpmepick.ui.PickRandomScreen
-import com.entropia.helpmepick.ui.RegularDestination
-import com.entropia.helpmepick.ui.RegularSelectScreen
-import com.entropia.helpmepick.ui.RegularSelectScreenDestination
 import com.entropia.helpmepick.ui.StatsDestination
 import com.entropia.helpmepick.ui.StatsScreen
 import com.entropia.helpmepick.ui.battlemode.BattleModeDestination
 import com.entropia.helpmepick.ui.battlemode.BattleModeScreen
 import com.entropia.helpmepick.ui.battlemode.BattleModeSelectScreen
 import com.entropia.helpmepick.ui.battlemode.BattleModeSelectScreenDestination
+import com.entropia.helpmepick.ui.regularmode.PickRandomScreen
+import com.entropia.helpmepick.ui.regularmode.RegularDestination
+import com.entropia.helpmepick.ui.regularmode.RegularSelectScreen
+import com.entropia.helpmepick.ui.regularmode.RegularSelectScreenDestination
 
 @Composable
 fun HelpMePickNavHost(
@@ -33,6 +33,7 @@ fun HelpMePickNavHost(
     ) {
         composable(route = MainScreenDestination.route) {
             MainScreen(
+                themeViewModel = viewModel(factory = AppViewModelProvider.Factory),
                 navigateToAddEditItems = { navController.navigate(AddEditItemsScreenDestination.route) },
                 navigateToRegular = { navController.navigate(RegularSelectScreenDestination.route) },
                 navigateToBattleMode = { navController.navigate(BattleModeSelectScreenDestination.route) },

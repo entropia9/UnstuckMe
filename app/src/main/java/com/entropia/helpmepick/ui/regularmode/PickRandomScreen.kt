@@ -1,4 +1,4 @@
-package com.entropia.helpmepick.ui
+package com.entropia.helpmepick.ui.regularmode
 
 import FinalText
 import androidx.compose.animation.AnimatedVisibility

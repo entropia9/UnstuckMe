@@ -39,7 +39,9 @@ android {
     }
     buildFeatures {
         compose = true
+
     }
+
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.3"
     }
@@ -73,8 +75,12 @@ dependencies {
     implementation("androidx.room:room-runtime:${rootProject.extra["room_version"]}")
     ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
     implementation("androidx.room:room-ktx:${rootProject.extra["room_version"]}")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     implementation ("androidx.compose.foundation:foundation:1.6.8")
-    implementation ("androidx.preference:preference-ktx:1.2.1")
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+
+
+
+
 
 }

@@ -1,4 +1,4 @@
-package com.entropia.helpmepick.ui
+package com.entropia.helpmepick.ui.regularmode
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -8,6 +8,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
+import com.entropia.helpmepick.ui.ItemsListViewModel
+import com.entropia.helpmepick.ui.SelectBottomAppBar
+import com.entropia.helpmepick.ui.SelectScreen
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
 
 object RegularSelectScreenDestination : NavigationDestination {

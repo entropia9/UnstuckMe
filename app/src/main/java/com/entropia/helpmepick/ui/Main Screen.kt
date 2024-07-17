@@ -41,14 +41,13 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
+import com.entropia.helpmepick.ui.custom.ThemeButton
 import com.entropia.helpmepick.ui.custom.Thumb
 import com.entropia.helpmepick.ui.custom.Track
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
-import com.entropia.helpmepick.ui.theme.HelpMePickTheme
 
 object MainScreenDestination : NavigationDestination {
     override val route: String
@@ -61,6 +60,7 @@ object MainScreenDestination : NavigationDestination {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
+    themeViewModel: ThemeViewModel,
     navigateToAddEditItems: () -> Unit,
     navigateToRegular: () -> Unit,
     navigateToBattleMode: () -> Unit,
@@ -150,6 +150,10 @@ fun MainScreen(
                         modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_medium))
                     )
                     Spacer(modifier = Modifier.weight(0.3f))
+                    ThemeButton(
+                        isDarkMode = themeViewModel.getTheme(),
+                        onDragComplete = { themeViewModel.setTheme(isDarkMode = true) },
+                        onDragReverse = { themeViewModel.setTheme(isDarkMode = false) })
                     AboutButton(onClick = { openAlertDialog.value = true })
                     Spacer(modifier = Modifier.weight(0.05f))
                 }
@@ -284,13 +288,3 @@ private fun AboutAlert(
 
 }
 
-@Preview
-@Composable
-fun MainScreenPreview() {
-    HelpMePickTheme {
-        MainScreen(navigateToAddEditItems = {},
-            navigateToStats = { },
-            navigateToRegular = {},
-            navigateToBattleMode = {})
-    }
-}

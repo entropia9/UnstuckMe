@@ -29,14 +29,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
 import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.ui.barchart.BarChart
 import com.entropia.helpmepick.ui.barchart.BarData
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
-import com.entropia.helpmepick.ui.theme.HelpMePickTheme
 import java.lang.Integer.min
 
 
@@ -298,15 +296,6 @@ private fun ExpandButton(expanded: Boolean, onClick: () -> Unit) {
                 .clickable { onClick() }
         )
     }
-}
-
-@Preview
-@Composable
-fun EmptyListPreview() {
-    HelpMePickTheme {
-        EmptyListCard(text = "No items to display", buttonText = "Play Some", navigateTo = { })
-    }
-
 }
 
 @Composable

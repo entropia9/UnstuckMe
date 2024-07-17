@@ -15,20 +15,32 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.entropia.helpmepick.R
 
 
-@Preview
 @Composable
-fun ThemeButton() {
+fun ThemeButton(
+    isDarkMode: Boolean,
+    onDragComplete: () -> Unit,
+    onDragReverse: () -> Unit,
+    modifier: Modifier = Modifier
+) {
 
-    Box(Modifier.width(120.dp)) {
-        Track(onDragComplete = { /*TODO*/ }, contentSize = 40.dp, thumb = {
-            Thumb(shape = RoundedCornerShape(60))
-        }) {
-
+    Box(modifier.width(120.dp)) {
+        Track(
+            initialValue =
+            when (isDarkMode) {
+                true -> DragAnchors.End
+                else -> DragAnchors.Start
+            },
+            onDragComplete = { onDragComplete() },
+            onDragReverse = { onDragReverse() },
+            contentSize = 40.dp,
+            shape = RoundedCornerShape(60),
+            thumb = {
+                Thumb(shape = RoundedCornerShape(60))
+            }) {
         }
         Row(
             modifier = Modifier

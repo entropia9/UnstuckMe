@@ -7,16 +7,13 @@ import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -29,14 +26,10 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.entropia.helpmepick.R
-import com.entropia.helpmepick.ui.theme.HelpMePickTheme
 import kotlin.math.roundToInt
 
 
@@ -67,10 +60,12 @@ fun Thumb(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Track(
-
     modifier: Modifier = Modifier,
+    initialValue: DragAnchors = DragAnchors.Start,
     contentSize: Dp = 60.dp,
     onDragComplete: () -> Unit,
+    onDragReverse: () -> Unit = {},
+    shape: Shape = MaterialTheme.shapes.extraLarge,
     thumb: @Composable (BoxScope.() -> Unit),
     trackContent: @Composable (BoxScope.() -> Unit)
 ) {
@@ -83,7 +78,7 @@ fun Track(
         saver = AnchoredDraggableState.Saver(animationSpec, positionalThreshold, velocityThreshold)
     ) {
         AnchoredDraggableState(
-            initialValue = DragAnchors.Start,
+            initialValue = initialValue,
             positionalThreshold = positionalThreshold,
             velocityThreshold = velocityThreshold,
             animationSpec = animationSpec,
@@ -98,6 +93,7 @@ fun Track(
     val startX = Offset(state.progress * 1000, 0f)
     LaunchedEffect(state.currentValue) {
         if (state.currentValue == DragAnchors.End) onDragComplete()
+        if (state.currentValue == DragAnchors.Start) onDragReverse()
     }
 
     Box(modifier = modifier
@@ -122,7 +118,7 @@ fun Track(
                     MaterialTheme.colorScheme.primary,
                     MaterialTheme.colorScheme.primaryContainer
                 ), Offset.Zero, startX
-            ), shape = MaterialTheme.shapes.extraLarge
+            ), shape = shape
         )
         .fillMaxWidth()) {
         trackContent()
@@ -140,27 +136,5 @@ fun Track(
             thumb()
         }
 
-    }
-}
-
-
-@Preview
-@Composable
-fun ButtonPreview() {
-    HelpMePickTheme {
-        Track(onDragComplete = {}, thumb = { Thumb() }) {
-            Row(
-                modifier = Modifier.matchParentSize(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = stringResource(R.string.regular_mode),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    textAlign = TextAlign.End
-                )
-            }
-        }
     }
 }

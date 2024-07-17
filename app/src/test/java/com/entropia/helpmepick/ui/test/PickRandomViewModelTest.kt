@@ -1,9 +1,8 @@
 package com.entropia.helpmepick.ui.test
 
-import co.yml.charts.common.extensions.isNotNull
 import com.entropia.helpmepick.fake.FakeRepository
 import com.entropia.helpmepick.rules.TestDispatcherRule
-import com.entropia.helpmepick.ui.PickRandomViewModel
+import com.entropia.helpmepick.ui.regularmode.PickRandomViewModel
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -28,7 +27,7 @@ class PickRandomViewModelTest {
     @Test
     fun pickRandomViewModel_pickRandom_pickedRandom() = runTest {
         viewModel.pickRandomFromSelected(repository.fakeData.itemsList)
-        assert(viewModel.pickItemUiState.currentPick.isNotNull())
+        assert(viewModel.pickItemUiState.currentPick !=null)
         viewModel.pickRandomFromSelected(emptyList())
         assert(viewModel.pickItemUiState.currentPick == null)
     }
