@@ -1,6 +1,5 @@
 package com.entropia.helpmepick.ui.custom
 
-import android.util.Log
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -78,7 +77,6 @@ fun Track(
     val state = rememberSaveable(
         saver = AnchoredDraggableState.Saver(animationSpec, positionalThreshold, velocityThreshold)
     ) {
-        Log.d("initial value", initialValue.toString())
         AnchoredDraggableState(
             initialValue = initialValue,
             positionalThreshold = positionalThreshold,

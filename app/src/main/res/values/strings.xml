@@ -56,10 +56,9 @@
     <string name="win_dialogue">%1$s won!</string>
     <string name="delete_confirmation">Are you sure you want to delete %1$s? </string>
     <string name="most_selected">Most Selected</string>
-    <string name="never_selected">Never Selected</string>
-    <string name="most_picked">Most Picked</string>
+    <string name="most_picked">Most Regular Mode Wins</string>
     <string name="most_rejected">Most Rejected</string>
-    <string name="most_battle_wins">Most Battle Wins</string>
+    <string name="most_battle_wins">Most Battle Mode Wins</string>
     <string name="yes_answer_button">Yes</string>
     <string name="no_answer_button">No</string>
     <string name="navigate_to_add_button">Add or Edit Items</string>
