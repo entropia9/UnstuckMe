@@ -1,5 +1,6 @@
 package com.entropia.helpmepick.ui.custom
 
+import android.util.Log
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -77,6 +78,7 @@ fun Track(
     val state = rememberSaveable(
         saver = AnchoredDraggableState.Saver(animationSpec, positionalThreshold, velocityThreshold)
     ) {
+        Log.d("initial value", initialValue.toString())
         AnchoredDraggableState(
             initialValue = initialValue,
             positionalThreshold = positionalThreshold,
@@ -86,14 +88,14 @@ fun Track(
             updateAnchors(DraggableAnchors {
                 DragAnchors.Start at 0f
                 DragAnchors.End at 1f
-            })
+            }, initialValue)
         }
     }
     val contentSizePx = with(density) { contentSize.toPx() }
     val startX = Offset(state.progress * 1000, 0f)
     LaunchedEffect(state.currentValue) {
-        if (state.currentValue == DragAnchors.End) onDragComplete()
-        if (state.currentValue == DragAnchors.Start) onDragReverse()
+        if (state.currentValue == DragAnchors.End && initialValue != DragAnchors.End) onDragComplete()
+        if (state.currentValue == DragAnchors.Start && initialValue != DragAnchors.Start) onDragReverse()
     }
 
     Box(modifier = modifier
@@ -109,7 +111,7 @@ fun Track(
                     .forEach { anchor ->
                         anchor at (dragEndPoint * anchor.fraction)
                     }
-            })
+            }, initialValue)
         }
 
         .background(

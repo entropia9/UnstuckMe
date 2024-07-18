@@ -1,5 +1,6 @@
 package com.entropia.helpmepick.ui
 
+import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -25,6 +26,7 @@ class ThemeViewModel(dataStoreManager: DataStoreManager) : ViewModel() {
                 ThemeState(preferences[IS_DARK_MODE_KEY] ?: false)
             }.collect {
                 _themeState.value = it
+                Log.d("storedData", _themeState.value.isDarkMode.toString())
             }
         }
 
