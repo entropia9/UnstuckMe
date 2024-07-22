@@ -84,7 +84,8 @@ fun SheetForm(
         TextInputRow(
             inputLabel = stringResource(R.string.name),
             fieldValue = name,
-            onValueChange = { name = it }
+            onValueChange = { name = it },
+            imeAction = ImeAction.Next
         )
         SpinnerRow(
             inputLabel = stringResource(id = R.string.category),
@@ -150,7 +151,8 @@ fun TextInputRow(
     inputLabel: String,
     fieldValue: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    imeAction: ImeAction = ImeAction.Done,
 ) {
     InputRow(inputLabel, modifier) {
         TextField(
@@ -163,7 +165,7 @@ fun TextInputRow(
                 unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                 disabledContainerColor = MaterialTheme.colorScheme.surface,
             ),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+            keyboardOptions = KeyboardOptions(imeAction = imeAction)
         )
     }
 }

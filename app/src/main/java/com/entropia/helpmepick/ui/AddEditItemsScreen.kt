@@ -10,10 +10,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -74,7 +76,7 @@ object AddEditItemsScreenDestination : NavigationDestination {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEditItemsScreen(viewModel: ItemsListViewModel, navigateUp: () -> Unit) {
+fun AddEditItemsScreen(viewModel: ItemsListViewModel, navigateUp: () -> Unit, modifier: Modifier=Modifier) {
     val uiState = viewModel.categoriesItemUiState.collectAsState()
     val editUiState = viewModel.addEditUiState.collectAsState()
 
@@ -114,7 +116,7 @@ fun AddEditItemsScreen(viewModel: ItemsListViewModel, navigateUp: () -> Unit) {
         },
             floatingActionButtonPosition = FabPosition.Center
         ) { paddingValues ->
-            Column(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
+            Column(modifier = modifier.padding(paddingValues).fillMaxSize()) {
                 CategoriesRow(
                     categories = uiState.value.categories,
                     currentCategory = uiState.value.currentCategory,
@@ -195,7 +197,8 @@ fun ItemsList(
     deleteItem: (Item) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
+    LazyVerticalStaggeredGrid(
+        columns = StaggeredGridCells.Adaptive(minSize = 400.dp),
         modifier = modifier
             .fillMaxSize()
             .padding(dimensionResource(id = R.dimen.padding_medium))

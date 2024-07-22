@@ -25,12 +25,17 @@ class BattleModeViewModel(items: List<Item>, private val itemsRepository: ItemsR
     }
 
     private fun updateSelected(items: List<Item>) {
+        val newItems = mutableListOf<Item>()
         items.forEach { item ->
             val timesSelected = item.timesSelectedBattleMode + 1
+            val newItem = item.copy(timesSelectedBattleMode = timesSelected)
             viewModelScope.launch {
                 itemsRepository.updateItem(item.copy(timesSelectedBattleMode = timesSelected))
             }
+            newItems.add(newItem)
         }
+        battleModeUiState =
+            battleModeUiState.copy(items = newItems, availableForSelection = newItems)
     }
 
     fun onItemPick(item: Item) {
@@ -54,7 +59,7 @@ class BattleModeViewModel(items: List<Item>, private val itemsRepository: ItemsR
         }
     }
 
-    fun updateRejected(item: Item){
+    fun updateRejected(item: Item) {
         val newItem = item.copy(timesRejectedBattleMode = item.timesRejectedBattleMode + 1)
         viewModelScope.launch {
             itemsRepository.updateItem(newItem)

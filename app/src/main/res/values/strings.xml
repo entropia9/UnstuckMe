@@ -33,14 +33,18 @@
         <item quantity="other">You\'ve considered it %1$s times so far</item>
         <item quantity="one">You\'ve considered it once so far</item>
     </plurals>
+    <plurals name="picked_stats1_battle_mode">
+        <item quantity="other">You\'ve considered it %1$s times so far</item>
+        <item quantity="one">You\'ve considered it once so far</item>
+    </plurals>
     <plurals name="picked_stats2">
         <item quantity="other">You\'ve decided you don\'t feel like it %1$s times!</item>
         <item quantity="one">You\'ve decided you don\'t feel like it %1$s time!</item>
     </plurals>
     <string name="zero">You\'ve never rejected it! Wohoo!</string>
     <plurals name="picked_stats3">
-        <item quantity="other">And you\'ve picked it %1$s times!</item>
-        <item quantity="one">And you\'ve picked it only %1$s time!</item>
+        <item quantity="other">And it won %1$s times!</item>
+        <item quantity="one">It was its first win!</item>
     </plurals>
     <plurals name="battle_wins">
         <item quantity="other">And it won %1$s times!</item>

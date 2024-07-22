@@ -33,6 +33,7 @@ fun CategorySpinner(
         TextField(
             value = selectedOptionText,
             onValueChange = { onValueChange(it) },
+            singleLine = true,
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
             },

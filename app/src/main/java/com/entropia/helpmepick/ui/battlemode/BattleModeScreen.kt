@@ -229,8 +229,9 @@ fun BattleModeScreen(
                             viewModel.battleModeUiState.winner?.let { item ->
                                 stringBuilder.append(
                                     pluralStringResource(
-                                        id = R.plurals.picked_stats1,
-                                        count = item.timesSelected, item.timesSelected
+                                        id = R.plurals.picked_stats1_battle_mode,
+                                        count = item.timesSelectedBattleMode,
+                                        item.timesSelectedBattleMode
                                     )
                                 ).appendLine().append(
                                     pluralStringResource(
