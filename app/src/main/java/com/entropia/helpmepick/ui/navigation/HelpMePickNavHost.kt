@@ -1,5 +1,6 @@
 package com.entropia.helpmepick.ui.navigation
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -8,6 +9,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.window.core.layout.WindowSizeClass
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.entropia.helpmepick.AppViewModelProvider
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.ui.AddEditItemsScreen
@@ -28,7 +31,8 @@ import com.entropia.helpmepick.ui.regularmode.RegularSelectScreenDestination
 @Composable
 fun HelpMePickNavHost(
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    windowSizeClass: WindowSizeClass,
+    modifier: Modifier = Modifier,
 ) {
     NavHost(
         navController = navController, startDestination = MainScreenDestination.route,
@@ -40,19 +44,27 @@ fun HelpMePickNavHost(
                 navigateToAddEditItems = { navController.navigate(AddEditItemsScreenDestination.route) },
                 navigateToRegular = { navController.navigate(RegularSelectScreenDestination.route) },
                 navigateToBattleMode = { navController.navigate(BattleModeSelectScreenDestination.route) },
-                navigateToStats = { navController.navigate(StatsDestination.route) })
+                navigateToStats = { navController.navigate(StatsDestination.route) },
+                modifier = when (windowSizeClass.windowWidthSizeClass) {
+                    WindowWidthSizeClass.EXPANDED -> Modifier.fillMaxWidth(0.5f)
+                    else -> Modifier
+                }
+            )
         }
         composable(route = AddEditItemsScreenDestination.route) {
-            AddEditItemsScreen(viewModel = viewModel(factory = AppViewModelProvider.Factory),
+            AddEditItemsScreen(
+                viewModel = viewModel(factory = AppViewModelProvider.Factory),
                 navigateUp = { navController.navigateUp() },
-                modifier=Modifier.padding(dimensionResource(id = R.dimen.padding_medium)))
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+            )
         }
         composable(route = RegularSelectScreenDestination.route) {
             RegularSelectScreen(
                 viewModel = viewModel(factory = AppViewModelProvider.Factory),
                 navigate = { navController.navigate(RegularDestination.route) },
                 navigateToAddEdit = { navController.navigate(AddEditItemsScreenDestination.route) },
-                navigateUp = { navController.navigateUp() }
+                navigateUp = { navController.navigateUp() },
+                windowSizeClass = windowSizeClass
             )
         }
         composable(route = BattleModeSelectScreenDestination.route) {
@@ -60,7 +72,8 @@ fun HelpMePickNavHost(
                 viewModel = viewModel(factory = AppViewModelProvider.Factory),
                 navigate = { navController.navigate(BattleModeDestination.route) },
                 navigateToAddEdit = { navController.navigate(AddEditItemsScreenDestination.route) },
-                navigateUp = { navController.navigateUp() }
+                navigateUp = { navController.navigateUp() },
+                windowSizeClass = windowSizeClass
             )
         }
         composable(route = BattleModeDestination.route) {

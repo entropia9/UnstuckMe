@@ -79,7 +79,9 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     implementation ("androidx.compose.foundation:foundation:1.6.8")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
-
+    implementation ("androidx.compose.material3:material3:1.2.1")
+    implementation ("androidx.compose.material3:material3-window-size-class:1.2.1")
+    implementation ("androidx.compose.material3:material3-adaptive-navigation-suite:1.3.0-beta05")
 
 
 

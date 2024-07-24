@@ -1,6 +1,8 @@
 package com.entropia.helpmepick.ui.custom
 
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.splineBasedDecay
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.AnchoredDraggableState
@@ -44,7 +46,7 @@ private object Thumb {
 fun Thumb(
     modifier: Modifier = Modifier,
     shape: Shape = MaterialTheme.shapes.extraLarge,
-    content: @Composable BoxScope.() -> Unit = {}
+    content: @Composable BoxScope.() -> Unit = {},
 ) {
     Box(
         contentAlignment = Alignment.Center,
@@ -67,30 +69,38 @@ fun Track(
     onDragReverse: () -> Unit = {},
     shape: Shape = MaterialTheme.shapes.extraLarge,
     thumb: @Composable (BoxScope.() -> Unit),
-    trackContent: @Composable (BoxScope.() -> Unit)
+    trackContent: @Composable (BoxScope.() -> Unit),
 ) {
 
     val density = LocalDensity.current
     val positionalThreshold = { distance: Float -> distance * 0.5f }
     val velocityThreshold = { with(density) { 100.dp.toPx() } }
-    val animationSpec = tween<Float>()
+    val animationSpec = tween<Float>() as AnimationSpec<Float>
+    val decayAnimationSpec = splineBasedDecay<Float>(density)
     val state = rememberSaveable(
-        saver = AnchoredDraggableState.Saver(animationSpec, positionalThreshold, velocityThreshold)
+        saver = AnchoredDraggableState.Saver(
+            snapAnimationSpec = animationSpec,
+            decayAnimationSpec = decayAnimationSpec,
+            positionalThreshold = positionalThreshold,
+            velocityThreshold = velocityThreshold
+        )
     ) {
         AnchoredDraggableState(
+            decayAnimationSpec = decayAnimationSpec,
+            snapAnimationSpec = animationSpec,
             initialValue = initialValue,
             positionalThreshold = positionalThreshold,
             velocityThreshold = velocityThreshold,
-            animationSpec = animationSpec,
         ).apply {
             updateAnchors(DraggableAnchors {
                 DragAnchors.Start at 0f
                 DragAnchors.End at 1f
             }, initialValue)
         }
+
     }
     val contentSizePx = with(density) { contentSize.toPx() }
-    val startX = Offset(state.progress * 1000, 0f)
+    val startX = Offset(state.progress(state.settledValue, state.targetValue) * 1000, 0f)
     LaunchedEffect(state.currentValue) {
         if (state.currentValue == DragAnchors.End && initialValue != DragAnchors.End) onDragComplete()
         if (state.currentValue == DragAnchors.Start && initialValue != DragAnchors.Start) onDragReverse()

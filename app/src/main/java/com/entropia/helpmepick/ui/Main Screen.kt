@@ -65,7 +65,7 @@ fun MainScreen(
     navigateToRegular: () -> Unit,
     navigateToBattleMode: () -> Unit,
     navigateToStats: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
 
     val openAlertDialog = remember { mutableStateOf(false) }
@@ -81,7 +81,7 @@ fun MainScreen(
             )
         }
     }
-    Scaffold(modifier = modifier,
+    Scaffold(modifier = Modifier,
         topBar = {
             TopAppBar(
                 title = stringResource(id = MainScreenDestination.titleRes),
@@ -103,10 +103,10 @@ fun MainScreen(
                                 MaterialTheme.colorScheme.secondaryContainer
                             ), Offset(600f, 600f), Offset.Infinite
                         ), shape = MaterialTheme.shapes.small
-                    )
+                    ), contentAlignment = Alignment.Center
             ) {
                 Column(
-                    Modifier
+                    modifier
                         .padding(it)
                         .padding(dimensionResource(id = R.dimen.padding_large)),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -171,7 +171,7 @@ private fun MainMenuButton(
     @StringRes label: Int,
     @DrawableRes icon: Int,
     onDragComplete: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier
@@ -254,7 +254,7 @@ private fun AboutAlert(
     onDismissRequest: () -> Unit,
     dialogTitle: String,
     dialogText: String,
-    icon: ImageVector
+    icon: ImageVector,
 ) {
     AlertDialog(
         icon = {

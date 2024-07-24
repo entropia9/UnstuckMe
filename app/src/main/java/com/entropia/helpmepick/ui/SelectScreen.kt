@@ -49,7 +49,7 @@ import com.entropia.helpmepick.ui.theme.Shapes
 @Composable
 fun SelectScreen(
     viewModel: ItemsListViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val uiState = viewModel.itemsListUiState.collectAsState()
     val categoriesUiState = viewModel.categoriesItemUiState.collectAsState()
@@ -118,12 +118,88 @@ fun SelectScreen(
 }
 
 @Composable
+fun ExpandedSelectScreen(
+    viewModel: ItemsListViewModel,
+    modifier: Modifier = Modifier,
+) {
+    val uiState = viewModel.itemsListUiState.collectAsState()
+    val categoriesUiState = viewModel.categoriesItemUiState.collectAsState()
+
+    Column(
+        modifier = modifier
+            .padding(dimensionResource(id = R.dimen.padding_medium))
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        CategoriesRow(
+            categories = categoriesUiState.value.categories,
+            currentCategory = categoriesUiState.value.currentCategory,
+            onAllClick = { viewModel.showAllItems() },
+            onCategoryClick = viewModel::showCurrentCategory,
+            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_large))
+        )
+        Column(Modifier.verticalScroll(rememberScrollState())) {
+            if (uiState.value.itemsList.isNotEmpty()) {
+                Row(Modifier.padding(dimensionResource(id = R.dimen.padding_medium))) {
+                    ContentTab(
+                        label = stringResource(id = R.string.select),
+                        modifier = Modifier.weight(0.5f),
+                        content = {
+                            ItemsGrid(
+                                itemList = categoriesUiState.value.currentItems,
+                                viewModel = viewModel,
+                                modifier = Modifier.padding(
+                                    dimensionResource(id = R.dimen.padding_medium)
+                                )
+                            )
+                        })
+                    ContentTab(
+                        label = stringResource(id = R.string.batch_select),
+                        modifier = Modifier.weight(0.5f),
+                        content = {
+                            Column(
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Row() {
+                                    Button(
+                                        onClick = { viewModel.selectAll() },
+                                        modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+                                    ) {
+                                        Text(text = (stringResource(id = R.string.select_all)))
+                                    }
+                                    Button(
+                                        onClick = { viewModel.clearAll() },
+                                        modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+                                    ) {
+                                        Text(text = (stringResource(id = R.string.clear_all)))
+                                    }
+                                }
+                                if (uiState.value.itemsList.size > 2) {
+                                    SelectRandom(
+                                        viewModel::selectRandom, uiState.value.itemsList.size - 1,
+                                        modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+                                    )
+                                }
+                            }
+                        })
+                }
+            }
+        }
+
+    }
+}
+
+
+@Composable
 fun SelectBottomAppBar(
     viewModel: ItemsListViewModel,
     navigate: () -> Unit,
     navigateToAddEdit: () -> Unit,
     isEnabled: (Int) -> Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val uiState = viewModel.itemsListUiState.collectAsState()
     Box(
@@ -176,7 +252,7 @@ fun ContentTab(
             MaterialTheme.colorScheme.onPrimary,
             MaterialTheme.colorScheme.secondaryContainer
         ),
-    )
+    ),
 ) {
     Box(
         modifier = modifier
@@ -215,7 +291,7 @@ private fun SelectRandom(
     selectFunction: (Int) -> Unit,
     upperLimit: Int,
     modifier: Modifier = Modifier,
-    lowerLimit: Int = 2
+    lowerLimit: Int = 2,
 ) {
     var number by remember {
         mutableIntStateOf(2)
@@ -297,7 +373,7 @@ fun ItemButton(
     selectItem: (item: Item) -> Unit,
     deselectItem: (item: Item) -> Unit,
     modifier: Modifier = Modifier,
-    selected: Boolean = false
+    selected: Boolean = false,
 ) {
 
     val colors = if (selected) ButtonDefaults.buttonColors(

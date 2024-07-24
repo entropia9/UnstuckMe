@@ -6,8 +6,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.window.core.layout.WindowSizeClass
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
+import com.entropia.helpmepick.ui.ExpandedSelectScreen
 import com.entropia.helpmepick.ui.ItemsListViewModel
 import com.entropia.helpmepick.ui.SelectBottomAppBar
 import com.entropia.helpmepick.ui.SelectScreen
@@ -27,7 +30,8 @@ fun BattleModeSelectScreen(
     viewModel: ItemsListViewModel,
     navigate: () -> Unit,
     navigateToAddEdit: () -> Unit,
-    navigateUp: () -> Unit
+    navigateUp: () -> Unit,
+    windowSizeClass: WindowSizeClass
 ) {
     Scaffold(topBar = {
         TopAppBar(
@@ -43,10 +47,17 @@ fun BattleModeSelectScreen(
                 isEnabled = { size -> size >= 4 && size % 4 == 0 }
             )
         }) { innerPadding ->
-        SelectScreen(
-            viewModel = viewModel,
-            modifier = Modifier.padding(innerPadding)
-        )
+        when (windowSizeClass.windowWidthSizeClass) {
+            WindowWidthSizeClass.EXPANDED -> ExpandedSelectScreen(
+                viewModel = viewModel,
+                modifier = Modifier.padding(innerPadding)
+            )
+
+            else -> SelectScreen(
+                viewModel = viewModel,
+                modifier = Modifier.padding(innerPadding)
+            )
+        }
     }
 
 }
