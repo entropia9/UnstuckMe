@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -83,8 +84,14 @@ fun HelpMePickNavHost(
         composable(
             route = RegularDestination.route
         ) {
-            PickRandomScreen(viewModel = viewModel(factory = AppViewModelProvider.Factory),
-                navigateUp = { navController.navigate(MainScreenDestination.route) })
+            PickRandomScreen(
+                viewModel = viewModel(factory = AppViewModelProvider.Factory),
+                navigateUp = { navController.navigate(MainScreenDestination.route) },
+                modifier = when (windowSizeClass.windowWidthSizeClass) {
+                    WindowWidthSizeClass.EXPANDED -> Modifier.padding(100.dp)
+                    else -> Modifier
+                }
+            )
         }
         composable(
             route = StatsDestination.route

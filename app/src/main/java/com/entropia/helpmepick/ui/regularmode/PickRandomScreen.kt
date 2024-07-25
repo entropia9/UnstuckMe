@@ -64,7 +64,7 @@ fun PickRandomScreen(
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Scaffold(modifier = modifier,
+    Scaffold(modifier = Modifier,
         topBar = {
             TopAppBar(
                 title = stringResource(id = RegularDestination.titleRes),
@@ -79,7 +79,7 @@ fun PickRandomScreen(
         val lastDialogueReached =
             viewModel.pickItemUiState.currentDialogue == pickedDialogue || viewModel.pickItemUiState.currentDialogue == outOfOptionsAgree
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(dimensionResource(id = R.dimen.padding_large)),
