@@ -153,7 +153,7 @@ fun ExpandedSelectScreen(
                                     dimensionResource(id = R.dimen.padding_medium)
                                 )
                             )
-                        })
+                        }, )
                     ContentTab(
                         label = stringResource(id = R.string.batch_select),
                         modifier = Modifier.weight(0.5f),

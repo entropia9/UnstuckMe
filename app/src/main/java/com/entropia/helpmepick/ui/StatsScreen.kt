@@ -26,9 +26,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
 import com.entropia.helpmepick.data.Item
@@ -64,17 +67,19 @@ fun StatsScreen(
     navigateUp: () -> Unit,
     navigateToBattleMode: () -> Unit,
     navigateToRegularMode: () -> Unit,
-    viewModel: StatsViewModel
+    viewModel: StatsViewModel,
 ) {
-    Scaffold(modifier = modifier, topBar = {
+    Scaffold(modifier = Modifier, topBar = {
         TopAppBar(
             title = stringResource(id = StatsDestination.titleRes),
             canNavigateBack = true,
             navigateUp = navigateUp
         )
     }) { innerPadding ->
-
-        LazyColumn(modifier = Modifier.padding(innerPadding)) {
+        val configuration = LocalConfiguration.current
+        val screenWidth = configuration.screenWidthDp.dp
+        val maxBarWidth = screenWidth*0.4f
+        LazyColumn(modifier = modifier.padding(innerPadding)) {
             item {
                 StatsBox(label = stringResource(id = R.string.regular), content = {
                     DisplayStats(
@@ -82,14 +87,16 @@ fun StatsScreen(
                         label = stringResource(id = R.string.most_picked),
                         noItemsButtonLabel = stringResource(id = R.string.no_items_button_regular_mode),
                         statsType = StatsType.Picked,
-                        navigateTo = navigateToRegularMode
+                        navigateTo = navigateToRegularMode,
+                        maxBarWidth = maxBarWidth
                     )
                     DisplayStats(
                         list = viewModel.statsUiState.mostSelected,
                         label = stringResource(id = R.string.most_selected),
                         noItemsButtonLabel = stringResource(id = R.string.no_items_button_regular_mode),
                         statsType = StatsType.Selected,
-                        navigateTo = navigateToRegularMode
+                        navigateTo = navigateToRegularMode,
+                        maxBarWidth = maxBarWidth
                     )
 
                     DisplayStats(
@@ -97,7 +104,8 @@ fun StatsScreen(
                         label = stringResource(id = R.string.most_rejected),
                         noItemsButtonLabel = stringResource(id = R.string.no_items_button_regular_mode),
                         statsType = StatsType.Rejected,
-                        navigateTo = navigateToRegularMode
+                        navigateTo = navigateToRegularMode,
+                        maxBarWidth = maxBarWidth
                     )
                 })
             }
@@ -108,21 +116,24 @@ fun StatsScreen(
                         label = stringResource(id = R.string.most_battle_wins),
                         noItemsButtonLabel = stringResource(id = R.string.no_items_button_battle_mode),
                         statsType = StatsType.BattleWins,
-                        navigateTo = navigateToBattleMode
+                        navigateTo = navigateToBattleMode,
+                        maxBarWidth = maxBarWidth
                     )
                     DisplayStats(
                         list = viewModel.statsUiState.mostSelectedBattleMode,
                         label = stringResource(id = R.string.most_selected),
                         noItemsButtonLabel = stringResource(id = R.string.no_items_button_battle_mode),
                         statsType = StatsType.SelectedBattleMode,
-                        navigateTo = navigateToBattleMode
+                        navigateTo = navigateToBattleMode,
+                        maxBarWidth = maxBarWidth
                     )
                     DisplayStats(
                         list = viewModel.statsUiState.mostRejectedBattleMode,
                         label = stringResource(id = R.string.most_rejected),
                         noItemsButtonLabel = stringResource(id = R.string.no_items_button_battle_mode),
                         statsType = StatsType.RejectedBattleMode,
-                        navigateTo = navigateToBattleMode
+                        navigateTo = navigateToBattleMode,
+                        maxBarWidth = maxBarWidth
                     )
                 }, label = stringResource(id = R.string.battle_mode))
             }
@@ -130,11 +141,110 @@ fun StatsScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ExpandedStatsScreen(
+    modifier: Modifier = Modifier,
+    navigateUp: () -> Unit,
+    navigateToBattleMode: () -> Unit,
+    navigateToRegularMode: () -> Unit,
+    viewModel: StatsViewModel,
+) {
+    Scaffold(modifier = Modifier, topBar = {
+        TopAppBar(
+            title = stringResource(id = StatsDestination.titleRes),
+            canNavigateBack = true,
+            navigateUp = navigateUp
+        )
+    }) { innerPadding ->
+        val configuration = LocalConfiguration.current
+        val screenWidth = configuration.screenWidthDp.dp
+        val mainBarWidth = screenWidth*0.5f
+        val smallBarWidth = screenWidth*0.15f
+        LazyColumn(modifier = modifier.padding(innerPadding)) {
+            item {
+                StatsBox(label = stringResource(id = R.string.regular), content = {
+                    Column() {
+                        DisplayStats(
+                            list = viewModel.statsUiState.mostPicked,
+                            label = stringResource(id = R.string.most_picked),
+                            noItemsButtonLabel = stringResource(id = R.string.no_items_button_regular_mode),
+                            statsType = StatsType.Picked,
+                            navigateTo = navigateToRegularMode,
+                            maxBarWidth = mainBarWidth
+                        )
+                        Row() {
+
+                            DisplayStats(
+                                list = viewModel.statsUiState.mostSelected,
+                                label = stringResource(id = R.string.most_selected),
+                                noItemsButtonLabel = stringResource(id = R.string.no_items_button_regular_mode),
+                                statsType = StatsType.Selected,
+                                navigateTo = navigateToRegularMode,
+                                modifier = Modifier.weight(0.5f),
+                                maxBarWidth = smallBarWidth
+                            )
+
+                            DisplayStats(
+                                list = viewModel.statsUiState.mostRejected,
+                                label = stringResource(id = R.string.most_rejected),
+                                noItemsButtonLabel = stringResource(id = R.string.no_items_button_regular_mode),
+                                statsType = StatsType.Rejected,
+                                navigateTo = navigateToRegularMode,
+                                modifier = Modifier.weight(0.5f),
+                                maxBarWidth = smallBarWidth
+                            )
+                        }
+                    }
+
+
+                })
+            }
+            item {
+                StatsBox(content = {
+                    Column {
+                        DisplayStats(
+                            list = viewModel.statsUiState.mostBattleWins,
+                            label = stringResource(id = R.string.most_battle_wins),
+                            noItemsButtonLabel = stringResource(id = R.string.no_items_button_battle_mode),
+                            statsType = StatsType.BattleWins,
+                            navigateTo = navigateToBattleMode,
+                            maxBarWidth = mainBarWidth
+                        )
+                        Row {
+                            DisplayStats(
+                                list = viewModel.statsUiState.mostSelectedBattleMode,
+                                label = stringResource(id = R.string.most_selected),
+                                noItemsButtonLabel = stringResource(id = R.string.no_items_button_battle_mode),
+                                statsType = StatsType.SelectedBattleMode,
+                                navigateTo = navigateToBattleMode,
+                                modifier = Modifier.weight(0.3f),
+                                maxBarWidth = smallBarWidth
+                            )
+                            DisplayStats(
+                                list = viewModel.statsUiState.mostRejectedBattleMode,
+                                label = stringResource(id = R.string.most_rejected),
+                                noItemsButtonLabel = stringResource(id = R.string.no_items_button_battle_mode),
+                                statsType = StatsType.RejectedBattleMode,
+                                navigateTo = navigateToBattleMode,
+                                modifier = Modifier.weight(0.3f),
+                                maxBarWidth = smallBarWidth
+                            )
+                        }
+                    }
+
+                }, label = stringResource(id = R.string.battle_mode))
+            }
+        }
+    }
+}
+
+
 @Composable
 fun StatsBox(
     modifier: Modifier = Modifier,
     content: @Composable (ColumnScope.() -> Unit),
-    label: String
+    label: String,
 ) {
     Box(
         modifier = modifier
@@ -172,17 +282,22 @@ private fun DisplayStats(
     label: String,
     noItemsButtonLabel: String,
     statsType: StatsType,
-    navigateTo: () -> Unit
+    navigateTo: () -> Unit,
+    modifier: Modifier = Modifier,
+    maxBarWidth: Dp = 150.dp,
 ) {
     if (list.isNotEmpty()) {
         MostByStats(
             itemList = list,
             label = label,
-            statsType = statsType
+            statsType = statsType,
+            modifier = modifier,
+            maxBarWidth = maxBarWidth
         )
     } else {
         EmptyListCard(
-            text = stringResource(id = R.string.no_items), buttonText = noItemsButtonLabel
+            text = stringResource(id = R.string.no_items), buttonText = noItemsButtonLabel,
+            modifier = modifier
         ) {
             navigateTo()
         }
@@ -194,7 +309,7 @@ fun EmptyListCard(
     text: String,
     buttonText: String,
     modifier: Modifier = Modifier,
-    navigateTo: () -> Unit
+    navigateTo: () -> Unit,
 ) {
     Card(
         modifier = modifier
@@ -228,7 +343,8 @@ fun MostByStats(
     label: String,
     itemList: List<Item>,
     statsType: StatsType,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    maxBarWidth: Dp = 150.dp,
 ) {
 
     val inputList: List<BarData> = itemList.map { item ->
@@ -264,7 +380,8 @@ fun MostByStats(
                         .fillMaxWidth()
                         .padding(
                             dimensionResource(id = R.dimen.padding_medium)
-                        )
+                        ),
+                    maxBarWidth = maxBarWidth
                 )
                 if (itemList.size > numberOfItemsVisibleInStats) {
                     ExpandButton(expanded) { expanded = !expanded }
@@ -311,7 +428,7 @@ private fun determineBarDataColor(statsType: StatsType) = when (statsType) {
 
 private fun determineBarDataValue(
     statsType: StatsType,
-    item: Item
+    item: Item,
 ) = when (statsType) {
     StatsType.Selected -> item.timesSelected
     StatsType.SelectedBattleMode -> item.timesSelectedBattleMode

@@ -51,7 +51,7 @@ object BattleModeDestination : NavigationDestination {
 fun BattleModeScreen(
     viewModel: BattleModeViewModel, modifier: Modifier = Modifier, navigateUp: () -> Unit
 ) {
-    Scaffold(modifier = modifier, topBar = {
+    Scaffold(modifier = Modifier, topBar = {
         TopAppBar(
             title = stringResource(id = BattleModeDestination.titleRes),
             canNavigateBack = viewModel.battleModeUiState.winner != null,
@@ -59,7 +59,7 @@ fun BattleModeScreen(
         )
     }) { innerPadding ->
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -74,6 +74,7 @@ fun BattleModeScreen(
                             id = R.string.round,
                             viewModel.battleModeUiState.round
                         ),
+                        style=MaterialTheme.typography.titleLarge,
                         modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
                     )
 
@@ -106,7 +107,7 @@ fun BattleModeScreen(
                     ) {
                         Row {
                             Box(
-                                modifier = modifier
+                                modifier = Modifier
                                     .background(
                                         brush = Brush.horizontalGradient(
                                             colors = listOf(
@@ -151,7 +152,7 @@ fun BattleModeScreen(
                         Row {
                             Spacer(modifier = Modifier.weight(1f))
                             Box(
-                                modifier = modifier
+                                modifier = Modifier
                                     .background(
                                         brush = Brush.horizontalGradient(
                                             colors = listOf(
@@ -210,7 +211,7 @@ fun BattleModeScreen(
                         )
                     )
                     Box(
-                        modifier = modifier
+                        modifier = Modifier
                             .fillMaxWidth()
                             .background(
                                 brush = Brush.verticalGradient(

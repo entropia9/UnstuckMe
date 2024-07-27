@@ -39,7 +39,7 @@ data class BarData(
 
 @Composable
 fun BarChart(
-    maxBarWidth: Dp = 120.dp,
+    maxBarWidth: Dp = 150.dp,
     height: Dp = 40.dp,
     inputList: List<BarData>,
     modifier: Modifier
