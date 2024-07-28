@@ -59,7 +59,7 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
 
     private suspend fun updateCategories(
         item: Item,
-        categoriesItemUiState: StateFlow<CategoryUiState>
+        categoriesItemUiState: StateFlow<CategoryUiState>,
     ) {
         if (item.category != "" && !categoriesItemUiState.value.categories.contains(item.category)) {
             (categoriesItemUiState as MutableStateFlow).value = CategoryUiState(
@@ -115,13 +115,25 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
 
     fun selectRandom(amountToSelect: Int) {
         if (_itemsListUiState.value.itemsList.isNotEmpty()) {
-            val list: MutableList<Item> = categoriesItemUiState.value.currentItems.toMutableList()
-            clearAll()
-            repeat(amountToSelect) {
-                val item = list.random()
-                selectItem(item)
-                list.remove(item)
+            val list: MutableList<Item> = categoriesItemUiState.value.currentItems.subtract(
+                _itemsListUiState.value.selectedItemsList.toSet()
+            ).toMutableList()
+            if (list.isNotEmpty()) {
+                repeat(amountToSelect) {
+                    val item = list.random()
+                    selectItem(item)
+                    list.remove(item)
+                }
+            } else {
+                clearAll()
+                list.addAll(categoriesItemUiState.value.currentItems)
+                repeat(amountToSelect) {
+                    val item = list.random()
+                    selectItem(item)
+                    list.remove(item)
+                }
             }
+
         }
     }
 
@@ -173,15 +185,15 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
 
 data class ItemsListUiState(
     val itemsList: List<Item> = listOf(),
-    val selectedItemsList: MutableList<Item> = mutableStateListOf()
+    val selectedItemsList: MutableList<Item> = mutableStateListOf(),
 )
 
 data class CategoryUiState(
     val categories: List<String> = listOf(),
     val currentCategory: String = "",
-    var currentItems: List<Item> = listOf()
+    var currentItems: List<Item> = listOf(),
 )
 
 data class AddEditUiState(
-    val isEdited: Boolean = false
+    val isEdited: Boolean = false,
 )
