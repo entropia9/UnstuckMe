@@ -101,6 +101,7 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
         if (isSelected(item)) {
             _itemsListUiState.value.selectedItemsList.remove(item)
         }
+        AppViewModelProvider.items = _itemsListUiState.value.selectedItemsList.toList()
     }
 
     fun selectAll() {
