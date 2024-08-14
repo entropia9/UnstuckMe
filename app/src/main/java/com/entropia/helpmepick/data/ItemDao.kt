@@ -24,6 +24,8 @@ interface ItemDao {
 
     @Query("SELECT * FROM items ORDER BY name ASC")
     fun getAllItems(): Flow<List<Item>>
+    @Query("SELECT * FROM items WHERE completed is 0 ORDER BY name ASC")
+    fun getAllNotCompletedItems(): Flow<List<Item>>
 
     @Query("SELECT * FROM items WHERE timesPicked > 0 ORDER BY timesPicked DESC")
     fun getAllItemsByTimesPicked(): Flow<List<Item>>

@@ -4,6 +4,8 @@ import kotlinx.coroutines.flow.Flow
 
 class OfflineItemsRepository(private val itemDao: ItemDao) : ItemsRepository {
     override fun getAllItemsStream(): Flow<List<Item>> = itemDao.getAllItems()
+    override fun getAllNotCompletedItemsStream(): Flow<List<Item>> =
+        itemDao.getAllNotCompletedItems()
 
     override fun getItem(name: String): Item? = itemDao.getItem(name)
 

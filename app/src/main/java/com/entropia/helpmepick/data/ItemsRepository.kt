@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 interface ItemsRepository {
 
     fun getAllItemsStream(): Flow<List<Item>>
-
+    fun getAllNotCompletedItemsStream(): Flow<List<Item>>
 
     fun getItem(name: String): Item?
 

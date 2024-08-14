@@ -11,6 +11,10 @@ class FakeRepository : ItemsRepository {
         return listOf(fakeData.itemsList).asFlow()
     }
 
+    override fun getAllNotCompletedItemsStream(): Flow<List<Item>> {
+        return listOf(fakeData.itemsList).asFlow()
+    }
+
     override fun getItem(name: String): Item? {
         return fakeData.itemsList.firstOrNull { item: Item -> item.name == name }
     }
@@ -36,8 +40,16 @@ class FakeRepository : ItemsRepository {
         return listOf(fakeData.itemsList.sortedBy { item -> item.timesSelected }).asFlow()
     }
 
+    override fun getAllByTimesSelectedBattleMode(): Flow<List<Item>> {
+        return listOf(fakeData.itemsList.sortedBy { item -> item.timesSelectedBattleMode }).asFlow()
+    }
+
     override fun getAllByTimesRejected(): Flow<List<Item>> {
         return listOf(fakeData.itemsList.sortedBy { item -> item.timesRejected }).asFlow()
+    }
+
+    override fun getAllByTimesRejectedBattleMode(): Flow<List<Item>> {
+        return listOf(fakeData.itemsList.sortedBy { item -> item.timesRejectedBattleMode }).asFlow()
     }
 
     override fun getAllByBattleWins(): Flow<List<Item>> {
