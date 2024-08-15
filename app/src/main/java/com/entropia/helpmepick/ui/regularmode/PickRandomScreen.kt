@@ -62,13 +62,14 @@ object RegularDestination : NavigationDestination {
 fun PickRandomScreen(
     viewModel: PickRandomViewModel,
     navigateUp: () -> Unit,
+    navigateToSelect: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(modifier = Modifier,
         topBar = {
             TopAppBar(
                 title = stringResource(id = RegularDestination.titleRes),
-                canNavigateBack = viewModel.pickItemUiState.currentDialogue == startAgainDialogue || viewModel.pickItemUiState.currentDialogue == pickedDialogue || viewModel.pickItemUiState.currentDialogue == outOfOptions,
+                canNavigateBack = viewModel.pickItemUiState.currentDialogue == startAgainDialogue || viewModel.pickItemUiState.currentDialogue == pickedDialogue || viewModel.pickItemUiState.currentDialogue == outOfOptionsAgree,
                 navigateUp = navigateUp
             )
         }) { innerPadding ->
@@ -102,7 +103,7 @@ fun PickRandomScreen(
                         id = viewModel.pickItemUiState.currentDialogue,
                         itemName
                     ),
-                    onYesButtonPressed = { viewModel.updatePickedStatsAndShowDialogue(navigateUp) },
+                    onYesButtonPressed = { viewModel.updatePickedStatsAndShowDialogue(navigateToSelect) },
                     onNoButtonPressed = { viewModel.updateRejectedStatsAndShowDialogue(navigateUp) },
                     lastDialogueReached = lastDialogueReached,
                     modifier = Modifier

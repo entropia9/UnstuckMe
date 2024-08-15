@@ -94,6 +94,7 @@ fun HelpMePickNavHost(
             PickRandomScreen(
                 viewModel = viewModel(factory = AppViewModelProvider.Factory),
                 navigateUp = { navController.navigate(MainScreenDestination.route) },
+                navigateToSelect = { navController.navigate(RegularSelectScreenDestination.route) },
                 modifier = when (windowSizeClass.windowWidthSizeClass) {
                     WindowWidthSizeClass.EXPANDED -> Modifier.padding(100.dp)
                     else -> Modifier

@@ -99,7 +99,7 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
         when (pickItemUiState.currentDialogue) {
             startAgainDialogue -> {
                 navigateUp()
-                navigateUp()
+                //navigateUp()
             }
 
             else -> {
