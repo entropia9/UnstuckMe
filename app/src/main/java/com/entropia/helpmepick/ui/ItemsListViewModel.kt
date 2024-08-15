@@ -43,7 +43,7 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
         viewModelScope.launch {
             (categoriesItemUiState as MutableStateFlow).value = CategoryUiState(
                 itemsRepository.getCategories().first(),
-                currentItems = itemsRepository.getAllItemsStream().first()
+                currentItems = itemsRepository.getAllNotCompletedItemsStream().first()
             )
         }
 
@@ -68,13 +68,19 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
             )
 
         }
+        if (item.completed) {
+            (categoriesItemUiState as MutableStateFlow).value = CategoryUiState(
+                itemsRepository.getCategories().first(),
+                categoriesItemUiState.value.currentCategory
+            )
+        }
         if (categoriesItemUiState.value.currentCategory == "") showAllItems() else showCurrentCategory(
             categoriesItemUiState.value.currentCategory
         )
     }
 
-    fun updateItem(item: Item, dispatcher: CoroutineDispatcher = defaultDispatcher) =
-        viewModelScope.launch(dispatcher) {
+    fun updateItem(item: Item) =
+        viewModelScope.launch {
             itemsRepository.updateItem(item)
             updateCategories(item, categoriesItemUiState)
         }
@@ -142,7 +148,16 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
         viewModelScope.launch {
             (categoriesItemUiState as MutableStateFlow).value = categoriesItemUiState.value.copy(
                 currentCategory = "",
-                currentItems = itemsRepository.getAllItemsStream().first()
+                currentItems = itemsRepository.getAllNotCompletedItemsStream().first()
+            )
+        }
+    }
+
+    fun showCompleted() {
+        viewModelScope.launch {
+            (categoriesItemUiState as MutableStateFlow).value = categoriesItemUiState.value.copy(
+                currentCategory = "Completed",
+                currentItems = itemsRepository.getCompleted().first()
             )
         }
     }

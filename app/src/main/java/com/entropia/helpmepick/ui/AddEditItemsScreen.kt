@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -50,6 +51,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -76,7 +78,11 @@ object AddEditItemsScreenDestination : NavigationDestination {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEditItemsScreen(viewModel: ItemsListViewModel, navigateUp: () -> Unit, modifier: Modifier=Modifier) {
+fun AddEditItemsScreen(
+    viewModel: ItemsListViewModel,
+    navigateUp: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val uiState = viewModel.categoriesItemUiState.collectAsState()
     val editUiState = viewModel.addEditUiState.collectAsState()
 
@@ -116,11 +122,16 @@ fun AddEditItemsScreen(viewModel: ItemsListViewModel, navigateUp: () -> Unit, mo
         },
             floatingActionButtonPosition = FabPosition.Center
         ) { paddingValues ->
-            Column(modifier = modifier.padding(paddingValues).fillMaxSize()) {
+            Column(
+                modifier = modifier
+                    .padding(paddingValues)
+                    .fillMaxSize()
+            ) {
                 CategoriesRow(
                     categories = uiState.value.categories,
                     currentCategory = uiState.value.currentCategory,
                     onAllClick = viewModel::showAllItems,
+                    onCompletedClick = viewModel::showCompleted,
                     onCategoryClick = viewModel::showCurrentCategory
                 )
                 ItemsList(
@@ -144,11 +155,19 @@ fun CategoriesRow(
     categories: List<String>,
     currentCategory: String,
     onAllClick: () -> Unit,
+    onCompletedClick: (() -> Unit)? = null,
     onCategoryClick: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
-    val list = listOf(stringResource(id = R.string.all)) + categories
+    val all = stringResource(id = R.string.all)
+    val completed = stringResource(id = R.string.completed)
+    val list = if (onCompletedClick != null) {
+        listOf(all) + categories + listOf(completed)
+    } else {
+        listOf(all) + categories
+    }
+
     LazyRow(
         state = listState, modifier = modifier
             .fadingEdge(
@@ -166,18 +185,17 @@ fun CategoriesRow(
     ) {
         items(list) { item ->
             Button(
-                onClick = { if (item != list[0]) onCategoryClick(item) else onAllClick() },
-                colors = if (currentCategory == item || (item == list[0] && currentCategory == "")) {
-                    ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                } else {
-                    ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
+                onClick = {
+                    when (item) {
+                        all -> onAllClick()
+                        completed -> if (onCompletedClick != null) {
+                            onCompletedClick()
+                        }
+
+                        else -> onCategoryClick(item)
+                    }
                 },
+                colors = determineButtonColors(currentCategory, item, list),
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small))
             ) {
                 Text(text = item)
@@ -185,6 +203,23 @@ fun CategoriesRow(
         }
     }
 
+}
+
+@Composable
+private fun determineButtonColors(
+    currentCategory: String,
+    item: String,
+    list: List<String>,
+) = if (currentCategory == item || (item == list[0] && currentCategory == "")) {
+    ButtonDefaults.buttonColors(
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+    )
+} else {
+    ButtonDefaults.buttonColors(
+        containerColor = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary
+    )
 }
 
 
@@ -195,7 +230,7 @@ fun ItemsList(
     updateItem: (Item) -> Unit,
     onEditItem: KFunction2<String, String, Unit>,
     deleteItem: (Item) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Adaptive(minSize = 400.dp),
@@ -256,94 +291,181 @@ fun ItemCard(
                 ), shape = Shapes.medium
             )
     ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
-        ) {
-            Column(
-                modifier = Modifier
-                    .weight(0.7f)
-                    .padding(
-                        start = dimensionResource(id = R.dimen.padding_medium),
-                        bottom = dimensionResource(
-                            id = R.dimen.padding_small
+        Column {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+            ) {
+                Column(
+                    modifier = Modifier
+                        .weight(0.7f)
+                        .padding(
+                            start = dimensionResource(id = R.dimen.padding_medium),
+                            bottom = dimensionResource(
+                                id = R.dimen.padding_small
+                            )
                         )
+                ) {
+                    TextRow(
+                        inputLabel = stringResource(R.string.name),
+                        fieldValue = if (!isEditable) item.name else viewModel.editedItem.first,
+                        onValueChange = {
+                            viewModel.updateEditedItem(
+                                it,
+                                viewModel.editedItem.second
+                            )
+                        },
+                        isEditable = isEditable,
+                        modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small)),
                     )
-            ) {
-                TextRow(
-                    inputLabel = stringResource(R.string.name),
-                    fieldValue = if (!isEditable) item.name else viewModel.editedItem.first,
-                    onValueChange = { viewModel.updateEditedItem(it, viewModel.editedItem.second) },
-                    isEditable = isEditable,
-                    modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small)),
-                )
-                TextRow(
-                    inputLabel = stringResource(R.string.category),
-                    fieldValue = if (!isEditable) item.category else viewModel.editedItem.second,
-                    onValueChange = { viewModel.updateEditedItem(viewModel.editedItem.first, it) },
-                    isEditable = isEditable,
-                    modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small)),
-                )
-            }
-            Column(
-                modifier = modifier.padding(16.dp),
-                verticalArrangement = Arrangement.SpaceEvenly,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                if (isEditable) {
-                    Row {
-                        Icon(
-                            imageVector = Icons.Default.Check, contentDescription = "Edit",
-                            modifier = Modifier
-                                .padding(dimensionResource(id = R.dimen.padding_medium))
-                                .clickable {
-                                    viewModel.updateIsBeingEdited(false)
-                                    isEditable = false
-                                    updateItem(
-                                        item.copy(
-                                            name = viewModel.editedItem.first,
-                                            category = viewModel.editedItem.second
-                                        )
-                                    )
-                                }
-                        )
-                        Icon(
-                            imageVector = Icons.Default.Clear, contentDescription = "Edit",
-                            modifier = Modifier
-                                .padding(dimensionResource(id = R.dimen.padding_medium))
-                                .clickable {
-                                    viewModel.updateIsBeingEdited(false)
-                                    isEditable = false
-                                }
-                        )
-                    }
-                } else {
+                    TextRow(
+                        inputLabel = stringResource(R.string.category),
+                        fieldValue = if (!isEditable) item.category else viewModel.editedItem.second,
+                        onValueChange = {
+                            viewModel.updateEditedItem(
+                                viewModel.editedItem.first,
+                                it
+                            )
+                        },
+                        isEditable = isEditable,
+                        modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small)),
+                    )
+                }
+                Column(
+                    modifier = modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.SpaceEvenly,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    EditIcons(
+                        isEditable,
+                        onCheckClicked = {
+                            viewModel.updateIsBeingEdited(false)
+                            isEditable = false
+                            updateItem(
+                                item.copy(
+                                    name = viewModel.editedItem.first,
+                                    category = viewModel.editedItem.second
+                                )
+                            )
+                        },
+                        onClearClicked = {
+                            viewModel.updateIsBeingEdited(false)
+                            isEditable = false
+                        },
+                        onEditClicked = {
+                            viewModel.updateIsBeingEdited(true)
+                            isEditable = true
+                            onEditItem(item.name, item.category)
+                        }
+                    )
+                    Spacer(modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium)))
                     Icon(
-                        imageVector = Icons.Default.Edit, contentDescription = "Edit",
+                        imageVector = Icons.Default.Delete, contentDescription = "Delete",
                         modifier = Modifier
                             .padding(dimensionResource(id = R.dimen.padding_medium))
                             .clickable {
-                                viewModel.updateIsBeingEdited(true)
-                                isEditable = true
-                                onEditItem(item.name, item.category)
+                                showDialog = true
                             }
                     )
-
                 }
-                Spacer(modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium)))
-                Icon(
-                    imageVector = Icons.Default.Delete, contentDescription = "Delete",
-                    modifier = Modifier
-                        .padding(dimensionResource(id = R.dimen.padding_medium))
-                        .clickable {
-                            showDialog = true
-                        }
+            }
+            CompleteTab(
+                completeItem = {
+                    updateItem(
+                        item.copy(completed = true)
+                    )
+                },
+                modifier = modifier.clip(
+                    RoundedCornerShape(
+                        bottomEnd = 20.dp, bottomStart = 40.dp
+                    )
+                ),
+                visible = viewModel.categoriesItemUiState.value.currentCategory != stringResource(id = R.string.completed)
+            )
+        }
+
+    }
+}
+
+@Composable
+private fun EditIcons(
+    isEditable: Boolean,
+    onCheckClicked: () -> Unit,
+    onClearClicked: () -> Unit,
+    onEditClicked: () -> Unit,
+) {
+
+    if (isEditable) {
+        Row {
+            Icon(
+                imageVector = Icons.Default.Check, contentDescription = "Edit",
+                modifier = Modifier
+                    .padding(dimensionResource(id = R.dimen.padding_medium))
+                    .clickable {
+                        onCheckClicked()
+                    }
+            )
+            Icon(
+                imageVector = Icons.Default.Clear, contentDescription = "Edit",
+                modifier = Modifier
+                    .padding(dimensionResource(id = R.dimen.padding_medium))
+                    .clickable {
+                        onClearClicked()
+                    }
+            )
+        }
+    } else {
+        Icon(
+            imageVector = Icons.Default.Edit, contentDescription = "Edit",
+            modifier = Modifier
+                .padding(dimensionResource(id = R.dimen.padding_medium))
+                .clickable {
+                    onEditClicked()
+                }
+        )
+
+    }
+}
+
+@Composable
+fun CompleteTab(
+    modifier: Modifier = Modifier,
+    completeItem: (() -> Unit),
+    visible: Boolean,
+) {
+    if (visible) {
+        Box(
+            modifier.background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.onPrimary,
+                        MaterialTheme.colorScheme.primaryContainer
+                    )
                 )
+            )
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Completed?",
+
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+                )
+                Button(
+                    onClick = { completeItem() },
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+                ) {
+                    Icon(imageVector = Icons.Default.Check, contentDescription = null)
+                }
             }
         }
     }
 }
+
 
 @Composable
 fun DeleteDialog(
@@ -374,7 +496,7 @@ fun TextRow(
     fieldValue: String,
     isEditable: Boolean,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     OutlinedTextField(
         modifier = modifier,
@@ -396,7 +518,7 @@ fun TextRow(
 
 @Composable
 fun AddItemFAB(
-    onClick: () -> Unit, modifier: Modifier = Modifier
+    onClick: () -> Unit, modifier: Modifier = Modifier,
 ) {
     FloatingActionButton(onClick = onClick, modifier = modifier) {
         Icon(

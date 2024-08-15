@@ -68,6 +68,8 @@
     <string name="navigate_to_add_button">Add or Edit Items</string>
     <string name="add_item">Add Item</string>
     <string name="all">All</string>
+    <string name="completed">Completed</string>
+    <string name="completed_question">Completed?</string>
     <string name="see_all">Expand</string>
     <string name="no_items">No items to display</string>
     <string name="no_items_button_battle_mode">Start Battle Mode</string>
