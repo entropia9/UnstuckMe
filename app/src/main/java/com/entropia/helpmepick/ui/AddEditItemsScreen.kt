@@ -415,7 +415,7 @@ fun CompletedItemCard(
         Column(
             Modifier
                 .fillMaxWidth()
-                .padding(dimensionResource(id = R.dimen.padding_medium))
+                .padding(dimensionResource(id = R.dimen.padding_large))
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = item.name, style = Typography.headlineMedium)
