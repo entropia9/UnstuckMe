@@ -1,6 +1,5 @@
 package com.entropia.helpmepick.ui.stats
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -417,7 +416,6 @@ fun MostByStats(
     modifier: Modifier = Modifier,
     maxBarWidth: Dp = 150.dp,
 ) {
-    Log.d("map",label + map.keys.toString() + map.values.toString())
     val inputList: List<BarData> = map.map { record ->
         BarData(
             value = record.value,

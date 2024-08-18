@@ -63,30 +63,25 @@ interface ItemDao {
     @Query("SELECT category, COUNT(completed) FROM items WHERE completed=1 GROUP BY category ORDER BY COUNT(completed) DESC")
     fun getCategoriesByNumberOfCompletedItems(): Flow<List<CompletedTuple>>
 
-    @Query("SELECT category, COUNT(battleWins) FROM items WHERE battleWins>0 GROUP BY category ORDER BY COUNT(battleWins) DESC")
+    @Query("SELECT category, SUM(battleWins) FROM items WHERE battleWins>0 GROUP BY category ORDER BY SUM(battleWins) DESC")
     fun getCategoriesByNumberOfBattleWins(): Flow<List<BattleWinsTuple>>
 
-    @Query("SELECT category, COUNT(timesPicked) FROM items WHERE timesPicked>0 GROUP BY category ORDER BY COUNT(timesPicked) DESC")
+    @Query("SELECT category, SUM(timesPicked) FROM items WHERE timesPicked>0 GROUP BY category ORDER BY SUM(timesPicked) DESC")
     fun getCategoriesByNumberOfRegularWins(): Flow<List<RegularWinsTuple>>
-}
-
-interface Tuple {
-    val category: String
-    val count: Int
 }
 
 
 data class CompletedTuple(
-    @ColumnInfo(name = "category") override val category: String,
-    @ColumnInfo(name = "COUNT(completed)") override val count: Int,
-) : Tuple
+    @ColumnInfo(name = "category") val category: String,
+    @ColumnInfo(name = "COUNT(completed)") val count: Int,
+)
 
 data class BattleWinsTuple(
     @ColumnInfo(name = "category") val category: String,
-    @ColumnInfo(name = "COUNT(battleWins)") val count: Int,
+    @ColumnInfo(name = "SUM(battleWins)") val count: Int,
 )
 
 data class RegularWinsTuple(
     @ColumnInfo(name = "category") val category: String,
-    @ColumnInfo(name = "COUNT(timesPicked)") val count: Int,
+    @ColumnInfo(name = "SUM(timesPicked)") val count: Int,
 )

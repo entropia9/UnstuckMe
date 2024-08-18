@@ -167,12 +167,12 @@ class StatsViewModel(val itemsRepository: ItemsRepository) : ViewModel() {
 
     private suspend fun getCategoriesByNumberOfRegularWinsStats() {
         val categoriesByNumberOfRegularWins = viewModelScope.async {
-            itemsRepository.getCategoriesByNumberOfBattleWins().first()
+            itemsRepository.getCategoriesByNumberOfRegularWins().first()
         }
         val regularWinsByCategory =
-            categoriesByNumberOfRegularWins.await().associate { it.category to it.count }
+            categoriesByNumberOfRegularWins.await()
         statsUiState = statsUiState.copy(
-            regularWinsByCategory = regularWinsByCategory
+            regularWinsByCategory = regularWinsByCategory.associate { it.category to it.count }
         )
     }
 }
