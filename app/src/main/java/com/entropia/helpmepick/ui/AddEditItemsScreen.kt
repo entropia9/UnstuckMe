@@ -55,6 +55,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.entropia.helpmepick.R
@@ -65,6 +66,7 @@ import com.entropia.helpmepick.ui.custom.FadingSide
 import com.entropia.helpmepick.ui.custom.fadingEdge
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
 import com.entropia.helpmepick.ui.theme.Shapes
+import com.entropia.helpmepick.ui.theme.Typography
 import kotlinx.coroutines.launch
 import kotlin.reflect.KFunction2
 
@@ -239,14 +241,19 @@ fun ItemsList(
             .padding(dimensionResource(id = R.dimen.padding_medium))
     ) {
         items(uiState.value.currentItems) { item ->
-            ItemCard(
-                viewModel = viewModel,
-                updateItem = updateItem,
-                onEditItem = onEditItem,
-                deleteItem = deleteItem,
-                item = item,
-                modifier = Modifier
-            )
+            if (uiState.value.currentCategory != stringResource(id = R.string.completed)) {
+                ItemCard(
+                    viewModel = viewModel,
+                    updateItem = updateItem,
+                    onEditItem = onEditItem,
+                    deleteItem = deleteItem,
+                    item = item,
+                    modifier = Modifier
+                )
+            } else {
+                CompletedItemCard(item = item)
+            }
+
         }
     }
 }
@@ -386,6 +393,62 @@ fun ItemCard(
         }
 
     }
+}
+
+@Composable
+fun CompletedItemCard(
+    modifier: Modifier = Modifier,
+    item: Item,
+) {
+    Box(
+        modifier = modifier
+            .padding(dimensionResource(id = R.dimen.padding_small))
+            .background(
+                Brush.linearGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.onPrimary,
+                        MaterialTheme.colorScheme.secondaryContainer
+                    )
+                ), shape = Shapes.medium
+            )
+    ) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(id = R.dimen.padding_medium))
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = item.name, style = Typography.headlineMedium)
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = stringResource(id = R.string.category_completed, item.category),
+                    modifier = Modifier.padding(
+                        dimensionResource(id = R.dimen.padding_medium)
+                    ),
+                    style = Typography.bodyLarge, fontWeight = FontWeight.ExtraBold
+                )
+            }
+
+            Column(Modifier.padding(top = dimensionResource(id = R.dimen.padding_medium))) {
+                Text(
+                    text = stringResource(id = R.string.regular_mode_completed, item.timesPicked),
+                    style = Typography.bodyLarge,
+                    fontWeight = FontWeight.ExtraBold,
+                    modifier= Modifier.padding(bottom=dimensionResource(id = R.dimen.padding_small))
+                )
+                Text(
+                    text = stringResource(id = R.string.battle_mode_completed, item.battleWins),
+                    style = Typography.bodyLarge,
+                    fontWeight = FontWeight.ExtraBold,
+                    modifier= Modifier.padding(bottom=dimensionResource(id = R.dimen.padding_small))
+                )
+
+            }
+
+        }
+
+    }
+
 }
 
 @Composable
