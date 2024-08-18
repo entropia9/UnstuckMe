@@ -16,11 +16,8 @@ import com.entropia.helpmepick.AppViewModelProvider
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.ui.AddEditItemsScreen
 import com.entropia.helpmepick.ui.AddEditItemsScreenDestination
-import com.entropia.helpmepick.ui.ExpandedStatsScreen
 import com.entropia.helpmepick.ui.MainScreen
 import com.entropia.helpmepick.ui.MainScreenDestination
-import com.entropia.helpmepick.ui.StatsDestination
-import com.entropia.helpmepick.ui.StatsScreen
 import com.entropia.helpmepick.ui.battlemode.BattleModeDestination
 import com.entropia.helpmepick.ui.battlemode.BattleModeScreen
 import com.entropia.helpmepick.ui.battlemode.BattleModeSelectScreen
@@ -29,6 +26,9 @@ import com.entropia.helpmepick.ui.regularmode.PickRandomScreen
 import com.entropia.helpmepick.ui.regularmode.RegularDestination
 import com.entropia.helpmepick.ui.regularmode.RegularSelectScreen
 import com.entropia.helpmepick.ui.regularmode.RegularSelectScreenDestination
+import com.entropia.helpmepick.ui.stats.ExpandedStatsScreen
+import com.entropia.helpmepick.ui.stats.StatsDestination
+import com.entropia.helpmepick.ui.stats.StatsScreen
 
 @Composable
 fun HelpMePickNavHost(
@@ -118,7 +118,11 @@ fun HelpMePickNavHost(
                             navController.navigate(
                                 RegularSelectScreenDestination.route
                             )
-                        }, modifier = Modifier.padding(50.dp)
+                        },
+                        navigateToAddEdit = {
+                            navController.navigate(AddEditItemsScreenDestination.route)
+                        },
+                        modifier = Modifier.padding(50.dp)
                     )
                 }
 
@@ -135,6 +139,9 @@ fun HelpMePickNavHost(
                             navController.navigate(
                                 RegularSelectScreenDestination.route
                             )
+                        },
+                        navigateToAddEdit = {
+                            navController.navigate(AddEditItemsScreenDestination.route)
                         }
                     )
                 }

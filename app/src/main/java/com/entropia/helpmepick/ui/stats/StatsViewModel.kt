@@ -1,4 +1,4 @@
-package com.entropia.helpmepick.ui
+package com.entropia.helpmepick.ui.stats
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,7 +23,9 @@ class StatsViewModel(val itemsRepository: ItemsRepository) : ViewModel() {
         getMostRejected()
         getMostRejectedBattleMode()
         getMostBattleWins()
-
+        getCompleted()
+        getCategoriesByNumberOfBattleWins()
+        getCategoriesByNumberOfRegularWins()
     }
 
     private fun getMostRejectedBattleMode() {
@@ -59,6 +61,24 @@ class StatsViewModel(val itemsRepository: ItemsRepository) : ViewModel() {
     private fun getMostRejected() {
         viewModelScope.launch {
             getAllByTimesRejected()
+        }
+    }
+
+    private fun getCompleted() {
+        viewModelScope.launch {
+            getCompletedByCategory()
+        }
+    }
+
+    private fun getCategoriesByNumberOfBattleWins() {
+        viewModelScope.launch {
+            getCategoriesByNumberOfBattleWinsStats()
+        }
+    }
+
+    private fun getCategoriesByNumberOfRegularWins() {
+        viewModelScope.launch {
+            getCategoriesByNumberOfRegularWinsStats()
         }
     }
 
@@ -121,6 +141,40 @@ class StatsViewModel(val itemsRepository: ItemsRepository) : ViewModel() {
             mostBattleWins = mostBattleWins
         )
     }
+
+
+    private suspend fun getCompletedByCategory() {
+        val categoriesByNumberOfCompleted = viewModelScope.async {
+            itemsRepository.getCategoriesByNumberOfCompletedItems().first()
+        }
+        val completed = categoriesByNumberOfCompleted.await().associate { it.category to it.count }
+        statsUiState = statsUiState.copy(
+            completed = completed
+        )
+    }
+
+
+    private suspend fun getCategoriesByNumberOfBattleWinsStats() {
+        val categoriesByNumberOfBattleWins = viewModelScope.async {
+            itemsRepository.getCategoriesByNumberOfBattleWins().first()
+        }
+        val battleWinsByCategory =
+            categoriesByNumberOfBattleWins.await().associate { it.category to it.count }
+        statsUiState = statsUiState.copy(
+            battleWinsByCategory = battleWinsByCategory
+        )
+    }
+
+    private suspend fun getCategoriesByNumberOfRegularWinsStats() {
+        val categoriesByNumberOfRegularWins = viewModelScope.async {
+            itemsRepository.getCategoriesByNumberOfBattleWins().first()
+        }
+        val regularWinsByCategory =
+            categoriesByNumberOfRegularWins.await().associate { it.category to it.count }
+        statsUiState = statsUiState.copy(
+            regularWinsByCategory = regularWinsByCategory
+        )
+    }
 }
 
 data class StatsUiState(
@@ -129,6 +183,9 @@ data class StatsUiState(
     val mostSelectedBattleMode: List<Item> = listOf(),
     val mostRejected: List<Item> = listOf(),
     val mostRejectedBattleMode: List<Item> = listOf(),
-    val mostBattleWins: List<Item> = listOf()
+    val mostBattleWins: List<Item> = listOf(),
+    val completed: Map<String, Int> = mapOf(),
+    val battleWinsByCategory: Map<String, Int> = mapOf(),
+    val regularWinsByCategory: Map<String, Int> = mapOf(),
 )
 

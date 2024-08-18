@@ -7,7 +7,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.datastore.DataStoreManager
 import com.entropia.helpmepick.ui.ItemsListViewModel
-import com.entropia.helpmepick.ui.StatsViewModel
+import com.entropia.helpmepick.ui.stats.StatsViewModel
 import com.entropia.helpmepick.ui.ThemeViewModel
 import com.entropia.helpmepick.ui.battlemode.BattleModeViewModel
 import com.entropia.helpmepick.ui.regularmode.PickRandomViewModel

@@ -1,5 +1,6 @@
 package com.entropia.helpmepick.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -59,4 +60,33 @@ interface ItemDao {
     @Query("SELECT * FROM items WHERE category=:category AND completed is 0")
     fun getItemsInCategory(category: String): Flow<List<Item>>
 
+    @Query("SELECT category, COUNT(completed) FROM items WHERE completed=1 GROUP BY category ORDER BY COUNT(completed) DESC")
+    fun getCategoriesByNumberOfCompletedItems(): Flow<List<CompletedTuple>>
+
+    @Query("SELECT category, COUNT(battleWins) FROM items WHERE battleWins>0 GROUP BY category ORDER BY COUNT(battleWins) DESC")
+    fun getCategoriesByNumberOfBattleWins(): Flow<List<BattleWinsTuple>>
+
+    @Query("SELECT category, COUNT(timesPicked) FROM items WHERE timesPicked>0 GROUP BY category ORDER BY COUNT(timesPicked) DESC")
+    fun getCategoriesByNumberOfRegularWins(): Flow<List<RegularWinsTuple>>
 }
+
+interface Tuple {
+    val category: String
+    val count: Int
+}
+
+
+data class CompletedTuple(
+    @ColumnInfo(name = "category") override val category: String,
+    @ColumnInfo(name = "COUNT(completed)") override val count: Int,
+) : Tuple
+
+data class BattleWinsTuple(
+    @ColumnInfo(name = "category") val category: String,
+    @ColumnInfo(name = "COUNT(battleWins)") val count: Int,
+)
+
+data class RegularWinsTuple(
+    @ColumnInfo(name = "category") val category: String,
+    @ColumnInfo(name = "COUNT(timesPicked)") val count: Int,
+)

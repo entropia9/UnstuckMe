@@ -63,6 +63,8 @@
     <string name="most_picked">Most Regular Mode Wins</string>
     <string name="most_rejected">Most Rejected</string>
     <string name="most_battle_wins">Most Battle Mode Wins</string>
+    <string name="most_completed">Most Completed</string>
+    <string name="by_categories">By Categories</string>
     <string name="yes_answer_button">Yes</string>
     <string name="no_answer_button">No</string>
     <string name="navigate_to_add_button">Add or Edit Items</string>
@@ -74,8 +76,12 @@
     <string name="no_items">No items to display</string>
     <string name="no_items_button_battle_mode">Start Battle Mode</string>
     <string name="no_items_button_regular_mode">Start Regular Mode</string>
+    <string name="no_items_button_complete">Complete some things</string>
     <string name="hide">Hide</string>
     <string name="about">About</string>
     <string name="dismiss">Dismiss</string>
     <string name="about_text">Help me pick is an app developed by entropia to combat her choice paralysis when it comes to having to many projects to work on. </string>
+    <string name="category_completed">Category: %1$s  </string>
+    <string name="regular_mode_completed">Regular Mode Wins: %1$s</string>
+    <string name="battle_mode_completed">Battle Mode Wins: %1$s</string>
 </resources>
