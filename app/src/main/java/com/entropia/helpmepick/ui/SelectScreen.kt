@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.data.Item
+import com.entropia.helpmepick.ui.custom.CategoriesRow
 import com.entropia.helpmepick.ui.theme.Shapes
 
 
@@ -88,7 +89,7 @@ fun SelectScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Row() {
+                        Row {
                             Button(
                                 onClick = { viewModel.selectAll() },
                                 modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
@@ -153,7 +154,8 @@ fun ExpandedSelectScreen(
                                     dimensionResource(id = R.dimen.padding_medium)
                                 )
                             )
-                        }, )
+                        },
+                    )
                     ContentTab(
                         label = stringResource(id = R.string.batch_select),
                         modifier = Modifier.weight(0.5f),

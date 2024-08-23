@@ -1,6 +1,6 @@
 package com.entropia.helpmepick.ui
 
-import androidx.compose.animation.core.tween
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,9 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -27,7 +24,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
@@ -62,8 +58,7 @@ import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
 import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.ui.bottomsheet.EntryBottomSheet
-import com.entropia.helpmepick.ui.custom.FadingSide
-import com.entropia.helpmepick.ui.custom.fadingEdge
+import com.entropia.helpmepick.ui.custom.CategoriesRow
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
 import com.entropia.helpmepick.ui.theme.Shapes
 import com.entropia.helpmepick.ui.theme.Typography
@@ -134,7 +129,8 @@ fun AddEditItemsScreen(
                     currentCategory = uiState.value.currentCategory,
                     onAllClick = viewModel::showAllItems,
                     onCompletedClick = viewModel::showCompleted,
-                    onCategoryClick = viewModel::showCurrentCategory
+                    onCategoryClick = viewModel::showCurrentCategory,
+                    onLongCategoryClick = { Log.d("long", "LOngClick") }
                 )
                 ItemsList(
                     uiState = uiState,
@@ -149,79 +145,6 @@ fun AddEditItemsScreen(
         }
     }
 
-}
-
-
-@Composable
-fun CategoriesRow(
-    categories: List<String>,
-    currentCategory: String,
-    onAllClick: () -> Unit,
-    onCompletedClick: (() -> Unit)? = null,
-    onCategoryClick: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val listState = rememberLazyListState()
-    val all = stringResource(id = R.string.all)
-    val completed = stringResource(id = R.string.completed)
-    val list = if (onCompletedClick != null) {
-        listOf(all) + categories + listOf(completed)
-    } else {
-        listOf(all) + categories
-    }
-
-    LazyRow(
-        state = listState, modifier = modifier
-            .fadingEdge(
-                FadingSide.LEFT,
-                color = MaterialTheme.colorScheme.background,
-                spec = tween(500),
-                isVisible = listState.canScrollBackward
-            )
-            .fadingEdge(
-                FadingSide.RIGHT,
-                color = MaterialTheme.colorScheme.background,
-                spec = tween(500),
-                isVisible = listState.canScrollForward
-            ), horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        items(list) { item ->
-            Button(
-                onClick = {
-                    when (item) {
-                        all -> onAllClick()
-                        completed -> if (onCompletedClick != null) {
-                            onCompletedClick()
-                        }
-
-                        else -> onCategoryClick(item)
-                    }
-                },
-                colors = determineButtonColors(currentCategory, item, list),
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small))
-            ) {
-                Text(text = item)
-            }
-        }
-    }
-
-}
-
-@Composable
-private fun determineButtonColors(
-    currentCategory: String,
-    item: String,
-    list: List<String>,
-) = if (currentCategory == item || (item == list[0] && currentCategory == "")) {
-    ButtonDefaults.buttonColors(
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-    )
-} else {
-    ButtonDefaults.buttonColors(
-        containerColor = MaterialTheme.colorScheme.primary,
-        contentColor = MaterialTheme.colorScheme.onPrimary
-    )
 }
 
 
@@ -434,13 +357,13 @@ fun CompletedItemCard(
                     text = stringResource(id = R.string.regular_mode_completed, item.timesPicked),
                     style = Typography.bodyLarge,
                     fontWeight = FontWeight.ExtraBold,
-                    modifier= Modifier.padding(bottom=dimensionResource(id = R.dimen.padding_small))
+                    modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_small))
                 )
                 Text(
                     text = stringResource(id = R.string.battle_mode_completed, item.battleWins),
                     style = Typography.bodyLarge,
                     fontWeight = FontWeight.ExtraBold,
-                    modifier= Modifier.padding(bottom=dimensionResource(id = R.dimen.padding_small))
+                    modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_small))
                 )
 
             }
