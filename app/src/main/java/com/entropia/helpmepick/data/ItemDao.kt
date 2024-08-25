@@ -60,6 +60,9 @@ interface ItemDao {
     @Query("SELECT * FROM items WHERE category=:category AND completed is 0")
     fun getItemsInCategory(category: String): Flow<List<Item>>
 
+    @Query("SELECT * FROM items WHERE category=:category")
+    fun getAllItemsInCategory(category: String): Flow<List<Item>>
+
     @Query("SELECT category, COUNT(completed) FROM items WHERE completed=1 GROUP BY category ORDER BY COUNT(completed) DESC")
     fun getCategoriesByNumberOfCompletedItems(): Flow<List<CompletedTuple>>
 

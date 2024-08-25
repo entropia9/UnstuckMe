@@ -1,6 +1,5 @@
 package com.entropia.helpmepick.ui
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -130,7 +129,8 @@ fun AddEditItemsScreen(
                     onAllClick = viewModel::showAllItems,
                     onCompletedClick = viewModel::showCompleted,
                     onCategoryClick = viewModel::showCurrentCategory,
-                    onLongCategoryClick = { Log.d("long", "LOngClick") }
+                    onRemoveCategory = viewModel::removeCategory,
+                    onRenameCategory = viewModel::renameCategory
                 )
                 ItemsList(
                     uiState = uiState,

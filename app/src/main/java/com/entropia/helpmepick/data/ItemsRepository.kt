@@ -31,6 +31,7 @@ interface ItemsRepository {
     fun getCategories(): Flow<List<String>>
 
     fun getItemsInCategory(category: String): Flow<List<Item>>
+    fun getAllItemsInCategory(category: String): Flow<List<Item>>
 
     fun getCategoriesByNumberOfCompletedItems(): Flow<List<CompletedTuple>>
 

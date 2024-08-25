@@ -34,6 +34,9 @@ class OfflineItemsRepository(private val itemDao: ItemDao) : ItemsRepository {
     override fun getItemsInCategory(category: String): Flow<List<Item>> =
         itemDao.getItemsInCategory(category)
 
+    override fun getAllItemsInCategory(category: String): Flow<List<Item>> =
+        itemDao.getAllItemsInCategory(category)
+
     override fun getCategoriesByNumberOfCompletedItems(): Flow<List<CompletedTuple>> =
         itemDao.getCategoriesByNumberOfCompletedItems()
 

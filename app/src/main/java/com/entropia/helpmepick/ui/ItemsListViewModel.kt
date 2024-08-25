@@ -147,6 +147,7 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
     fun showAllItems() {
         viewModelScope.launch {
             (categoriesItemUiState as MutableStateFlow).value = categoriesItemUiState.value.copy(
+                categories = itemsRepository.getCategories().first(),
                 currentCategory = "",
                 currentItems = itemsRepository.getAllNotCompletedItemsStream().first()
             )
@@ -162,11 +163,32 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
         }
     }
 
+    fun removeCategory(category: String) {
+        viewModelScope.launch {
+            val itemsInCategory = itemsRepository.getAllItemsInCategory(category = category).first()
+            itemsInCategory.forEach { item ->
+                itemsRepository.deleteItem(item)
+            }
+            showAllItems()
+        }
+    }
+
+    fun renameCategory(oldCategory: String, newCategory: String) {
+        viewModelScope.launch {
+            val itemsInCategory =
+                itemsRepository.getAllItemsInCategory(category = oldCategory).first()
+            itemsInCategory.forEach { item ->
+                itemsRepository.updateItem(item.copy(category = newCategory))
+            }
+            showCurrentCategory(newCategory)
+        }
+    }
 
     fun showCurrentCategory(category: String) = viewModelScope.launch {
 
         (categoriesItemUiState as MutableStateFlow).value =
             categoriesItemUiState.value.copy(
+                categories = itemsRepository.getCategories().first(),
                 currentCategory = category,
                 currentItems = itemsRepository.getItemsInCategory(category).first()
             )
