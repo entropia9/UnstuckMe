@@ -11,20 +11,22 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -57,7 +59,8 @@ fun EntryBottomSheet(
                     onCancel = onCancel,
                     onSubmit = onSubmit,
                     categories = categories,
-                    addItem = itemsListViewModel::addItem
+                    viewModel = itemsListViewModel,
+                    addItem = itemsListViewModel::isItemAdded
                 )
             }
         }
@@ -72,6 +75,7 @@ fun SheetForm(
     onSubmit: () -> Unit,
     categories: List<String>,
     addItem: (Item) -> Unit,
+    viewModel: ItemsListViewModel,
     modifier: Modifier = Modifier,
 ) {
     var name by remember {
@@ -80,11 +84,22 @@ fun SheetForm(
     var category by remember {
         mutableStateOf("")
     }
-    Column(modifier.padding(horizontal = 16.dp)) {
+    var entryInvalid by remember {
+        mutableStateOf(false)
+    }
+    val editUiState = viewModel.addEditUiState.collectAsState()
+    Column(
+        modifier = modifier.padding(horizontal = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
         TextInputRow(
             inputLabel = stringResource(R.string.name),
             fieldValue = name,
-            onValueChange = { name = it },
+            onValueChange = {
+                name = it
+                entryInvalid = false
+            },
             imeAction = ImeAction.Next
         )
         SpinnerRow(
@@ -92,14 +107,26 @@ fun SheetForm(
             categories = categories,
             category = category,
             onValueChange = { category = it })
+        if (entryInvalid) {
+            Text(
+                text = stringResource(id = R.string.entry_invalid),
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+            )
+        }
         ButtonRow(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             onCancel = onCancel,
             onSubmit = {
-                onSubmit()
                 addItem(Item(name = name, category = category))
-                name = ""
-                category = ""
+                if (editUiState.value.canBeAdded) {
+                    onSubmit()
+                    name = ""
+                    category = ""
+                    entryInvalid = false
+                } else {
+                    entryInvalid = true
+                }
             },
             submitButtonEnabled = name.isNotEmpty()
         )
@@ -115,7 +142,7 @@ fun SheetHeader(modifier: Modifier = Modifier) {
             text = stringResource(R.string.bottom_sheet_headline),
             style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
         )
-        Divider()
+        HorizontalDivider()
     }
 }
 
@@ -124,7 +151,7 @@ fun ButtonRow(
     onCancel: () -> Unit,
     onSubmit: () -> Unit,
     submitButtonEnabled: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier
@@ -177,7 +204,7 @@ fun SpinnerRow(
     categories: List<String>,
     category: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     InputRow(inputLabel = inputLabel, modifier = modifier) {
         CategorySpinner(
@@ -192,7 +219,7 @@ fun SpinnerRow(
 fun InputRow(
     inputLabel: String,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Row(
         modifier = modifier.padding(bottom = 8.dp),

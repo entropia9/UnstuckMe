@@ -11,6 +11,7 @@ import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.data.ItemsRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -49,13 +50,26 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
 
     }
 
-    fun addItem(item: Item, dispatcher: CoroutineDispatcher = defaultDispatcher) =
+    fun isItemAdded(item: Item,dispatcher: CoroutineDispatcher = defaultDispatcher) {
         viewModelScope.launch(dispatcher) {
+            (addEditUiState as MutableStateFlow).value =
+                addEditUiState.value.copy(
+                    canBeAdded = addItem(item = item)
+                )
+        }
+    }
+
+    private suspend fun addItem(item: Item, dispatcher: CoroutineDispatcher = defaultDispatcher): Boolean {
+        val deferred = viewModelScope.async(dispatcher) {
             if (validateInput(item.name)) {
                 itemsRepository.insertItem(item)
                 updateCategories(item, categoriesItemUiState)
-            }
+                true
+            } else false
         }
+        return deferred.await()
+    }
+
 
     private suspend fun updateCategories(
         item: Item,
@@ -234,4 +248,5 @@ data class CategoryUiState(
 
 data class AddEditUiState(
     val isEdited: Boolean = false,
+    val canBeAdded: Boolean = false,
 )
