@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
@@ -26,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -48,6 +50,7 @@ fun EntryBottomSheet(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
     BottomSheetScaffold(
         modifier = modifier,
         sheetShape = RoundedCornerShape(topStartPercent = 20, topEndPercent = 20),
@@ -56,14 +59,22 @@ fun EntryBottomSheet(
             Column {
                 SheetHeader()
                 SheetForm(
-                    onCancel = onCancel,
-                    onSubmit = onSubmit,
+                    onCancel = {
+                        onCancel()
+                        keyboardController?.hide()
+                    },
+                    onSubmit = {
+                        onSubmit()
+                        keyboardController?.hide()
+                    },
                     categories = categories,
                     viewModel = itemsListViewModel,
-                    addItem = itemsListViewModel::isItemAdded
+                    validateItem = itemsListViewModel::isItemAdded,
+                    addItem = itemsListViewModel::addItem
                 )
             }
-        }
+        },
+        sheetSwipeEnabled = false
     ) {
         content()
     }
@@ -74,6 +85,7 @@ fun SheetForm(
     onCancel: () -> Unit,
     onSubmit: () -> Unit,
     categories: List<String>,
+    validateItem: (Item) -> Unit,
     addItem: (Item) -> Unit,
     viewModel: ItemsListViewModel,
     modifier: Modifier = Modifier,
@@ -84,9 +96,7 @@ fun SheetForm(
     var category by remember {
         mutableStateOf("")
     }
-    var entryInvalid by remember {
-        mutableStateOf(false)
-    }
+
     val editUiState = viewModel.addEditUiState.collectAsState()
     Column(
         modifier = modifier.padding(horizontal = 16.dp),
@@ -98,7 +108,7 @@ fun SheetForm(
             fieldValue = name,
             onValueChange = {
                 name = it
-                entryInvalid = false
+                viewModel.updateCanBeAdded(true)
             },
             imeAction = ImeAction.Next
         )
@@ -107,7 +117,7 @@ fun SheetForm(
             categories = categories,
             category = category,
             onValueChange = { category = it })
-        if (entryInvalid) {
+        if (!editUiState.value.canBeAdded) {
             Text(
                 text = stringResource(id = R.string.entry_invalid),
                 color = MaterialTheme.colorScheme.error,
@@ -118,17 +128,14 @@ fun SheetForm(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             onCancel = onCancel,
             onSubmit = {
-                addItem(Item(name = name, category = category))
+                validateItem(Item(name = name, category = category))
                 if (editUiState.value.canBeAdded) {
+                    addItem(Item(name = name, category = category))
                     onSubmit()
                     name = ""
-                    category = ""
-                    entryInvalid = false
-                } else {
-                    entryInvalid = true
                 }
             },
-            submitButtonEnabled = name.isNotEmpty()
+            submitButtonEnabled = name.isNotBlank() && category.isNotBlank()
         )
     }
 }
@@ -181,6 +188,7 @@ fun TextInputRow(
     modifier: Modifier = Modifier,
     imeAction: ImeAction = ImeAction.Done,
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
     InputRow(inputLabel, modifier) {
         TextField(
             modifier = Modifier.fillMaxWidth(),
@@ -192,7 +200,13 @@ fun TextInputRow(
                 unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                 disabledContainerColor = MaterialTheme.colorScheme.surface,
             ),
-            keyboardOptions = KeyboardOptions(imeAction = imeAction)
+            keyboardOptions = KeyboardOptions(imeAction = imeAction),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    keyboardController?.hide()
+                }
+            )
+
         )
     }
 }

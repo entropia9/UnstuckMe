@@ -2,7 +2,6 @@ package com.entropia.helpmepick
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -16,15 +15,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.window.core.layout.WindowSizeClass
-import com.entropia.helpmepick.ui.navigation.HelpMePickNavHost
+import com.entropia.helpmepick.ui.navigation.UnstuckMeNavHost
 
 
 @Composable
-fun HelpMePickApp(
+fun UnstuckMeApp(
     navController: NavHostController = rememberNavController(),
     windowClassSize: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 ) {
-    HelpMePickNavHost(navController = navController, windowSizeClass = windowClassSize)
+    UnstuckMeNavHost(navController = navController, windowSizeClass = windowClassSize)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

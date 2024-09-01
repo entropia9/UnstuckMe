@@ -31,7 +31,7 @@ import com.entropia.helpmepick.ui.stats.StatsDestination
 import com.entropia.helpmepick.ui.stats.StatsScreen
 
 @Composable
-fun HelpMePickNavHost(
+fun UnstuckMeNavHost(
     navController: NavHostController,
     windowSizeClass: WindowSizeClass,
     modifier: Modifier = Modifier,

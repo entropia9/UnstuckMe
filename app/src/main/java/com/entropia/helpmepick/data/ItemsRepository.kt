@@ -9,7 +9,7 @@ interface ItemsRepository {
     fun getAllNotCompletedItemsStream(): Flow<List<Item>>
     fun getCompleted(): Flow<List<Item>>
 
-    fun getItem(name: String): Item?
+    fun getItem(name: String): Boolean
 
     suspend fun insertItem(item: Item)
 

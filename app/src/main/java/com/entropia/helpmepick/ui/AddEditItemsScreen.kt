@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -48,6 +49,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -98,6 +100,7 @@ fun AddEditItemsScreen(
         onCancel = {
             scope.launch {
                 bottomSheetScaffoldState.bottomSheetState.hide()
+
             }
         },
         onSubmit = {
@@ -473,6 +476,7 @@ fun DeleteDialog(
             }
         },
         shape = RoundedCornerShape(20)
+
     )
 }
 
@@ -483,7 +487,7 @@ fun TextRow(
     isEditable: Boolean,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-) {
+) { val keyboardController = LocalSoftwareKeyboardController.current
     OutlinedTextField(
         modifier = modifier,
         value = fieldValue,
@@ -498,7 +502,11 @@ fun TextRow(
             disabledContainerColor = MaterialTheme.colorScheme.surface,
         ),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-
+        keyboardActions = KeyboardActions(
+            onDone = {
+                keyboardController?.hide()
+            }
+        )
         )
 }
 

@@ -53,7 +53,7 @@ fun Thumb(
         modifier = modifier
             .size(Thumb.Size)
             .clip(shape)
-            .background(MaterialTheme.colorScheme.primaryContainer)
+            .background(MaterialTheme.colorScheme.inversePrimary)
     ) {
         content()
     }
@@ -125,8 +125,8 @@ fun Track(
         .background(
             brush = Brush.linearGradient(
                 colors = listOf(
-                    MaterialTheme.colorScheme.primary,
-                    MaterialTheme.colorScheme.primaryContainer
+                    MaterialTheme.colorScheme.primaryContainer,
+                    MaterialTheme.colorScheme.secondaryContainer
                 ), Offset.Zero, startX
             ), shape = shape
         )

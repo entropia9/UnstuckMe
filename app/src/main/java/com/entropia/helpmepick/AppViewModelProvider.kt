@@ -43,5 +43,5 @@ object AppViewModelProvider {
     }
 }
 
-fun CreationExtras.helpMePickApplication(): HelpMePickApplication =
-    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as HelpMePickApplication)
+fun CreationExtras.helpMePickApplication(): UnstuckMeApplication =
+    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as UnstuckMeApplication)

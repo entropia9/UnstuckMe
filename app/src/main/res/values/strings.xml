@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Help Me Pick</string>
+    <string name="app_name">Unstuck.me</string>
     <string name="hide_list">Hide List</string>
     <string name="show_list">Show List</string>
     <string name="select">Select Items to Pick From Below</string>
