@@ -462,16 +462,23 @@ fun DeleteDialog(
     onConfirmation: () -> Unit,
     item: Item,
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
     AlertDialog(
         onDismissRequest = { onDismissRequest() },
         text = { Text(stringResource(id = R.string.delete_confirmation, item.name)) },
         confirmButton = {
-            TextButton(onClick = { onConfirmation() }) {
+            TextButton(onClick = {
+                onConfirmation()
+                keyboardController?.hide()
+            }) {
                 Text(text = stringResource(id = R.string.yes_answer_button))
             }
         },
         dismissButton = {
-            TextButton(onClick = { onDismissRequest() }) {
+            TextButton(onClick = {
+                onDismissRequest()
+                keyboardController?.hide()
+            }) {
                 Text(text = stringResource(id = R.string.no_answer_button))
             }
         },
@@ -487,7 +494,8 @@ fun TextRow(
     isEditable: Boolean,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-) { val keyboardController = LocalSoftwareKeyboardController.current
+) {
+    val keyboardController = LocalSoftwareKeyboardController.current
     OutlinedTextField(
         modifier = modifier,
         value = fieldValue,
@@ -507,7 +515,7 @@ fun TextRow(
                 keyboardController?.hide()
             }
         )
-        )
+    )
 }
 
 @Composable

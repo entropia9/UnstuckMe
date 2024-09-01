@@ -1,6 +1,5 @@
 package com.entropia.helpmepick.ui
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +19,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewModel() {
 
@@ -51,31 +51,29 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
 
     }
 
-    fun isItemAdded(item: Item, dispatcher: CoroutineDispatcher = defaultDispatcher) {
-        viewModelScope.launch(dispatcher) {
-            updateCanBeAdded(validateItem(item))
-        }
-    }
 
     fun addItem(item: Item) {
         viewModelScope.launch {
             itemsRepository.insertItem(item)
-            Log.d("addedItem", "item is added")
             updateCategories(item, categoriesItemUiState)
 
         }
-
     }
 
-    private suspend fun validateItem(
+    fun validateItem(
         item: Item,
         dispatcher: CoroutineDispatcher = defaultDispatcher,
     ): Boolean {
-        val deferred = viewModelScope.async(dispatcher) {
-            validateInput(item.name)
+        var list: List<String> = mutableListOf()
+        runBlocking {
+            list = viewModelScope.async(dispatcher) {
+                itemsRepository.getAllItemsStream().first().map {
+                    it.name
+                }
+            }.await()
+        }
 
-        }.await()
-        return deferred
+        return !list.contains(item.name)
     }
 
 
@@ -229,20 +227,9 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
             )
     }
 
-    fun updateCanBeAdded(canBeAdded: Boolean) {
-        (addEditUiState as MutableStateFlow).value =
-            addEditUiState.value.copy(
-                canBeAdded = canBeAdded
-            )
-    }
 
     private fun isSelected(item: Item) =
         _itemsListUiState.value.selectedItemsList.contains(item)
-
-    private fun validateInput(name: String): Boolean {
-        Log.d("canBeAddedValidateInput", (!itemsRepository.getItem(name)).toString())
-        return !itemsRepository.getItem(name)
-    }
 
 
     companion object {
@@ -264,5 +251,4 @@ data class CategoryUiState(
 
 data class AddEditUiState(
     val isEdited: Boolean = false,
-    val canBeAdded: Boolean = true,
 )

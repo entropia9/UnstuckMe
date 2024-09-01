@@ -56,7 +56,13 @@ fun UnstuckMeNavHost(
         composable(route = AddEditItemsScreenDestination.route) {
             AddEditItemsScreen(
                 viewModel = viewModel(factory = AppViewModelProvider.Factory),
-                navigateUp = { navController.navigateUp() },
+                navigateUp = {
+                    val id = navController.previousBackStackEntry?.destination?.id
+                    navController.popBackStack()
+                    if (id != null) {
+                        navController.navigate(id)
+                    }
+                },
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
             )
         }

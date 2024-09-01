@@ -20,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,9 +67,8 @@ fun EntryBottomSheet(
                         keyboardController?.hide()
                     },
                     categories = categories,
-                    viewModel = itemsListViewModel,
-                    validateItem = itemsListViewModel::isItemAdded,
-                    addItem = itemsListViewModel::addItem
+                    validateItem = itemsListViewModel::validateItem,
+                    addItem = itemsListViewModel::addItem,
                 )
             }
         },
@@ -85,9 +83,8 @@ fun SheetForm(
     onCancel: () -> Unit,
     onSubmit: () -> Unit,
     categories: List<String>,
-    validateItem: (Item) -> Unit,
+    validateItem: (Item) -> Boolean,
     addItem: (Item) -> Unit,
-    viewModel: ItemsListViewModel,
     modifier: Modifier = Modifier,
 ) {
     var name by remember {
@@ -97,7 +94,10 @@ fun SheetForm(
         mutableStateOf("")
     }
 
-    val editUiState = viewModel.addEditUiState.collectAsState()
+    var entryValid by remember {
+        mutableStateOf(true)
+    }
+
     Column(
         modifier = modifier.padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -108,7 +108,7 @@ fun SheetForm(
             fieldValue = name,
             onValueChange = {
                 name = it
-                viewModel.updateCanBeAdded(true)
+                entryValid = true
             },
             imeAction = ImeAction.Next
         )
@@ -117,7 +117,7 @@ fun SheetForm(
             categories = categories,
             category = category,
             onValueChange = { category = it })
-        if (!editUiState.value.canBeAdded) {
+        if (!entryValid) {
             Text(
                 text = stringResource(id = R.string.entry_invalid),
                 color = MaterialTheme.colorScheme.error,
@@ -128,11 +128,13 @@ fun SheetForm(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             onCancel = onCancel,
             onSubmit = {
-                validateItem(Item(name = name, category = category))
-                if (editUiState.value.canBeAdded) {
+                if (validateItem(Item(name = name, category = category))) {
                     addItem(Item(name = name, category = category))
                     onSubmit()
                     name = ""
+                    entryValid = true
+                } else {
+                    entryValid = false
                 }
             },
             submitButtonEnabled = name.isNotBlank() && category.isNotBlank()
