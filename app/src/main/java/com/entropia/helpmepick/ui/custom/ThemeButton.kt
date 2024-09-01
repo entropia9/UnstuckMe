@@ -1,5 +1,6 @@
 package com.entropia.helpmepick.ui.custom
 
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -24,55 +25,56 @@ fun ThemeButton(
     isDarkMode: Boolean,
     onDragComplete: () -> Unit,
     onDragReverse: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-
-    Box(modifier.width(120.dp)) {
-        Track(
-            initialValue =
-            when (isDarkMode) {
-                true -> DragAnchors.End
-                else -> DragAnchors.Start
-            },
-            onDragComplete = { onDragComplete() },
-            onDragReverse = { onDragReverse() },
-            contentSize = 40.dp,
-            shape = RoundedCornerShape(60),
-            thumb = {
-                Thumb(shape = RoundedCornerShape(60))
-            }) {
-        }
-        Row(
-            modifier = Modifier
-                .matchParentSize()
-                .padding(start = 12.dp, end = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.End
-        ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.light_mode),
-                contentDescription = "",
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+        Box(modifier.width(120.dp)) {
+            Track(
+                initialValue =
+                when (isDarkMode) {
+                    true -> DragAnchors.End
+                    else -> DragAnchors.Start
+                },
+                onDragComplete = { onDragComplete() },
+                onDragReverse = { onDragReverse() },
+                contentSize = 40.dp,
+                shape = RoundedCornerShape(60),
+                thumb = {
+                    Thumb(shape = RoundedCornerShape(60))
+                }) {
+            }
+            Row(
                 modifier = Modifier
-                    .padding(start = 9.dp)
-                    .size(30.dp)
+                    .matchParentSize()
+                    .padding(start = 12.dp, end = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.light_mode),
+                    contentDescription = "",
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier
+                        .padding(start = 9.dp)
+                        .size(30.dp)
 
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.dark_mode),
-                contentDescription = "",
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier
-                    .padding(end = 9.dp)
-                    .size(30.dp)
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.dark_mode),
+                    contentDescription = "",
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier
+                        .padding(end = 9.dp)
+                        .size(30.dp)
 
 
-            )
+                )
+            }
+
         }
-
     }
 
 
-}
 
+}
