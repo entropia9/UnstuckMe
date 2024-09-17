@@ -5,10 +5,12 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.splineBasedDecay
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.gestures.snapTo
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,6 +34,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.entropia.helpmepick.R
+import kotlinx.coroutines.runBlocking
 import kotlin.math.roundToInt
 
 
@@ -109,7 +112,13 @@ fun Track(
     Box(modifier = modifier
         .padding(
             dimensionResource(id = R.dimen.padding_large)
-        )
+        ).clickable {
+            when(initialValue){
+               DragAnchors.Start -> runBlocking { state.snapTo(DragAnchors.End)}
+               DragAnchors.End -> runBlocking { state.snapTo(DragAnchors.Start)}
+            }
+
+        }
         .onSizeChanged { layoutSize ->
 
             val dragEndPoint = layoutSize.width - contentSizePx
