@@ -76,6 +76,7 @@
     <string name="all">All</string>
     <string name="completed">Completed</string>
     <string name="completed_question">Completed?</string>
+    <string name="uncompleted_question">Move back to the list?</string>
     <string name="see_all">Expand</string>
     <string name="no_items">No items to display</string>
     <string name="no_items_button_battle_mode">Start Battle Mode</string>

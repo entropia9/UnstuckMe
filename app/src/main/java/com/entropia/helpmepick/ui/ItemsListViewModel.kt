@@ -89,14 +89,19 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
 
         }
         if (item.completed) {
+            val categories = itemsRepository.getCategories().first()
             (categoriesItemUiState as MutableStateFlow).value = CategoryUiState(
-                itemsRepository.getCategories().first(),
+                categories,
+                if (categories.contains(categoriesItemUiState.value.currentCategory)) categoriesItemUiState.value.currentCategory else ""
+            )
+        }
+        when (categoriesItemUiState.value.currentCategory) {
+            "" -> showAllItems()
+            "Completed" -> showCompleted()
+            else -> showCurrentCategory(
                 categoriesItemUiState.value.currentCategory
             )
         }
-        if (categoriesItemUiState.value.currentCategory == "") showAllItems() else showCurrentCategory(
-            categoriesItemUiState.value.currentCategory
-        )
     }
 
     fun updateItem(item: Item) =

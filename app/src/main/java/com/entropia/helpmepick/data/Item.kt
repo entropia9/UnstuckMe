@@ -16,4 +16,5 @@ data class Item(
     val timesRejectedBattleMode: Int = 0,
     val battleWins: Int = 0,
     val completed: Boolean = false,
+    val oneTime: Boolean = false,
 )

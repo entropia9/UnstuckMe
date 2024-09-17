@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [Item::class], version = 3, exportSchema = false)
+@Database(entities = [Item::class], version = 4, exportSchema = false)
 abstract class ItemsDatabase : RoomDatabase() {
     abstract fun itemDao(): ItemDao
 
@@ -15,8 +15,13 @@ abstract class ItemsDatabase : RoomDatabase() {
         @Volatile
         private var Instance: ItemsDatabase? = null
         private val MIGRATION_2_3 = object : Migration(2, 3) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE 'items' ADD COLUMN 'completed' INTEGER NOT NULL DEFAULT 0")
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE 'items' ADD COLUMN 'completed' INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+        private val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE 'items' ADD COLUMN 'oneTime' INTEGER NOT NULL DEFAULT 0")
             }
         }
 
@@ -26,7 +31,7 @@ abstract class ItemsDatabase : RoomDatabase() {
                     context = context,
                     ItemsDatabase::class.java,
                     "item_database"
-                ).addMigrations(MIGRATION_2_3).build().also {
+                ).addMigrations(MIGRATION_2_3, MIGRATION_3_4).build().also {
                     Instance = it
                 }
             }

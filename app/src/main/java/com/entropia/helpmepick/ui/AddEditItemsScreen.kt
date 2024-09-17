@@ -177,7 +177,13 @@ fun ItemsList(
                     modifier = Modifier
                 )
             } else {
-                CompletedItemCard(item = item)
+                CompletedItemCard(
+                    item = item, uncomplete = {
+                        updateItem(
+                            item.copy(completed = false)
+                        )
+                    },
+                )
             }
 
         }
@@ -304,7 +310,7 @@ fun ItemCard(
                 }
             }
             CompleteTab(
-                completeItem = {
+                onClick = {
                     updateItem(
                         item.copy(completed = true)
                     )
@@ -324,6 +330,7 @@ fun ItemCard(
 @Composable
 fun CompletedItemCard(
     modifier: Modifier = Modifier,
+    uncomplete: (Item) -> Unit,
     item: Item,
 ) {
     Box(
@@ -338,40 +345,55 @@ fun CompletedItemCard(
                 ), shape = Shapes.medium
             )
     ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .padding(dimensionResource(id = R.dimen.padding_large))
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = item.name, style = Typography.headlineMedium)
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = stringResource(id = R.string.category_completed, item.category),
-                    modifier = Modifier.padding(
-                        dimensionResource(id = R.dimen.padding_medium)
-                    ),
-                    style = Typography.bodyLarge, fontWeight = FontWeight.ExtraBold
-                )
+        Column {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(dimensionResource(id = R.dimen.padding_large))
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = item.name, style = Typography.headlineMedium)
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = stringResource(id = R.string.category_completed, item.category),
+                        modifier = Modifier.padding(
+                            dimensionResource(id = R.dimen.padding_medium)
+                        ),
+                        style = Typography.bodyLarge, fontWeight = FontWeight.ExtraBold
+                    )
+                }
+
+                Column(Modifier.padding(top = dimensionResource(id = R.dimen.padding_medium))) {
+                    Text(
+                        text = stringResource(
+                            id = R.string.regular_mode_completed,
+                            item.timesPicked
+                        ),
+                        style = Typography.bodyLarge,
+                        fontWeight = FontWeight.ExtraBold,
+                        modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_small))
+                    )
+                    Text(
+                        text = stringResource(id = R.string.battle_mode_completed, item.battleWins),
+                        style = Typography.bodyLarge,
+                        fontWeight = FontWeight.ExtraBold,
+                        modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_small))
+                    )
+
+                }
             }
-
-            Column(Modifier.padding(top = dimensionResource(id = R.dimen.padding_medium))) {
-                Text(
-                    text = stringResource(id = R.string.regular_mode_completed, item.timesPicked),
-                    style = Typography.bodyLarge,
-                    fontWeight = FontWeight.ExtraBold,
-                    modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_small))
+            CompleteTab(
+                onClick = { uncomplete(item) },
+                visible = true,
+                text = R.string.uncompleted_question,
+                modifier = Modifier.clip(
+                    RoundedCornerShape(
+                        bottomEnd = 20.dp, bottomStart = 40.dp
+                    )
                 )
-                Text(
-                    text = stringResource(id = R.string.battle_mode_completed, item.battleWins),
-                    style = Typography.bodyLarge,
-                    fontWeight = FontWeight.ExtraBold,
-                    modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_small))
-                )
-
-            }
-
+            )
         }
+
 
     }
 
@@ -420,7 +442,8 @@ private fun EditIcons(
 @Composable
 fun CompleteTab(
     modifier: Modifier = Modifier,
-    completeItem: (() -> Unit),
+    text: Int = R.string.completed_question,
+    onClick: (() -> Unit),
     visible: Boolean,
 ) {
     if (visible) {
@@ -440,12 +463,12 @@ fun CompleteTab(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Completed?",
+                    text = stringResource(id = text),
 
                     modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
                 )
                 Button(
-                    onClick = { completeItem() },
+                    onClick = { onClick() },
                     modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
                 ) {
                     Icon(imageVector = Icons.Default.Check, contentDescription = null)
