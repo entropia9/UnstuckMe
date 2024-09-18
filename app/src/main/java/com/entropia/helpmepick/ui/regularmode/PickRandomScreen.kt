@@ -63,7 +63,7 @@ fun PickRandomScreen(
     viewModel: PickRandomViewModel,
     navigateUp: () -> Unit,
     navigateToSelect: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Scaffold(modifier = Modifier,
         topBar = {
@@ -103,7 +103,11 @@ fun PickRandomScreen(
                         id = viewModel.pickItemUiState.currentDialogue,
                         itemName
                     ),
-                    onYesButtonPressed = { viewModel.updatePickedStatsAndShowDialogue(navigateToSelect) },
+                    onYesButtonPressed = {
+                        viewModel.updatePickedStatsAndShowDialogue(
+                            navigateToSelect
+                        )
+                    },
                     onNoButtonPressed = { viewModel.updateRejectedStatsAndShowDialogue(navigateUp) },
                     lastDialogueReached = lastDialogueReached,
                     modifier = Modifier
@@ -113,6 +117,7 @@ fun PickRandomScreen(
             }
             AnimatedVisibility(visible = lastDialogueReached, enter = slideInVertically()) {
                 Column {
+                    Spacer(modifier = Modifier.weight(0.1f))
                     FinalText(
                         text = stringResource(
                             id = viewModel.pickItemUiState.currentDialogue,
@@ -166,6 +171,17 @@ fun PickRandomScreen(
                             }
                         }
                     }
+                    Spacer(modifier = Modifier.weight(0.2f))
+                    Button(
+                        onClick = { navigateUp() }, modifier = Modifier.padding(
+                            dimensionResource(
+                                id = R.dimen.padding_medium
+                            )
+                        )
+                    ) {
+                        Text(text = stringResource(id = R.string.proceed))
+                    }
+                    Spacer(modifier = Modifier.weight(0.02f))
                 }
             }
         }
@@ -180,7 +196,7 @@ fun RandomScreen(
     onYesButtonPressed: () -> Unit,
     onNoButtonPressed: () -> Unit,
     lastDialogueReached: Boolean,
-    listSize: Int
+    listSize: Int,
 ) {
     val shakeController = rememberShakeController()
     var visible by remember { mutableStateOf(false) }

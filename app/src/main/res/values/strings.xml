@@ -86,6 +86,7 @@
     <string name="about">About</string>
     <string name="dismiss">Dismiss</string>
     <string name="confirm">Confirm</string>
+    <string name="proceed">Proceed</string>
     <string name="entry_invalid">Entry Invalid, Item of the same name already exists </string>
     <string name="about_text">Help me pick is an app developed by entropia to combat her choice paralysis when it comes to having to many projects to work on. </string>
     <string name="category_completed">Category: %1$s  </string>

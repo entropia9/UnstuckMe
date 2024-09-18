@@ -199,6 +199,7 @@ fun BattleModeScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
+                    Spacer(modifier = Modifier.weight(0.1f))
                     FinalText(
                         text = stringResource(
                             id = R.string.win_dialogue,
@@ -245,6 +246,13 @@ fun BattleModeScreen(
                             }
                         }
                     }
+                    Spacer(modifier = Modifier.weight(0.2f))
+                    Button(onClick = { navigateUp() }, modifier=Modifier.padding(dimensionResource(
+                        id = R.dimen.padding_medium
+                    ))) {
+                        Text(text = stringResource(id = R.string.proceed))
+                    }
+                    Spacer(modifier = Modifier.weight(0.02f))
                 }
 
             }
