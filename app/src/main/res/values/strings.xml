@@ -11,6 +11,7 @@
     <string name="items">Items</string>
     <string name="regular">Regular Mode</string>
     <string name="battle_mode">Battle Mode</string>
+    <string name="raffle_mode">Raffle Mode</string>
     <string name="round">Round %1$s</string>
     <string name="regular_mode">Regular Mode</string>
     <string name="name">Name</string>
@@ -41,6 +42,10 @@
         <item quantity="other">You\'ve considered it %1$s times so far</item>
         <item quantity="one">You\'ve considered it once so far</item>
     </plurals>
+    <plurals name="picked_stats1_raffle_mode">
+        <item quantity="other">You\'ve considered it %1$s times so far</item>
+        <item quantity="one">You\'ve considered it once so far</item>
+    </plurals>
     <plurals name="picked_stats2">
         <item quantity="other">You\'ve decided you don\'t feel like it %1$s times!</item>
         <item quantity="one">You\'ve decided you don\'t feel like it %1$s time!</item>
@@ -60,7 +65,7 @@
     </plurals>
     <string name="out_of_options_dialogue">Seems like you don\'t want to do any of these. Maybe you should just chill then?</string>
     <string name="out_of_options_agree">That\'s okay, it\'s important to rest.</string>
-    <string name="start_again_dialogue2">Do you want to start again then?</string>
+    <string name="start_again_dialogue">Do you want to start again then?</string>
     <string name="win_dialogue">%1$s won!</string>
     <string name="delete_confirmation">Are you sure you want to delete %1$s? </string>
     <string name="most_selected">Most Selected</string>

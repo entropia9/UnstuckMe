@@ -64,6 +64,7 @@ fun MainScreen(
     navigateToAddEditItems: () -> Unit,
     navigateToRegular: () -> Unit,
     navigateToBattleMode: () -> Unit,
+    navigateToRaffleMode: () -> Unit,
     navigateToStats: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -128,6 +129,15 @@ fun MainScreen(
                         onDragComplete = {
                             visible = false
                             navigateToBattleMode()
+                        },
+                        modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_medium))
+                    )
+                    MainMenuButton(
+                        label = R.string.raffle_mode,
+                        icon = R.drawable.raffle_mode_icon,
+                        onDragComplete = {
+                            visible = false
+                            navigateToRaffleMode()
                         },
                         modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_medium))
                     )
