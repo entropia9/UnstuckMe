@@ -14,8 +14,8 @@ import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.entropia.helpmepick.AppViewModelProvider
 import com.entropia.helpmepick.R
-import com.entropia.helpmepick.ui.AddEditItemsScreen
-import com.entropia.helpmepick.ui.AddEditItemsScreenDestination
+import com.entropia.helpmepick.ui.addedititem.AddEditItemsScreen
+import com.entropia.helpmepick.ui.addedititem.AddEditItemsScreenDestination
 import com.entropia.helpmepick.ui.MainScreen
 import com.entropia.helpmepick.ui.MainScreenDestination
 import com.entropia.helpmepick.ui.battlemode.BattleModeDestination

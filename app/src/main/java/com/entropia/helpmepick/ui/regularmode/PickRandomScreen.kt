@@ -44,6 +44,9 @@ import com.entropia.helpmepick.ui.custom.ShakeConfig
 import com.entropia.helpmepick.ui.custom.rememberShakeController
 import com.entropia.helpmepick.ui.custom.shake
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
+import com.entropia.helpmepick.ui.outOfOptionsAgree
+import com.entropia.helpmepick.ui.pickedDialogue
+import com.entropia.helpmepick.ui.startAgainDialogue
 import com.entropia.helpmepick.ui.theme.Shapes
 import kotlinx.coroutines.delay
 

@@ -28,7 +28,7 @@
     <string name="select_random">Or select </string>
     <string name="select_random2"> random?</string>
     <string name="done_button">Done</string>
-    <string name="help_me_pick_btn">Help Me Pick</string>
+    <string name="help_me_pick_btn">Unstuck Me!</string>
     <string name="question_dialogue1">Is this your what you wanted?</string>
     <string name="question_dialogue2">How about %1$s?</string>
     <string name="question_dialogue3">Maybe you fancy %1$s instead?</string>

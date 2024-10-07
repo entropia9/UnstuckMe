@@ -31,10 +31,9 @@ import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
 import com.entropia.helpmepick.ui.custom.DialogueText
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
+import com.entropia.helpmepick.ui.pickedDialogue
 import com.entropia.helpmepick.ui.regularmode.RandomScreen
 import com.entropia.helpmepick.ui.regularmode.RegularDestination
-import com.entropia.helpmepick.ui.regularmode.outOfOptionsAgree
-import com.entropia.helpmepick.ui.regularmode.pickedDialogue
 import com.entropia.helpmepick.ui.theme.Shapes
 
 
@@ -55,7 +54,7 @@ fun RaffleModeScreen(
     modifier: Modifier = Modifier,
 ) {
     val lastDialogueReached =
-        viewModel.raffleUiState.currentDialogue == pickedDialogue || viewModel.raffleUiState.currentDialogue == outOfOptionsAgree
+        viewModel.raffleUiState.currentDialogue == pickedDialogue
     Scaffold(modifier = Modifier,
         topBar = {
             TopAppBar(
@@ -109,8 +108,17 @@ fun RaffleModeScreen(
                 )
             }
         }
-        AnimatedVisibility(visible = lastDialogueReached, enter = slideInVertically()) {
-            Column {
+        AnimatedVisibility(
+            visible = viewModel.raffleUiState.currentDialogue == pickedDialogue,
+            enter = slideInVertically()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimensionResource(id = R.dimen.padding_large)),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
                 Spacer(modifier = Modifier.weight(0.1f))
                 FinalText(
                     text = stringResource(

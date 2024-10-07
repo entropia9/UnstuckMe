@@ -9,9 +9,10 @@ import com.entropia.helpmepick.AppViewModelProvider.items
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.data.ItemsRepository
-import com.entropia.helpmepick.ui.regularmode.outOfOptionsAgree
-import com.entropia.helpmepick.ui.regularmode.pickedDialogue
-import com.entropia.helpmepick.ui.regularmode.startAgainDialogue
+import com.entropia.helpmepick.ui.outOfOptions
+import com.entropia.helpmepick.ui.outOfOptionsAgree
+import com.entropia.helpmepick.ui.pickedDialogue
+import com.entropia.helpmepick.ui.startAgainDialogue
 import kotlinx.coroutines.launch
 
 class RaffleModeViewModel(items: List<Item>, private val itemsRepository: ItemsRepository) :
@@ -49,6 +50,10 @@ class RaffleModeViewModel(items: List<Item>, private val itemsRepository: ItemsR
                 updateRejected()
             }
 
+            outOfOptions -> {
+                nextDialogue()
+            }
+
             outOfOptionsAgree -> {
                 navigateToMain()
             }
@@ -61,11 +66,10 @@ class RaffleModeViewModel(items: List<Item>, private val itemsRepository: ItemsR
     }
 
     fun nextDialogue() {
-        when (raffleUiState.currentDialogue) {
-            startAgainDialogue -> raffleUiState =
-                raffleUiState.copy(currentDialogue = outOfOptionsAgree)
-
-            else -> raffleUiState = raffleUiState.copy(currentDialogue = startAgainDialogue)
+        raffleUiState = when (raffleUiState.currentDialogue) {
+            startAgainDialogue -> raffleUiState.copy(currentDialogue = outOfOptions)
+            outOfOptions -> raffleUiState.copy(currentDialogue = outOfOptionsAgree)
+            else -> raffleUiState.copy(currentDialogue = startAgainDialogue)
 
         }
     }

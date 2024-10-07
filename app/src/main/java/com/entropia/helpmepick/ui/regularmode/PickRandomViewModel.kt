@@ -8,18 +8,14 @@ import androidx.lifecycle.viewModelScope
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.data.ItemsRepository
+import com.entropia.helpmepick.ui.outOfOptions
+import com.entropia.helpmepick.ui.outOfOptionsAgree
+import com.entropia.helpmepick.ui.pickedDialogue
+import com.entropia.helpmepick.ui.questionDialogueList
+import com.entropia.helpmepick.ui.startAgainDialogue
 import kotlinx.coroutines.launch
 
 
-val questionDialogueList: List<Int> = listOf(
-    R.string.question_dialogue2,
-    R.string.question_dialogue3,
-    R.string.question_dialogue4
-)
-val startAgainDialogue: Int = R.string.start_again_dialogue
-val pickedDialogue: Int = R.string.picked_dialogue
-val outOfOptionsAgree: Int = R.string.out_of_options_agree
-val outOfOptions: Int = R.string.out_of_options_dialogue
 
 class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: List<Item>) :
     ViewModel() {

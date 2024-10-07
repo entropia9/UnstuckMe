@@ -1,4 +1,4 @@
-package com.entropia.helpmepick.ui
+package com.entropia.helpmepick.ui.addedititem
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -58,6 +58,8 @@ import androidx.compose.ui.unit.dp
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
 import com.entropia.helpmepick.data.Item
+import com.entropia.helpmepick.ui.CategoryUiState
+import com.entropia.helpmepick.ui.ItemsListViewModel
 import com.entropia.helpmepick.ui.bottomsheet.EntryBottomSheet
 import com.entropia.helpmepick.ui.custom.CategoriesRow
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
