@@ -6,11 +6,10 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.datastore.DataStoreManager
-import com.entropia.helpmepick.ui.ItemsListViewModel
+import com.entropia.helpmepick.ui.addedititem.ItemsListViewModel
 import com.entropia.helpmepick.ui.stats.StatsViewModel
-import com.entropia.helpmepick.ui.ThemeViewModel
+import com.entropia.helpmepick.ui.theme.ThemeViewModel
 import com.entropia.helpmepick.ui.battlemode.BattleModeViewModel
-import com.entropia.helpmepick.ui.rafflemode.RaffleModeViewModel
 import com.entropia.helpmepick.ui.regularmode.PickRandomViewModel
 
 object AppViewModelProvider {
@@ -29,12 +28,6 @@ object AppViewModelProvider {
         }
         initializer {
             BattleModeViewModel(
-                items = items,
-                itemsRepository = helpMePickApplication().container.itemsRepository
-            )
-        }
-        initializer {
-            RaffleModeViewModel(
                 items = items,
                 itemsRepository = helpMePickApplication().container.itemsRepository
             )

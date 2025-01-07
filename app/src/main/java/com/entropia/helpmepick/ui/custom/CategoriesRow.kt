@@ -106,6 +106,7 @@ fun CategoriesRow(
 ) {
     val openRenameDialog = remember { mutableStateOf(false) }
     val openRemoveDialog = remember { mutableStateOf(false) }
+    val pressedCategory = remember { mutableStateOf("") }
     val listState = rememberLazyListState()
     val all = stringResource(id = R.string.all)
     val completed = stringResource(id = R.string.completed)
@@ -174,22 +175,24 @@ fun CategoriesRow(
                         }) { hide ->
                         DropdownMenuItem(text = { Text(text = stringResource(id = R.string.rename_category)) },
                             onClick = {
+                                pressedCategory.value=category
                                 hide()
                                 openRenameDialog.value = true
                             })
                         DropdownMenuItem(text = { Text(text = stringResource(id = R.string.remove_category)) },
                             onClick = {
+                                pressedCategory.value=category
                                 hide()
                                 openRemoveDialog.value = true
                             })
                     }
                     AlertDialogs(
-                        openRemoveDialog,
-                        onRemoveCategory,
+                        openRemoveDialog=openRemoveDialog,
+                        onRemoveCategory={onRemoveCategory(pressedCategory.value)},
                         onRemoveDismiss = { openRemoveDialog.value = false },
-                        category,
-                        openRenameDialog,
-                        onRenameCategory,
+                        category=pressedCategory.value,
+                        openRenameDialog=openRenameDialog,
+                        onRenameCategory=onRenameCategory,
                         onRenameDismiss = { openRenameDialog.value = false },
                     )
                 }

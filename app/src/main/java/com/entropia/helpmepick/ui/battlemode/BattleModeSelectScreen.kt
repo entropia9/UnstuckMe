@@ -11,7 +11,7 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
 import com.entropia.helpmepick.ui.ExpandedSelectScreen
-import com.entropia.helpmepick.ui.ItemsListViewModel
+import com.entropia.helpmepick.ui.addedititem.ItemsListViewModel
 import com.entropia.helpmepick.ui.SelectBottomAppBar
 import com.entropia.helpmepick.ui.SelectScreen
 import com.entropia.helpmepick.ui.navigation.NavigationDestination

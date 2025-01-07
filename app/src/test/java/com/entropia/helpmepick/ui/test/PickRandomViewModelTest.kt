@@ -36,7 +36,7 @@ class PickRandomViewModelTest {
     fun pickRandomViewModel_updatePickedStatsAndShowDialogue_updatedPickedStats() = runTest {
         viewModel.pickRandomFromSelected(repository.fakeData.itemsList)
         viewModel.updatePickedStatsAndShowDialogue(navigateUp = {})
-        assertEquals(1, viewModel.pickItemUiState.currentPick?.let { repository.getItem(it.name)?.timesPicked
+        assertEquals(1, viewModel.pickItemUiState.currentPick?.let { repository.getItem(it.name)?.regularWins
             ?: 0 })
     }
 

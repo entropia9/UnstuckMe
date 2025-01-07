@@ -1,4 +1,4 @@
-package com.entropia.helpmepick.ui
+package com.entropia.helpmepick.ui.theme
 
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel

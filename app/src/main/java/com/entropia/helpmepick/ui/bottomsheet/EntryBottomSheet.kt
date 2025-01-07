@@ -34,7 +34,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.data.Item
-import com.entropia.helpmepick.ui.ItemsListViewModel
+import com.entropia.helpmepick.ui.addedititem.ItemsListViewModel
 import java.util.Locale
 
 

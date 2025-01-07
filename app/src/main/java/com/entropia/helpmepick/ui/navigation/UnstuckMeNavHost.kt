@@ -14,18 +14,14 @@ import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.entropia.helpmepick.AppViewModelProvider
 import com.entropia.helpmepick.R
-import com.entropia.helpmepick.ui.addedititem.AddEditItemsScreen
-import com.entropia.helpmepick.ui.addedititem.AddEditItemsScreenDestination
 import com.entropia.helpmepick.ui.MainScreen
 import com.entropia.helpmepick.ui.MainScreenDestination
+import com.entropia.helpmepick.ui.addedititem.AddEditItemsScreen
+import com.entropia.helpmepick.ui.addedititem.AddEditItemsScreenDestination
 import com.entropia.helpmepick.ui.battlemode.BattleModeDestination
 import com.entropia.helpmepick.ui.battlemode.BattleModeScreen
 import com.entropia.helpmepick.ui.battlemode.BattleModeSelectScreen
 import com.entropia.helpmepick.ui.battlemode.BattleModeSelectScreenDestination
-import com.entropia.helpmepick.ui.rafflemode.RaffleModeDestination
-import com.entropia.helpmepick.ui.rafflemode.RaffleModeScreen
-import com.entropia.helpmepick.ui.rafflemode.RaffleModeSelectScreen
-import com.entropia.helpmepick.ui.rafflemode.RaffleModeSelectScreenDestination
 import com.entropia.helpmepick.ui.regularmode.PickRandomScreen
 import com.entropia.helpmepick.ui.regularmode.RegularDestination
 import com.entropia.helpmepick.ui.regularmode.RegularSelectScreen
@@ -50,7 +46,6 @@ fun UnstuckMeNavHost(
                 navigateToAddEditItems = { navController.navigate(AddEditItemsScreenDestination.route) },
                 navigateToRegular = { navController.navigate(RegularSelectScreenDestination.route) },
                 navigateToBattleMode = { navController.navigate(BattleModeSelectScreenDestination.route) },
-                navigateToRaffleMode = { navController.navigate(RaffleModeSelectScreenDestination.route) },
                 navigateToStats = { navController.navigate(StatsDestination.route) },
                 modifier = when (windowSizeClass.windowWidthSizeClass) {
                     WindowWidthSizeClass.EXPANDED -> Modifier.fillMaxWidth(0.5f)
@@ -101,27 +96,6 @@ fun UnstuckMeNavHost(
             )
         }
 
-        composable(route = RaffleModeSelectScreenDestination.route) {
-            RaffleModeSelectScreen(
-                viewModel = viewModel(factory = AppViewModelProvider.Factory),
-                navigate = { navController.navigate(RaffleModeDestination.route) },
-                navigateToAddEdit = { navController.navigate(AddEditItemsScreenDestination.route) },
-                navigateUp = { navController.navigateUp() },
-                windowSizeClass = windowSizeClass
-            )
-        }
-
-        composable(route = RaffleModeDestination.route) {
-            RaffleModeScreen(
-                viewModel = viewModel(factory = AppViewModelProvider.Factory),
-                navigateUp = { navController.navigate(MainScreenDestination.route) },
-                navigateToSelect = { navController.navigateUp() },
-                modifier = when (windowSizeClass.windowWidthSizeClass) {
-                    WindowWidthSizeClass.EXPANDED -> Modifier.padding(100.dp)
-                    else -> Modifier
-                }
-            )
-        }
         composable(
             route = RegularDestination.route
         ) {
@@ -138,49 +112,57 @@ fun UnstuckMeNavHost(
         composable(
             route = StatsDestination.route
         ) {
-            when (windowSizeClass.windowWidthSizeClass) {
-                WindowWidthSizeClass.EXPANDED -> {
-                    ExpandedStatsScreen(
-                        navigateUp = { navController.navigateUp() },
-                        viewModel = viewModel(factory = AppViewModelProvider.Factory),
-                        navigateToBattleMode = {
-                            navController.navigate(
-                                BattleModeSelectScreenDestination.route
-                            )
-                        },
-                        navigateToRegularMode = {
-                            navController.navigate(
-                                RegularSelectScreenDestination.route
-                            )
-                        },
-                        navigateToAddEdit = {
-                            navController.navigate(AddEditItemsScreenDestination.route)
-                        },
-                        modifier = Modifier.padding(50.dp)
-                    )
-                }
+            showStatsScreen(windowSizeClass, navController)
 
-                else -> {
-                    StatsScreen(
-                        navigateUp = { navController.navigateUp() },
-                        viewModel = viewModel(factory = AppViewModelProvider.Factory),
-                        navigateToBattleMode = {
-                            navController.navigate(
-                                BattleModeSelectScreenDestination.route
-                            )
-                        },
-                        navigateToRegularMode = {
-                            navController.navigate(
-                                RegularSelectScreenDestination.route
-                            )
-                        },
-                        navigateToAddEdit = {
-                            navController.navigate(AddEditItemsScreenDestination.route)
-                        }
-                    )
-                }
-            }
+        }
+    }
+}
 
+@Composable
+private fun showStatsScreen(
+    windowSizeClass: WindowSizeClass,
+    navController: NavHostController,
+) {
+    when (windowSizeClass.windowWidthSizeClass) {
+        WindowWidthSizeClass.EXPANDED -> {
+            ExpandedStatsScreen(
+                navigateUp = { navController.navigateUp() },
+                viewModel = viewModel(factory = AppViewModelProvider.Factory),
+                navigateToBattleMode = {
+                    navController.navigate(
+                        BattleModeSelectScreenDestination.route
+                    )
+                },
+                navigateToRegularMode = {
+                    navController.navigate(
+                        RegularSelectScreenDestination.route
+                    )
+                },
+                navigateToAddEdit = {
+                    navController.navigate(AddEditItemsScreenDestination.route)
+                },
+                modifier = Modifier.padding(50.dp)
+            )
+        }
+
+        else -> {
+            StatsScreen(
+                navigateUp = { navController.navigateUp() },
+                viewModel = viewModel(factory = AppViewModelProvider.Factory),
+                navigateToBattleMode = {
+                    navController.navigate(
+                        BattleModeSelectScreenDestination.route
+                    )
+                },
+                navigateToRegularMode = {
+                    navController.navigate(
+                        RegularSelectScreenDestination.route
+                    )
+                },
+                navigateToAddEdit = {
+                    navController.navigate(AddEditItemsScreenDestination.route)
+                }
+            )
         }
     }
 }

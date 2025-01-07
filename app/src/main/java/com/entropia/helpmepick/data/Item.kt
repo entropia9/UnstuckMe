@@ -11,7 +11,7 @@ data class Item(
     val category: String = "",
     val timesSelected: Int = 0,
     val timesSelectedBattleMode: Int = 0,
-    val timesPicked: Int = 0,
+    val regularWins: Int = 0,
     val timesRejected: Int = 0,
     val timesRejectedBattleMode: Int = 0,
     val battleWins: Int = 0,

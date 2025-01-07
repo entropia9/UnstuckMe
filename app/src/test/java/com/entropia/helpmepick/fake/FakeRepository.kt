@@ -33,7 +33,7 @@ class FakeRepository : ItemsRepository {
     }
 
     override fun getAllByTimesPicked(): Flow<List<Item>> {
-        return listOf(fakeData.itemsList.sortedBy { item -> item.timesPicked }).asFlow()
+        return listOf(fakeData.itemsList.sortedBy { item -> item.regularWins }).asFlow()
     }
 
     override fun getAllByTimesSelected(): Flow<List<Item>> {

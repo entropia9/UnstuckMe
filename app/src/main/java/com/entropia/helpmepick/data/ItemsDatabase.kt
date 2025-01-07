@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [Item::class], version = 5, exportSchema = false)
+@Database(entities = [Item::class], version = 6, exportSchema = false)
 abstract class ItemsDatabase : RoomDatabase() {
     abstract fun itemDao(): ItemDao
 
@@ -32,13 +32,20 @@ abstract class ItemsDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE 'items' RENAME COLUMN 'timesPicked' TO 'regularWins'")
+
+            }
+        }
+
         fun getDatabase(context: Context): ItemsDatabase {
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(
                     context = context,
                     ItemsDatabase::class.java,
                     "item_database"
-                ).addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5).build().also {
+                ).addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6).build().also {
                     Instance = it
                 }
             }

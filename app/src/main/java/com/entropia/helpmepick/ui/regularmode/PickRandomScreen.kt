@@ -81,7 +81,7 @@ fun PickRandomScreen(
         }
         val itemName = viewModel.pickItemUiState.currentPick?.name ?: " "
         val lastDialogueReached =
-            viewModel.pickItemUiState.currentDialogue == pickedDialogue || viewModel.pickItemUiState.currentDialogue == outOfOptionsAgree
+            viewModel.pickItemUiState.finalText == pickedDialogue || viewModel.pickItemUiState.finalText == outOfOptionsAgree
         Column(
             modifier = modifier
                 .fillMaxSize()
@@ -119,11 +119,18 @@ fun PickRandomScreen(
                 )
             }
             AnimatedVisibility(visible = lastDialogueReached, enter = slideInVertically()) {
-                Column {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .padding(dimensionResource(id = R.dimen.padding_large)),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
                     Spacer(modifier = Modifier.weight(0.1f))
                     FinalText(
                         text = stringResource(
-                            id = viewModel.pickItemUiState.currentDialogue,
+                            id = viewModel.pickItemUiState.finalText,
                             itemName
                         ),
                         style = MaterialTheme.typography.headlineMedium,
@@ -166,8 +173,8 @@ fun PickRandomScreen(
                                 ).appendLine().appendLine().append(
                                     pluralStringResource(
                                         id = R.plurals.picked_stats3,
-                                        count = item.timesPicked,
-                                        item.timesPicked
+                                        count = item.regularWins,
+                                        item.regularWins
                                     )
                                 ).toString()
                                     .let { DialogueText(text = it) }

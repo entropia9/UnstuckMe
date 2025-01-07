@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.data.Item
+import com.entropia.helpmepick.ui.addedititem.ItemsListViewModel
 import com.entropia.helpmepick.ui.custom.CategoriesRow
 import com.entropia.helpmepick.ui.theme.Shapes
 
@@ -165,7 +166,7 @@ fun ExpandedSelectScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Row() {
+                                Row {
                                     Button(
                                         onClick = { viewModel.selectAll() },
                                         modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))

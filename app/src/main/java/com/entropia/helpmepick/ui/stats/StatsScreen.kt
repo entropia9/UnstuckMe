@@ -86,7 +86,7 @@ fun StatsScreen(
             item {
                 StatsBox(label = stringResource(id = R.string.regular), content = {
                     DisplayStats(
-                        map = viewModel.statsUiState.mostPicked.associate { it.name to it.timesPicked },
+                        map = viewModel.statsUiState.mostPicked.associate { it.name to it.regularWins },
                         label = stringResource(id = R.string.most_picked),
                         noItemsButtonLabel = stringResource(id = R.string.no_items_button_regular_mode),
                         statsType = StatsType.Picked,
@@ -198,16 +198,16 @@ fun ExpandedStatsScreen(
         LazyColumn(modifier = modifier.padding(innerPadding)) {
             item {
                 StatsBox(label = stringResource(id = R.string.regular), content = {
-                    Column() {
+                    Column {
                         DisplayStats(
-                            map = viewModel.statsUiState.mostPicked.associate { it.name to it.timesPicked },
+                            map = viewModel.statsUiState.mostPicked.associate { it.name to it.regularWins },
                             label = stringResource(id = R.string.most_picked),
                             noItemsButtonLabel = stringResource(id = R.string.no_items_button_regular_mode),
                             statsType = StatsType.Picked,
                             navigateTo = navigateToRegularMode,
                             maxBarWidth = mainBarWidth
                         )
-                        Row() {
+                        Row {
 
                             DisplayStats(
                                 map = viewModel.statsUiState.mostSelected.associate { it.name to it.timesSelected },

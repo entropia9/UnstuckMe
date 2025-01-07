@@ -3,7 +3,7 @@ package com.entropia.helpmepick.ui.test
 import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.fake.FakeRepository
 import com.entropia.helpmepick.rules.TestDispatcherRule
-import com.entropia.helpmepick.ui.ItemsListViewModel
+import com.entropia.helpmepick.ui.addedititem.ItemsListViewModel
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue

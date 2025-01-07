@@ -1,4 +1,4 @@
-package com.entropia.helpmepick.ui
+package com.entropia.helpmepick.ui.addedititem
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf

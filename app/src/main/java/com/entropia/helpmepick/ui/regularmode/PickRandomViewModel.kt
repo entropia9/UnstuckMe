@@ -16,7 +16,6 @@ import com.entropia.helpmepick.ui.startAgainDialogue
 import kotlinx.coroutines.launch
 
 
-
 class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: List<Item>) :
     ViewModel() {
 
@@ -42,7 +41,7 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
     private fun updatePicked() {
         if (pickItemUiState.currentPick != null) {
             val newItem =
-                pickItemUiState.currentPick!!.copy(timesPicked = pickItemUiState.currentPick!!.timesPicked + 1)
+                pickItemUiState.currentPick!!.copy(regularWins = pickItemUiState.currentPick!!.regularWins + 1)
             viewModelScope.launch {
                 itemsRepository.updateItem(newItem)
             }
@@ -74,8 +73,8 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
 
     private fun showPickedDialogue() {
         pickItemUiState = when (pickItemUiState.currentDialogue) {
-            outOfOptions -> pickItemUiState.copy(currentDialogue = outOfOptionsAgree)
-            else -> pickItemUiState.copy(currentDialogue = pickedDialogue)
+            outOfOptions -> pickItemUiState.copy(finalText = outOfOptionsAgree)
+            else -> pickItemUiState.copy(finalText = pickedDialogue)
         }
     }
 
@@ -96,6 +95,7 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
             startAgainDialogue -> {
                 navigateUp()
             }
+
             else -> {
                 updateRejected()
                 pickRandomFromSelected(pickItemUiState.selectedList)
@@ -121,6 +121,7 @@ data class PickItemUiState(
     val currentPick: Item? = null,
     val pickedItem: Item? = null,
     val selectedList: List<Item>,
-    val currentDialogue: Int = R.string.question_dialogue1
+    val currentDialogue: Int = R.string.question_dialogue1,
+    val finalText: Int = 0,
 )
 

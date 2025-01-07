@@ -87,7 +87,7 @@ class ItemDaoTest {
     fun daoGetAllItemsByTimesPicked_sortsByPicked() = runBlocking {
         addTwoItemsToDb()
         val mostPicked = itemDao.getAllItems().first()
-        Assert.assertTrue(mostPicked[0].timesPicked > mostPicked[1].timesPicked)
+        Assert.assertTrue(mostPicked[0].regularWins > mostPicked[1].regularWins)
     }
 
     @Test

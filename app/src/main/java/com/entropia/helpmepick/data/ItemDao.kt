@@ -33,7 +33,7 @@ interface ItemDao {
     @Query("SELECT * FROM items WHERE completed is 1 ORDER BY name ASC")
     fun getCompleted(): Flow<List<Item>>
 
-    @Query("SELECT * FROM items WHERE timesPicked > 0 ORDER BY timesPicked DESC")
+    @Query("SELECT * FROM items WHERE regularWins > 0 ORDER BY regularWins DESC")
     fun getAllItemsByTimesPicked(): Flow<List<Item>>
 
     @Query("SELECT * FROM items WHERE timesSelected > 0 ORDER BY timesSelected DESC")
@@ -69,7 +69,7 @@ interface ItemDao {
     @Query("SELECT category, SUM(battleWins) FROM items WHERE battleWins>0 GROUP BY category ORDER BY SUM(battleWins) DESC")
     fun getCategoriesByNumberOfBattleWins(): Flow<List<BattleWinsTuple>>
 
-    @Query("SELECT category, SUM(timesPicked) FROM items WHERE timesPicked>0 GROUP BY category ORDER BY SUM(timesPicked) DESC")
+    @Query("SELECT category, SUM(regularWins) FROM items WHERE regularWins>0 GROUP BY category ORDER BY SUM(regularWins) DESC")
     fun getCategoriesByNumberOfRegularWins(): Flow<List<RegularWinsTuple>>
 }
 
@@ -86,5 +86,5 @@ data class BattleWinsTuple(
 
 data class RegularWinsTuple(
     @ColumnInfo(name = "category") val category: String,
-    @ColumnInfo(name = "SUM(timesPicked)") val count: Int,
+    @ColumnInfo(name = "SUM(regularWins)") val count: Int,
 )

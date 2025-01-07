@@ -12,7 +12,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import com.entropia.helpmepick.ui.ThemeViewModel
 
 private val lightColors = lightColorScheme(
     primary = md_theme_light_primary,

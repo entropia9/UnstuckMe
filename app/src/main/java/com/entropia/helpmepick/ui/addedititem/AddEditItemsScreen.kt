@@ -58,8 +58,6 @@ import androidx.compose.ui.unit.dp
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
 import com.entropia.helpmepick.data.Item
-import com.entropia.helpmepick.ui.CategoryUiState
-import com.entropia.helpmepick.ui.ItemsListViewModel
 import com.entropia.helpmepick.ui.bottomsheet.EntryBottomSheet
 import com.entropia.helpmepick.ui.custom.CategoriesRow
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
@@ -369,7 +367,7 @@ fun CompletedItemCard(
                     Text(
                         text = stringResource(
                             id = R.string.regular_mode_completed,
-                            item.timesPicked
+                            item.regularWins
                         ),
                         style = Typography.bodyLarge,
                         fontWeight = FontWeight.ExtraBold,
