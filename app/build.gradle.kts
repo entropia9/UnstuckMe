@@ -7,14 +7,13 @@ plugins {
 android {
     namespace = "com.entropia.helpmepick"
     compileSdk = 34
-
+    ndkVersion = "28.0.12674087"
     defaultConfig {
         applicationId = "com.entropia.helpmepick"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -23,12 +22,15 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("debug")
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
         }
     }
     compileOptions {
@@ -82,8 +84,5 @@ dependencies {
     implementation ("androidx.compose.material3:material3:1.2.1")
     implementation ("androidx.compose.material3:material3-window-size-class:1.2.1")
     implementation ("androidx.compose.material3:material3-adaptive-navigation-suite:1.3.0-beta05")
-
-
-
 
 }

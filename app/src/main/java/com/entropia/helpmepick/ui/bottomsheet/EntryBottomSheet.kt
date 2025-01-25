@@ -1,19 +1,28 @@
 package com.entropia.helpmepick.ui.bottomsheet
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -26,11 +35,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.data.Item
@@ -55,7 +67,7 @@ fun EntryBottomSheet(
         sheetShape = RoundedCornerShape(topStartPercent = 20, topEndPercent = 20),
         scaffoldState = sheetScaffoldState,
         sheetContent = {
-            Column {
+            Column(modifier = Modifier.imePadding()) {
                 SheetHeader()
                 SheetForm(
                     onCancel = {
@@ -94,6 +106,27 @@ fun SheetForm(
         mutableStateOf("")
     }
 
+    var oneTime by remember {
+        mutableStateOf(false)
+    }
+
+    var oneTimeInfoVisible by remember {
+        mutableStateOf(false)
+    }
+
+    val alpha: Float by animateFloatAsState(
+        targetValue = if (oneTimeInfoVisible) {
+            1f
+        } else {
+            0f
+        },
+        animationSpec = tween(
+            durationMillis = 300,
+            easing = LinearEasing,
+        ),
+        label = "one time description visibility"
+    )
+
     var entryValid by remember {
         mutableStateOf(true)
     }
@@ -124,12 +157,41 @@ fun SheetForm(
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
             )
         }
+        InputRow(inputLabel = stringResource(id = R.string.one_time)) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(checked = oneTime, onCheckedChange = { oneTime = !oneTime })
+                Row(
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement =
+                    Arrangement.spacedBy(8.dp),
+                    modifier = modifier.padding(end = 8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        contentDescription = "",
+                        Modifier.clickable {
+                            oneTimeInfoVisible = !oneTimeInfoVisible
+                        })
+
+                    Text(
+                        text = stringResource(id = R.string.one_time_explanation),
+                        textAlign = TextAlign.Justify,
+                        modifier = Modifier.alpha(alpha)
+                    )
+
+                }
+
+            }
+
+        }
         ButtonRow(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             onCancel = onCancel,
             onSubmit = {
-                if (validateItem(Item(name = name, category = category))) {
-                    addItem(Item(name = name, category = category))
+                if (validateItem(Item(name = name, category = category, oneTime = oneTime))) {
+                    addItem(Item(name = name, category = category, oneTime = oneTime))
                     onSubmit()
                     name = ""
                     entryValid = true
@@ -252,4 +314,17 @@ fun InputRow(
             content()
         }
     }
+}
+
+
+@Composable
+@Preview
+fun SheetPreview() {
+    SheetForm(
+        onCancel = { },
+        onSubmit = { },
+        categories = listOf("3d", "ble"),
+        validateItem = { true },
+        addItem = { }
+    )
 }

@@ -3,6 +3,7 @@ package com.entropia.helpmepick.ui.battlemode
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -46,7 +47,8 @@ fun BattleModeSelectScreen(
                 navigateToAddEdit = { navigateToAddEdit() },
                 isEnabled = { size -> size >= 4 && size % 4 == 0 }
             )
-        }) { innerPadding ->
+        },
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets) { innerPadding ->
         when (windowSizeClass.windowWidthSizeClass) {
             WindowWidthSizeClass.EXPANDED -> ExpandedSelectScreen(
                 viewModel = viewModel,

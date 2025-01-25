@@ -16,6 +16,8 @@
     <string name="regular_mode">Regular Mode</string>
     <string name="name">Name</string>
     <string name="category">Category</string>
+    <string name="one_time">One-time? </string>
+    <string name="one_time_explanation">One-time item will disappear from the list after being used in any mode. </string>
     <string name="rename_category">Rename Category</string>
     <string name="rename_category_dialog">Input new name for %1$s category below </string>
     <string name="remove_category">Remove Category</string>

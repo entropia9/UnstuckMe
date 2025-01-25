@@ -1,5 +1,8 @@
 package com.entropia.helpmepick.ui.addedititem
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +27,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
@@ -31,6 +35,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -47,6 +52,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -54,7 +60,9 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
 import com.entropia.helpmepick.data.Item
@@ -107,7 +115,8 @@ fun AddEditItemsScreen(
             scope.launch {
                 bottomSheetScaffoldState.bottomSheetState.hide()
             }
-        }) {
+        },
+    ) {
         Scaffold(topBar = {
             TopAppBar(
                 title = stringResource(id = R.string.items),
@@ -119,7 +128,8 @@ fun AddEditItemsScreen(
                 AddItemFAB(onClick = { scope.launch { bottomSheetScaffoldState.bottomSheetState.expand() } })
             }
         },
-            floatingActionButtonPosition = FabPosition.Center
+            floatingActionButtonPosition = FabPosition.Center,
+            contentWindowInsets = ScaffoldDefaults.contentWindowInsets
         ) { paddingValues ->
             Column(
                 modifier = modifier
@@ -178,7 +188,8 @@ fun ItemsList(
                 )
             } else {
                 CompletedItemCard(
-                    item = item, uncomplete = {
+                    item = item,
+                    uncomplete = {
                         updateItem(
                             item.copy(completed = false)
                         )
@@ -217,6 +228,19 @@ fun ItemCard(
             item = item,
         )
     }
+
+    val alpha: Float by animateFloatAsState(
+        targetValue = if (!item.oneTime) {
+            1f
+        } else {
+            0f
+        },
+        animationSpec = tween(
+            durationMillis = 300,
+            easing = LinearEasing,
+        ),
+        label = "one time description visibility"
+    )
 
     Box(
         modifier = modifier
@@ -310,22 +334,64 @@ fun ItemCard(
                 }
             }
             CompleteTab(
-                onClick = {
-                    updateItem(
-                        item.copy(completed = true)
-                    )
-                },
-                modifier = modifier.clip(
-                    RoundedCornerShape(
-                        bottomEnd = 20.dp, bottomStart = 40.dp
-                    )
-                ),
+                modifier = modifier
+                    .clip(
+                        RoundedCornerShape(
+                            bottomEnd = 20.dp, bottomStart = 40.dp
+                        )
+                    ),
                 visible = viewModel.categoriesItemUiState.value.currentCategory != stringResource(id = R.string.completed)
-            )
-        }
+            ) {
+                Text(
+                    stringResource(id = R.string.one_time),
+                    modifier = Modifier.padding(start =dimensionResource(id = R.dimen.padding_large))
+                )
+                Checkbox(checked = item.oneTime, onCheckedChange = {
+                    updateItem(
+                        item.copy(oneTime = !item.oneTime)
+                    )
+                })
+                Box(
+                    modifier = Modifier.fillMaxWidth(), Alignment.Center
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End) {
+                        Text(
+                            text = stringResource(id = R.string.completed_question),
 
+                            modifier = Modifier
+                                .padding(dimensionResource(id = R.dimen.padding_medium))
+                                .alpha(alpha)
+                        )
+                        Button(
+                            onClick = {
+                                updateItem(
+                                    item.copy(completed = true)
+                                )
+                            },
+                            modifier = Modifier
+                                .padding(dimensionResource(id = R.dimen.padding_medium))
+                                .alpha(alpha)
+                        ) {
+                            Icon(imageVector = Icons.Default.Check, contentDescription = null)
+                        }
+                    }
+                    Text(
+                        text = stringResource(id = R.string.one_time_explanation),
+                        fontSize = 12.sp,
+                        textAlign = TextAlign.Justify,
+                        modifier = Modifier
+                            .alpha(1.0f-alpha)
+                            .padding(end=dimensionResource(id = R.dimen.padding_large))
+                    )
+                }
+
+
+            }
+        }
     }
+
 }
+
 
 @Composable
 fun CompletedItemCard(
@@ -383,15 +449,25 @@ fun CompletedItemCard(
                 }
             }
             CompleteTab(
-                onClick = { uncomplete(item) },
                 visible = true,
-                text = R.string.uncompleted_question,
                 modifier = Modifier.clip(
                     RoundedCornerShape(
                         bottomEnd = 20.dp, bottomStart = 40.dp
                     )
                 )
-            )
+            ) {
+                Text(
+                    text = stringResource(id = R.string.uncompleted_question),
+
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+                )
+                Button(
+                    onClick = { uncomplete(item) },
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+                ) {
+                    Icon(imageVector = Icons.Default.Check, contentDescription = null)
+                }
+            }
         }
 
 
@@ -439,12 +515,12 @@ private fun EditIcons(
     }
 }
 
+
 @Composable
 fun CompleteTab(
     modifier: Modifier = Modifier,
-    text: Int = R.string.completed_question,
-    onClick: (() -> Unit),
     visible: Boolean,
+    content: @Composable () -> Unit,
 ) {
     if (visible) {
         Box(
@@ -462,17 +538,8 @@ fun CompleteTab(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = stringResource(id = text),
+                content()
 
-                    modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
-                )
-                Button(
-                    onClick = { onClick() },
-                    modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
-                ) {
-                    Icon(imageVector = Icons.Default.Check, contentDescription = null)
-                }
             }
         }
     }

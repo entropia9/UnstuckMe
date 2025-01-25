@@ -54,7 +54,7 @@ interface ItemDao {
     @Query("SELECT * FROM items WHERE timesSelected = 0")
     fun getNeverSelected(): Flow<List<Item>>
 
-    @Query("SELECT DISTINCT category FROM items WHERE completed is 0 ORDER BY name")
+    @Query("SELECT DISTINCT category FROM items WHERE completed is 0 ORDER BY name ASC")
     fun getAllCategories(): Flow<List<String>>
 
     @Query("SELECT * FROM items WHERE category=:category AND completed is 0")

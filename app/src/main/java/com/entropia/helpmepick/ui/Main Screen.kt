@@ -24,6 +24,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -82,13 +83,16 @@ fun MainScreen(
             )
         }
     }
-    Scaffold(modifier = Modifier,
+    Scaffold(
+        modifier = Modifier,
         topBar = {
             TopAppBar(
                 title = stringResource(id = MainScreenDestination.titleRes),
                 canNavigateBack = false
             )
-        }) {
+        },
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets
+    ) {
         AnimatedVisibility(
             visible = visible,
             exit = fadeOut()

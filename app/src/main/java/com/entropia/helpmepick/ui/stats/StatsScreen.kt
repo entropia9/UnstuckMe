@@ -17,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -78,7 +79,7 @@ fun StatsScreen(
             canNavigateBack = true,
             navigateUp = navigateUp
         )
-    }) { innerPadding ->
+    }, contentWindowInsets = ScaffoldDefaults.contentWindowInsets) { innerPadding ->
         val configuration = LocalConfiguration.current
         val screenWidth = configuration.screenWidthDp.dp
         val maxBarWidth = screenWidth * 0.4f
@@ -148,7 +149,7 @@ fun StatsScreen(
                         label = stringResource(id = R.string.most_completed),
                         noItemsButtonLabel = stringResource(id = R.string.no_items_button_complete),
                         statsType = StatsType.Completed,
-                        navigateTo =navigateToAddEdit,
+                        navigateTo = navigateToAddEdit,
                         maxBarWidth = maxBarWidth
                     )
                     DisplayStats(

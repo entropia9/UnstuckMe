@@ -3,6 +3,7 @@ package com.entropia.helpmepick.ui.regularmode
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -11,9 +12,9 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
 import com.entropia.helpmepick.ui.ExpandedSelectScreen
-import com.entropia.helpmepick.ui.addedititem.ItemsListViewModel
 import com.entropia.helpmepick.ui.SelectBottomAppBar
 import com.entropia.helpmepick.ui.SelectScreen
+import com.entropia.helpmepick.ui.addedititem.ItemsListViewModel
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
 
 object RegularSelectScreenDestination : NavigationDestination {
@@ -31,7 +32,7 @@ fun RegularSelectScreen(
     navigate: () -> Unit,
     navigateToAddEdit: () -> Unit,
     navigateUp: () -> Unit,
-    windowSizeClass: WindowSizeClass
+    windowSizeClass: WindowSizeClass,
 ) {
     Scaffold(
         topBar = {
@@ -48,13 +49,15 @@ fun RegularSelectScreen(
                 navigateToAddEdit = { navigateToAddEdit() },
                 isEnabled = { size -> size >= 2 }
             )
-        }
+        },
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets
     ) { innerPadding ->
         when (windowSizeClass.windowWidthSizeClass) {
             WindowWidthSizeClass.EXPANDED -> ExpandedSelectScreen(
                 viewModel = viewModel,
                 modifier = Modifier.padding(innerPadding)
             )
+
             else -> SelectScreen(
                 viewModel = viewModel,
                 modifier = Modifier.padding(innerPadding)

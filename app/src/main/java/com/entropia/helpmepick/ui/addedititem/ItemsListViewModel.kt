@@ -219,7 +219,6 @@ class ItemsListViewModel(private val itemsRepository: ItemsRepository) : ViewMod
             )
     }
 
-
     fun updateEditedItem(name: String, category: String) {
         editedItem = Pair(name, category)
 

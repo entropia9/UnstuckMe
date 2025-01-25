@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.entropia.helpmepick.AppViewModelProvider.items
 import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.data.ItemsRepository
 import kotlinx.coroutines.launch
@@ -55,6 +56,13 @@ class BattleModeViewModel(items: List<Item>, private val itemsRepository: ItemsR
                 battleModeUiState = battleModeUiState.copy(
                     winner = newItem
                 )
+                viewModelScope.launch {
+                    items.forEach { item: Item ->
+                        if (item.oneTime) {
+                            itemsRepository.deleteItem(item)
+                        }
+                    }
+                }
             }
         }
     }
@@ -87,5 +95,5 @@ data class BattleModeUiState(
     var nextRoundList: MutableList<Item> = mutableListOf(),
     val item1: Item? = null,
     val item2: Item? = null,
-    val winner: Item? = null
+    val winner: Item? = null,
 )

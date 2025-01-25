@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.entropia.helpmepick.AppViewModelProvider.items
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.data.Item
 import com.entropia.helpmepick.data.ItemsRepository
@@ -69,6 +70,7 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
         } else {
             pickItemUiState.copy(currentPick = null)
         }
+
     }
 
     private fun showPickedDialogue() {
@@ -85,6 +87,7 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
             else -> {
                 updatePicked()
                 showPickedDialogue()
+                removeOneTime()
             }
         }
     }
@@ -100,6 +103,19 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
                 updateRejected()
                 pickRandomFromSelected(pickItemUiState.selectedList)
                 nextDialogue()
+                if (pickItemUiState.selectedList.isEmpty()) {
+                    removeOneTime()
+                }
+            }
+        }
+    }
+
+    private fun removeOneTime() {
+        viewModelScope.launch {
+            items.forEach { item: Item ->
+                if (item.oneTime) {
+                    itemsRepository.deleteItem(item)
+                }
             }
         }
     }
