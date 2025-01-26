@@ -14,6 +14,7 @@ import com.entropia.helpmepick.ui.outOfOptionsAgree
 import com.entropia.helpmepick.ui.pickedDialogue
 import com.entropia.helpmepick.ui.questionDialogueList
 import com.entropia.helpmepick.ui.startAgainDialogue
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -65,12 +66,15 @@ class PickRandomViewModel(private val itemsRepository: ItemsRepository, items: L
     }
 
     fun pickRandomFromSelected(items: List<Item>) {
-        pickItemUiState = if (items.isNotEmpty()) {
-            pickItemUiState.copy(currentPick = items.random())
-        } else {
-            pickItemUiState.copy(currentPick = null)
-        }
+        viewModelScope.launch{
+            delay(200)
+            pickItemUiState = if (items.isNotEmpty()) {
+                pickItemUiState.copy(currentPick = items.random())
+            } else {
+                pickItemUiState.copy(currentPick = null)
+            }
 
+        }
     }
 
     private fun showPickedDialogue() {
