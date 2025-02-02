@@ -28,11 +28,15 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
@@ -282,17 +286,19 @@ fun ItemCard(
                         isEditable = isEditable,
                         modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small)),
                     )
-                    TextRow(
+
+                    CategorySpinnerRow(
                         inputLabel = stringResource(R.string.category),
-                        fieldValue = if (!isEditable) item.category else viewModel.editedItem.second,
+                        categories = viewModel.categoriesItemUiState.value.categories,
+                        selectedOptionText = if (!isEditable) item.category else viewModel.editedItem.second,
+                        isEditable = isEditable,
                         onValueChange = {
                             viewModel.updateEditedItem(
                                 viewModel.editedItem.first,
                                 it
                             )
                         },
-                        isEditable = isEditable,
-                        modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small)),
+                        modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small))
                     )
                 }
                 Column(
@@ -344,7 +350,7 @@ fun ItemCard(
             ) {
                 Text(
                     stringResource(id = R.string.one_time),
-                    modifier = Modifier.padding(start =dimensionResource(id = R.dimen.padding_large))
+                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_large))
                 )
                 Checkbox(checked = item.oneTime, onCheckedChange = {
                     updateItem(
@@ -354,7 +360,10 @@ fun ItemCard(
                 Box(
                     modifier = Modifier.fillMaxWidth(), Alignment.Center
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End
+                    ) {
                         Text(
                             text = stringResource(id = R.string.completed_question),
 
@@ -380,8 +389,8 @@ fun ItemCard(
                         fontSize = 12.sp,
                         textAlign = TextAlign.Justify,
                         modifier = Modifier
-                            .alpha(1.0f-alpha)
-                            .padding(end=dimensionResource(id = R.dimen.padding_large))
+                            .alpha(1.0f - alpha)
+                            .padding(end = dimensionResource(id = R.dimen.padding_large))
                     )
                 }
 
@@ -607,6 +616,69 @@ fun TextRow(
         )
     )
 }
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CategorySpinnerRow(
+    inputLabel: String,
+    categories: List<String>,
+    selectedOptionText: String,
+    isEditable: Boolean,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier,
+) {
+    var value = selectedOptionText
+    var expanded by remember { mutableStateOf(false) }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    ExposedDropdownMenuBox(expanded = expanded,
+        onExpandedChange = { expanded = !expanded }) {
+        OutlinedTextField(
+            value = value,
+            enabled = isEditable,
+            readOnly = !isEditable,
+            onValueChange = {
+                value = it
+                onValueChange(value)
+            },
+            label = { Text(inputLabel) },
+            singleLine = true,
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                disabledContainerColor = MaterialTheme.colorScheme.surface,
+            ),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    keyboardController?.hide()
+                }),
+            trailingIcon = {
+
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+            },
+            modifier = modifier.menuAnchor(MenuAnchorType.PrimaryEditable, isEditable)
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            containerColor = MaterialTheme.colorScheme.secondaryContainer
+        ) {
+            categories.forEach { selectionOption ->
+                DropdownMenuItem(
+                    text = { Text(selectionOption) },
+                    onClick = {
+                        value = selectionOption
+                        onValueChange(value)
+                        expanded = false
+                    },
+                    modifier = modifier
+                )
+            }
+        }
+    }
+}
+
 
 @Composable
 fun AddItemFAB(
