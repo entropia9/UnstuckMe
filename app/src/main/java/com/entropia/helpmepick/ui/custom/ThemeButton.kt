@@ -27,14 +27,14 @@ fun ThemeButton(
     modifier: Modifier = Modifier,
 ) {
 
-    Box(modifier.width(120.dp)) {
+    Box(modifier.width(130.dp)) {
         Track(initialValue = when (isDarkMode) {
             true -> DragAnchors.End
             else -> DragAnchors.Start
         },
             onDragComplete = { onDragComplete() },
             onDragReverse = { onDragReverse() },
-            contentSize = 40.dp,
+            contentSize = 48.dp,
             shape = RoundedCornerShape(60),
             thumb = {
                 Thumb(shape = RoundedCornerShape(60))
@@ -48,21 +48,21 @@ fun ThemeButton(
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.light_mode),
-                contentDescription = "",
+                contentDescription = "Light Theme",
                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier
                     .padding(start = 9.dp)
-                    .size(30.dp)
+                    .size(40.dp)
 
             )
             Spacer(modifier = Modifier.weight(1f))
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.dark_mode),
-                contentDescription = "",
+                contentDescription = "Dark Theme",
                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier
                     .padding(end = 9.dp)
-                    .size(30.dp)
+                    .size(40.dp)
 
 
             )

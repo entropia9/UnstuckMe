@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -221,7 +222,7 @@ fun ItemCard(
     var isEditable by remember {
         mutableStateOf(false)
     }
-
+   val categoryUiState=viewModel.categoriesItemUiState.collectAsState()
     if (showDialog) {
         DeleteDialog(
             onDismissRequest = { showDialog = false },
@@ -289,7 +290,7 @@ fun ItemCard(
 
                     CategorySpinnerRow(
                         inputLabel = stringResource(R.string.category),
-                        categories = viewModel.categoriesItemUiState.value.categories,
+                        categories = categoryUiState.value.categories,
                         selectedOptionText = if (!isEditable) item.category else viewModel.editedItem.second,
                         isEditable = isEditable,
                         onValueChange = {
@@ -346,7 +347,7 @@ fun ItemCard(
                             bottomEnd = 20.dp, bottomStart = 40.dp
                         )
                     ),
-                visible = viewModel.categoriesItemUiState.value.currentCategory != stringResource(id = R.string.completed)
+                visible = categoryUiState.value.currentCategory != stringResource(id = R.string.completed)
             ) {
                 Text(
                     stringResource(id = R.string.one_time),
@@ -356,7 +357,8 @@ fun ItemCard(
                     updateItem(
                         item.copy(oneTime = !item.oneTime)
                     )
-                })
+                },
+                    modifier=Modifier.size(48.dp))
                 Box(
                     modifier = Modifier.fillMaxWidth(), Alignment.Center
                 ) {
@@ -381,7 +383,7 @@ fun ItemCard(
                                 .padding(dimensionResource(id = R.dimen.padding_medium))
                                 .alpha(alpha)
                         ) {
-                            Icon(imageVector = Icons.Default.Check, contentDescription = null)
+                            Icon(imageVector = Icons.Default.Check, contentDescription = "Move To Completed Button")
                         }
                     }
                     Text(
@@ -474,7 +476,7 @@ fun CompletedItemCard(
                     onClick = { uncomplete(item) },
                     modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
                 ) {
-                    Icon(imageVector = Icons.Default.Check, contentDescription = null)
+                    Icon(imageVector = Icons.Default.Check, contentDescription = "Move to Uncompleted Button")
                 }
             }
         }

@@ -1,20 +1,26 @@
 package com.entropia.helpmepick.ui.battlemode
 
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeGestures
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.entropia.helpmepick.R
 import com.entropia.helpmepick.TopAppBar
 import com.entropia.helpmepick.ui.ExpandedSelectScreen
-import com.entropia.helpmepick.ui.addedititem.ItemsListViewModel
 import com.entropia.helpmepick.ui.SelectBottomAppBar
 import com.entropia.helpmepick.ui.SelectScreen
+import com.entropia.helpmepick.ui.addedititem.ItemsListViewModel
 import com.entropia.helpmepick.ui.navigation.NavigationDestination
 
 object BattleModeSelectScreenDestination : NavigationDestination {
@@ -32,23 +38,35 @@ fun BattleModeSelectScreen(
     navigate: () -> Unit,
     navigateToAddEdit: () -> Unit,
     navigateUp: () -> Unit,
-    windowSizeClass: WindowSizeClass
+    windowSizeClass: WindowSizeClass,
 ) {
-    Scaffold(topBar = {
-        TopAppBar(
-            title = stringResource(id = R.string.select_btn), canNavigateBack = true,
-            navigateUp = navigateUp
-        )
-    },
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = stringResource(id = R.string.select_btn), canNavigateBack = true,
+                navigateUp = navigateUp
+            )
+        },
         bottomBar = {
+            val layoutDirection = LocalLayoutDirection.current
+            val displayCutout = WindowInsets.safeGestures.asPaddingValues()
+            val startPadding = displayCutout.calculateStartPadding(layoutDirection)
+            val endPadding = displayCutout.calculateEndPadding(layoutDirection)
+            val bottomPadding = displayCutout.calculateBottomPadding()
             SelectBottomAppBar(
                 viewModel = viewModel,
                 navigate = { navigate() },
                 navigateToAddEdit = { navigateToAddEdit() },
-                isEnabled = { size -> size >= 4 && size % 4 == 0 }
+                isEnabled = { size -> size >= 4 && size % 4 == 0 },
+                modifier = Modifier.padding(
+                    PaddingValues(
+                        bottom = bottomPadding,
+                        start = startPadding,
+                        end = endPadding
+                    )
+                ),
             )
-        },
-        contentWindowInsets = ScaffoldDefaults.contentWindowInsets) { innerPadding ->
+        }) { innerPadding ->
         when (windowSizeClass.windowWidthSizeClass) {
             WindowWidthSizeClass.EXPANDED -> ExpandedSelectScreen(
                 viewModel = viewModel,

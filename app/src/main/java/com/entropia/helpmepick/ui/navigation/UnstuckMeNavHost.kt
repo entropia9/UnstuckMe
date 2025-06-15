@@ -112,14 +112,14 @@ fun UnstuckMeNavHost(
         composable(
             route = StatsDestination.route
         ) {
-            showStatsScreen(windowSizeClass, navController)
+            ShowStatsScreen(windowSizeClass, navController)
 
         }
     }
 }
 
 @Composable
-private fun showStatsScreen(
+private fun ShowStatsScreen(
     windowSizeClass: WindowSizeClass,
     navController: NavHostController,
 ) {

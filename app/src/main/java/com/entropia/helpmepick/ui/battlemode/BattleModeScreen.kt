@@ -50,214 +50,217 @@ object BattleModeDestination : NavigationDestination {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BattleModeScreen(
-    viewModel: BattleModeViewModel, modifier: Modifier = Modifier, navigateUp: () -> Unit
+    viewModel: BattleModeViewModel, modifier: Modifier = Modifier, navigateUp: () -> Unit,
 ) {
-    Scaffold(modifier = Modifier, topBar = {
-        TopAppBar(
-            title = stringResource(id = BattleModeDestination.titleRes),
-            canNavigateBack = viewModel.battleModeUiState.winner != null,
-            navigateUp = navigateUp
-        )
-    },
-        contentWindowInsets = ScaffoldDefaults.contentWindowInsets) { innerPadding ->
-        Column(
-            modifier = modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            if (viewModel.battleModeUiState.winner == null) {
-                Column(
-                    verticalArrangement = Arrangement.Center,
+    Scaffold(
+        modifier = Modifier, topBar = {
+            TopAppBar(
+                title = stringResource(id = BattleModeDestination.titleRes),
+                canNavigateBack = viewModel.battleModeUiState.winner != null,
+                navigateUp = navigateUp
+            )
+        },
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets
+    ) { innerPadding ->
+        if (viewModel.battleModeUiState.winner == null) {
+            Column(
+                modifier = modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = stringResource(
+                        id = R.string.round,
+                        viewModel.battleModeUiState.round
+                    ),
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
+                )
+
+                val rightButtonState = remember {
+                    MutableTransitionState(false).apply {
+                        // Start the animation immediately.
+                        targetState = true
+                    }
+                }
+                val leftButtonState = remember {
+                    MutableTransitionState(false).apply {
+                        // Start the animation immediately.
+                        targetState = true
+                    }
+                }
+                var trigger by remember { mutableStateOf(false) }
+
+                LaunchedEffect(trigger) {
+                    rightButtonState.apply { targetState = false }
+                    leftButtonState.apply { targetState = false }
+                    delay(200)
+                    rightButtonState.apply { targetState = true }
+                    leftButtonState.apply { targetState = true }
+                    trigger = false
+                }
+                AnimatedVisibility(
+                    visibleState = rightButtonState,
+                    enter = slideInHorizontally { width -> -width / 3 },
+                    exit = slideOutHorizontally { 3 * it / 2 }
                 ) {
-                    Text(
-                        text = stringResource(
-                            id = R.string.round,
-                            viewModel.battleModeUiState.round
-                        ),
-                        style=MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
-                    )
-
-                    val rightButtonState = remember {
-                        MutableTransitionState(false).apply {
-                            // Start the animation immediately.
-                            targetState = true
-                        }
-                    }
-                    val leftButtonState = remember {
-                        MutableTransitionState(false).apply {
-                            // Start the animation immediately.
-                            targetState = true
-                        }
-                    }
-                    var trigger by remember { mutableStateOf(false) }
-
-                    LaunchedEffect(trigger) {
-                        rightButtonState.apply { targetState = false }
-                        leftButtonState.apply { targetState = false }
-                        delay(200)
-                        rightButtonState.apply { targetState = true }
-                        leftButtonState.apply { targetState = true }
-                        trigger = false
-                    }
-                    AnimatedVisibility(
-                        visibleState = rightButtonState,
-                        enter = slideInHorizontally { width -> -width / 3 },
-                        exit = slideOutHorizontally { 3 * it / 2 }
-                    ) {
-                        Row {
-                            Box(
-                                modifier = Modifier
-                                    .background(
-                                        brush = Brush.horizontalGradient(
-                                            colors = listOf(
-                                                MaterialTheme.colorScheme.onPrimary,
-                                                MaterialTheme.colorScheme.secondaryContainer
-                                            ),
+                    Row {
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    brush = Brush.horizontalGradient(
+                                        colors = listOf(
+                                            MaterialTheme.colorScheme.onPrimary,
+                                            MaterialTheme.colorScheme.secondaryContainer
                                         ),
-                                        shape = Shapes.extraLarge
+                                    ),
+                                    shape = Shapes.extraLarge
+                                )
+                                .padding(dimensionResource(id = R.dimen.padding_large))
+                        ) {
+                            Button(onClick = {
+                                trigger = true
+                                viewModel.battleModeUiState.item2?.let {
+                                    viewModel.updateRejected(
+                                        it
                                     )
-                                    .padding(dimensionResource(id = R.dimen.padding_large))
-                            ) {
-                                Button(onClick = {
-                                    trigger = true
-                                    viewModel.battleModeUiState.item2?.let {
-                                        viewModel.updateRejected(
-                                            it
-                                        )
-                                    }
-                                    viewModel.battleModeUiState.item1?.let {
-                                        viewModel.onItemPick(
-                                            it
-                                        )
-                                    }
+                                }
+                                viewModel.battleModeUiState.item1?.let {
+                                    viewModel.onItemPick(
+                                        it
+                                    )
+                                }
 
-                                }) {
-                                    viewModel.battleModeUiState.item1?.let {
-                                        Text(
-                                            text = it.name,
-                                            style = MaterialTheme.typography.titleLarge
-                                        )
-                                    }
+                            }) {
+                                viewModel.battleModeUiState.item1?.let {
+                                    Text(
+                                        text = it.name,
+                                        style = MaterialTheme.typography.titleLarge
+                                    )
                                 }
                             }
-                            Spacer(modifier = Modifier.weight(1f))
                         }
+                        Spacer(modifier = Modifier.weight(1f))
                     }
-                    AnimatedVisibility(
-                        visibleState = leftButtonState,
-                        enter = slideInHorizontally { width -> width / 3 },
-                        exit = slideOutHorizontally { -3 * it / 2 }
-                    ) {
-                        Row {
-                            Spacer(modifier = Modifier.weight(1f))
-                            Box(
-                                modifier = Modifier
-                                    .background(
-                                        brush = Brush.horizontalGradient(
-                                            colors = listOf(
-                                                MaterialTheme.colorScheme.secondaryContainer,
-                                                MaterialTheme.colorScheme.onPrimary
-                                            ),
+                }
+                AnimatedVisibility(
+                    visibleState = leftButtonState,
+                    enter = slideInHorizontally { width -> width / 3 },
+                    exit = slideOutHorizontally { -3 * it / 2 }
+                ) {
+                    Row {
+                        Spacer(modifier = Modifier.weight(1f))
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    brush = Brush.horizontalGradient(
+                                        colors = listOf(
+                                            MaterialTheme.colorScheme.secondaryContainer,
+                                            MaterialTheme.colorScheme.onPrimary
                                         ),
-                                        shape = Shapes.extraLarge
+                                    ),
+                                    shape = Shapes.extraLarge
+                                )
+                                .padding(dimensionResource(id = R.dimen.padding_large))
+                        )
+                        {
+                            Button(onClick = {
+                                trigger = true
+                                viewModel.battleModeUiState.item1?.let {
+                                    viewModel.updateRejected(
+                                        it
                                     )
-                                    .padding(dimensionResource(id = R.dimen.padding_large))
-                            )
-                            {
-                                Button(onClick = {
-                                    trigger = true
-                                    viewModel.battleModeUiState.item1?.let {
-                                        viewModel.updateRejected(
-                                            it
-                                        )
-                                    }
-                                    viewModel.battleModeUiState.item2?.let {
-                                        viewModel.onItemPick(
-                                            it
-                                        )
-                                    }
-                                }) {
-                                    viewModel.battleModeUiState.item2?.let {
-                                        Text(
-                                            text = it.name,
-                                            style = MaterialTheme.typography.titleLarge
-                                        )
-                                    }
+                                }
+                                viewModel.battleModeUiState.item2?.let {
+                                    viewModel.onItemPick(
+                                        it
+                                    )
+                                }
+                            }) {
+                                viewModel.battleModeUiState.item2?.let {
+                                    Text(
+                                        text = it.name,
+                                        style = MaterialTheme.typography.titleLarge
+                                    )
                                 }
                             }
                         }
                     }
                 }
+            }
 
-            } else {
-                Column(
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(dimensionResource(id = R.dimen.padding_large)),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Spacer(modifier = Modifier.weight(0.1f))
+                FinalText(
+                    text = stringResource(
+                        id = R.string.win_dialogue,
+                        viewModel.battleModeUiState.winner!!.name
+
+                    ),
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.padding(
+                        dimensionResource(id = R.dimen.padding_large)
+                    )
+                )
+                Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                        .padding(dimensionResource(id = R.dimen.padding_large)),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                        .fillMaxWidth()
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    MaterialTheme.colorScheme.secondaryContainer,
+                                    MaterialTheme.colorScheme.onPrimary
+                                ),
+                            ),
+                            shape = Shapes.large
+                        )
+                        .padding(dimensionResource(id = R.dimen.padding_large))
                 ) {
-                    Spacer(modifier = Modifier.weight(0.1f))
-                    FinalText(
-                        text = stringResource(
-                            id = R.string.win_dialogue,
-                            viewModel.battleModeUiState.winner!!.name
 
-                        ),
-                        style = MaterialTheme.typography.headlineMedium,
-                        modifier = Modifier.padding(
-                            dimensionResource(id = R.dimen.padding_large)
+                    Column {
+                        val stringBuilder = StringBuilder()
+                        viewModel.battleModeUiState.winner?.let { item ->
+                            stringBuilder.append(
+                                pluralStringResource(
+                                    id = R.plurals.picked_stats1_battle_mode,
+                                    count = item.timesSelectedBattleMode,
+                                    item.timesSelectedBattleMode
+                                )
+                            ).appendLine().append(
+                                pluralStringResource(
+                                    id = R.plurals.battle_wins,
+                                    count = item.battleWins,
+                                    item.battleWins
+                                )
+                            ).toString()
+                                .let { DialogueText(text = it) }
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.weight(0.1f))
+                Button(
+                    onClick = { navigateUp() }, modifier = Modifier.padding(
+                        dimensionResource(
+                            id = R.dimen.padding_medium
                         )
                     )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                brush = Brush.verticalGradient(
-                                    colors = listOf(
-                                        MaterialTheme.colorScheme.secondaryContainer,
-                                        MaterialTheme.colorScheme.onPrimary
-                                    ),
-                                ),
-                                shape = Shapes.large
-                            )
-                            .padding(dimensionResource(id = R.dimen.padding_large))
-                    ) {
-
-                        Column {
-                            val stringBuilder = StringBuilder()
-                            viewModel.battleModeUiState.winner?.let { item ->
-                                stringBuilder.append(
-                                    pluralStringResource(
-                                        id = R.plurals.picked_stats1_battle_mode,
-                                        count = item.timesSelectedBattleMode,
-                                        item.timesSelectedBattleMode
-                                    )
-                                ).appendLine().append(
-                                    pluralStringResource(
-                                        id = R.plurals.battle_wins,
-                                        count = item.battleWins,
-                                        item.battleWins
-                                    )
-                                ).toString()
-                                    .let { DialogueText(text = it) }
-                            }
-                        }
-                    }
-                    Spacer(modifier = Modifier.weight(0.2f))
-                    Button(onClick = { navigateUp() }, modifier=Modifier.padding(dimensionResource(
-                        id = R.dimen.padding_medium
-                    ))) {
-                        Text(text = stringResource(id = R.string.proceed))
-                    }
-                    Spacer(modifier = Modifier.weight(0.02f))
+                ) {
+                    Text(text = stringResource(id = R.string.proceed))
                 }
-
+                Spacer(modifier = Modifier.weight(0.02f))
             }
+
         }
+
     }
 }

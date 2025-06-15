@@ -1,11 +1,17 @@
 package com.entropia.helpmepick.ui.regularmode
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeGestures
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
@@ -43,11 +49,21 @@ fun RegularSelectScreen(
             )
         },
         bottomBar = {
+            val layoutDirection = LocalLayoutDirection.current
+            val displayCutout = WindowInsets.safeGestures.asPaddingValues()
+            val startPadding = displayCutout.calculateStartPadding(layoutDirection)
+            val endPadding = displayCutout.calculateEndPadding(layoutDirection)
+            val bottomPadding = displayCutout.calculateBottomPadding()
             SelectBottomAppBar(
                 viewModel = viewModel,
                 navigate = { navigate() },
                 navigateToAddEdit = { navigateToAddEdit() },
-                isEnabled = { size -> size >= 2 }
+                isEnabled = { size -> size >= 2 },
+                modifier = Modifier.padding(
+                    bottom = bottomPadding,
+                    start = startPadding,
+                    end = endPadding
+                )
             )
         },
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets
